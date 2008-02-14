@@ -1,4 +1,5 @@
 #summary Solving the issue of pydot generating empty output files
+#labels Deprecated
 
 = Introduction =
 
@@ -10,5 +11,3 @@ In OSX the path to the binaries usually looks like one of these:
 
   * `/usr/local/graphviz-2.12/bin/`
   * `/Applications/Graphviz.app/Contents/MacOS/`
-
-
