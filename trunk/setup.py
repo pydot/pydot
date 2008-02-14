@@ -1,23 +1,31 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError, excp:
+    from distutils.core import setup
+    
 import pydot
 
 setup(	name = 'pydot',
-	version = pydot.__version__,
-	description = 'Python interface to Graphiz\'s Dot',
-	author = 'Ero Carrera',
-	author_email = 'ero@dkbza.org',
-	url = 'http://dkbza.org/pydot.html',
-	license = 'MIT',
-	platforms = ["any"],
-	classifiers =	['Development Status :: 5 - Production/Stable',	\
-			 'Intended Audience :: Science/Research',	\
-			 'License :: OSI Approved :: MIT License',\
-			 'Natural Language :: English',			\
-			 'Operating System :: OS Independent',		\
-			 'Programming Language :: Python',		\
-			 'Topic :: Scientific/Engineering :: Visualization',\
-			 'Topic :: Software Development :: Libraries :: Python Modules'],
-	long_description = "\n".join(pydot.__doc__.split('\n')),
-	py_modules = ['pydot', 'dot_parser'])
+    version = pydot.__version__,
+    description = 'Python interface to Graphviz\'s Dot',
+    author = 'Ero Carrera',
+    author_email = 'ero@dkbza.org',
+    url = 'http://code.google.com/p/pydot/',
+    download_url = 'http://pydot.googlecode.com/files/pydot-%s.tar.gz' % pydot.__version__,
+    license = 'MIT',
+    keywords = 'graphviz dot graphs visualization',
+    platforms = ['any'],
+    classifiers =	['Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering :: Visualization',
+        'Topic :: Software Development :: Libraries :: Python Modules'],
+    long_description = "\n".join(pydot.__doc__.split('\n')),
+    py_modules = ['pydot', 'dot_parser'],
+    install_requires = ['pyparsing', 'setuptools'],
+    data_files = [('.', ['ChangeLog', 'LICENSE', 'README'])] )
