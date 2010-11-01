@@ -7,6 +7,7 @@ into a class representation defined by pydot.
 The module needs pyparsing (tested with version 1.2.2) and pydot (tested with 0.9.10)
 
 Author: Michael Krause <michael@krause-software.de>
+Fixes by: Ero Carrera <ero@dkbza.org>
 """
 
 __author__ = ['Michael Krause', 'Ero Carrera']
@@ -17,6 +18,7 @@ import sys
 import glob
 import pydot
 import re
+import codecs
 
 from pyparsing import __version__ as pyparsing_version
 
@@ -24,7 +26,6 @@ from pyparsing import ( nestedExpr, Literal, CaselessLiteral, Word, Upcase, OneO
     Forward, NotAny, delimitedList, oneOf, Group, Optional, Combine, alphas, nums,
     restOfLine, cStyleComment, nums, alphanums, printables, empty, quotedString,
     ParseException, ParseResults, CharsNotIn, _noncomma, dblQuotedString, QuotedString, ParserElement )
-
 
 
 class P_AttrList:
@@ -35,12 +36,17 @@ class P_AttrList:
         i = 0
         
         while i < len(toks):
-        
             attrname = toks[i]
-            attrvalue = toks[i+1]
+            if i+2 < len(toks) and toks[i+1] == '=':
+                attrvalue = toks[i+2]
+                i += 3
+            else:
+                attrvalue = None
+                i += 1
+                
             self.attrs[attrname] = attrvalue
-            i += 2
-
+            
+            
     def __repr__(self):
 
         return "%s(%r)" % (self.__class__.__name__, self.attrs)
@@ -191,14 +197,19 @@ def push_graph_stmt(str, loc, toks):
     return g
 
 
-def push_subgraph_stmt(str, loc, toks):	
+def push_subgraph_stmt(str, loc, toks):
 
     g = pydot.Subgraph('')
-    
     for e in toks:
         if len(e)==3:
-            g = e[2]
-            g.set_name(e[1])
+            e[2].set_name(e[1])
+            if e[0] == 'subgraph':
+                e[2].obj_dict['show_keyword'] = True
+            return e[2]
+        else:
+            if e[0] == 'subgraph':
+                e[1].obj_dict['show_keyword'] = True
+            return e[1]
 
     return g
 
@@ -208,7 +219,6 @@ def push_default_stmt(str, loc, toks):
     # The pydot class instances should be marked as
     # default statements to be inherited by actual
     # graphs, nodes and edges.
-    # print "push_default_stmt", toks
     #
     default_type = toks[0][0]
     if len(toks) > 1:
@@ -366,19 +376,17 @@ def graph_definition():
         
         double_quoted_string = QuotedString('"', multiline=True, unquoteResults=False) # dblQuotedString
 
-        alphastring_ = OneOrMore(CharsNotIn(_noncomma))
+        alphastring_ = OneOrMore(CharsNotIn(_noncomma + ' '))
 
         def parse_html(s, loc, toks):
-        
             return '<%s>' % ''.join(toks[0])
             
         
         opener = '<'
         closer = '>'
         html_text = nestedExpr( opener, closer, 
-            ( CharsNotIn( 
-                opener + closer ).setParseAction( lambda t:t[0] ))
-            ).setParseAction(parse_html)
+            ( CharsNotIn( opener + closer )  ) 
+                ).setParseAction(parse_html).leaveWhitespace()
 
         ID = ( identifier | html_text | 
             double_quoted_string | #.setParseAction(strip_quotes) |
@@ -399,16 +407,16 @@ def graph_definition():
             Group(port_angle + Optional(port_location))).setName("port")
             
         node_id = (ID + Optional(port))
-        a_list = OneOrMore(ID + Optional(equals.suppress() + righthand_id) +	
+        a_list = OneOrMore(ID + Optional(equals + righthand_id) +
             Optional(comma.suppress())).setName("a_list")
-            
+        
         attr_list = OneOrMore(lbrack.suppress() + Optional(a_list) +	
             rbrack.suppress()).setName("attr_list")
-            
+        
         attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName("attr_stmt")
-
+        
         edgeop = (Literal("--") | Literal("->")).setName("edgeop")
-
+        
         stmt_list = Forward()
         graph_stmt = Group(lbrace.suppress() + Optional(stmt_list) +	
             rbrace.suppress() + Optional(semi.suppress()) ).setName("graph_stmt")
@@ -421,17 +429,17 @@ def graph_definition():
         
         subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
         
-        edge_point << Group(subgraph | graph_stmt | node_id )
-
+        edge_point << Group(subgraph | graph_stmt | node_id ).setName('edge_point')
+        
         node_stmt = (node_id + Optional(attr_list) + Optional(semi.suppress())).setName("node_stmt")
         
-        assignment = (ID + equals.suppress() + righthand_id).setName("assignment")
+        assignment = (ID + equals + righthand_id).setName("assignment")
         stmt =  (assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt).setName("stmt")
         stmt_list << OneOrMore(stmt + Optional(semi.suppress()))
-
-        graphparser = OneOrMore( (Optional(strict_) + Group((graph_ | digraph_)) +	
+        
+        graphparser = OneOrMore( (Optional(strict_) + Group((graph_ | digraph_)) +
             Optional(ID) + graph_stmt).setResultsName("graph") )
-
+        
         singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
         
         
@@ -439,18 +447,18 @@ def graph_definition():
         
         graphparser.ignore(singleLineComment)
         graphparser.ignore(cStyleComment)
-
+        
         assignment.setParseAction(push_attr_list)
         a_list.setParseAction(push_attr_list)
         edge_stmt.setParseAction(push_edge_stmt)
         node_stmt.setParseAction(push_node_stmt)
         attr_stmt.setParseAction(push_default_stmt)
-
+        
         subgraph.setParseAction(push_subgraph_stmt)
         graph_stmt.setParseAction(push_graph_stmt)
         graphparser.setParseAction(push_top_graph_stmt)
-
         
+    
     return graphparser
 
 
@@ -459,7 +467,12 @@ def parse_dot_data(data):
     global top_graphs
     
     top_graphs = list()
-
+    
+    
+    if data.startswith( codecs.BOM_UTF8 ):
+        data = data.decode( 'utf-8' ).lstrip( unicode(codecs.BOM_UTF8, "utf8") )
+        data = data.encode( 'ascii' )
+        
     try:
     
         graphparser = graph_definition()

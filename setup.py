@@ -28,4 +28,4 @@ setup(	name = 'pydot',
     long_description = "\n".join(pydot.__doc__.split('\n')),
     py_modules = ['pydot', 'dot_parser'],
     install_requires = ['pyparsing', 'setuptools'],
-    data_files = [('.', ['ChangeLog', 'LICENSE', 'README'])] )
+    data_files = [('.', ['LICENSE', 'README'])] )
