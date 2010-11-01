@@ -6,11 +6,11 @@ and process graphs in Graphviz's dot language.
 
 References:
 
-pydot Homepage:	http://www.dkbza.org/pydot.html
-Graphviz:	http://www.research.att.com/sw/tools/graphviz/
-DOT Language:	http://www.research.att.com/~erg/graphviz/info/lang.html
+pydot Homepage: http://code.google.com/p/pydot/
+Graphviz:       http://www.graphviz.org/
+DOT Language:   http://www.graphviz.org/doc/info/lang.html
 
-Programmed and tested with Graphviz 1.16 and Python 2.3.4 on GNU/Linux
+Programmed and tested with Graphviz 2.26.3 and Python 2.6 on OSX 10.6.4
 by Ero Carrera (c) 2004-2010  [ero@dkbza.org]
 
 Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
