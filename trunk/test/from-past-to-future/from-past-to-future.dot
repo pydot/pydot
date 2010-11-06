@@ -1,0 +1,108 @@
+digraph G {
+	compound=true;
+	ranksep=1.25;
+	label="From Past to Future...";
+
+	node [shape=plaintext, fontsize=16];
+
+	bgcolor=white;
+	edge [arrowsize=1, color=black];
+
+	/* Nodes */
+	subgraph cluster_Computers {label="Computers"; labelloc="b"; Computers_icon};
+	Computers_icon [label="", shape=box, style=invis, shapefile="Computers.png"];
+                
+	subgraph cluster_Semantic_Web {label="Semantic Web"; labelloc="b"; Semantic_Web_icon};
+	Semantic_Web_icon [label="", shape=box, style=invis, shapefile="Semantic_Web.png"];
+                
+	subgraph cluster_Cryptography {label="Cryptography"; labelloc="b"; Cryptography_icon};
+	Cryptography_icon [label="", shape=box, style=invis, shapefile="Cryptography.png"];
+                
+	subgraph cluster_Automata {label="Automata"; labelloc="b"; Automata_icon};
+	Automata_icon [label="", shape=box, style=invis, shapefile="Automata.png"];
+                
+	subgraph cluster_AI {label="A.I."; labelloc="b"; AI_icon};
+	AI_icon [label="", shape=box, style=invis, shapefile="AI.png"];
+                
+	subgraph cluster_Chaos {label="Chaos / Fractals"; labelloc="b"; Chaos_icon};
+	Chaos_icon [label="", shape=box, style=invis, shapefile="Chaos.png"];
+                
+	subgraph cluster_XML {label="XML / RDF / URI"; labelloc="b"; XML_icon};
+	XML_icon [label="", shape=box, style=invis, shapefile="XML.png"];
+                
+	subgraph cluster_Ontology {label="Ontology / Clustering"; labelloc="b"; Ontology_icon};
+	Ontology_icon [label="", shape=box, style=invis, shapefile="Ontology.png"];
+                
+	subgraph cluster_Biology {label="Biology / Neurons"; labelloc="b"; Biology_icon};
+	Biology_icon [label="", shape=box, style=invis, shapefile="Biology.png"];
+                
+	subgraph cluster_Agents {label="Agents / Security"; labelloc="b"; Agents_icon};
+	Agents_icon [label="", shape=box, style=invis, shapefile="Agents.png"];
+                
+	subgraph cluster_Small_World {label="The Small World Project"; labelloc="b"; Small_World_icon};
+	Small_World_icon [label="", shape=box, style=invis, shapefile="Small_World.png"];
+                
+	subgraph cluster_Social_Networks {label="Social Networks"; labelloc="b"; Social_Networks_icon};
+	Social_Networks_icon [label="", shape=box, style=invis, shapefile="Social_Networks.png"];
+                
+	subgraph cluster_Search_Engines {label="Search Engines"; labelloc="b"; Search_Engines_icon};
+	Search_Engines_icon [label="", shape=box, style=invis, shapefile="Search_Engines.png"];
+                
+	subgraph cluster_Turing {label="A. Turing"; labelloc="b"; Turing_icon};
+	Turing_icon [label="", shape=box, style=invis, shapefile="Turing.png"];
+                
+	subgraph cluster_Rejewski {label="M. Rejewski"; labelloc="b"; Rejewski_icon};
+	Rejewski_icon [label="", shape=box, style=invis, shapefile="Rejewski.png"];
+                
+	subgraph cluster_Dertouzos {label="M. Dertouzos"; labelloc="b"; Dertouzos_icon};
+	Dertouzos_icon [label="", shape=box, style=invis, shapefile="Dertouzos.png"];
+                
+	subgraph cluster_Berners_Lee {label="T. Berners-Lee"; labelloc="b"; Berners_Lee_icon};
+	Berners_Lee_icon [label="", shape=box, style=invis, shapefile="Berners_Lee.png"];
+                
+	/* Relationships */
+	Computers_icon -> Semantic_Web_icon;
+	Semantic_Web_icon -> Computers_icon;
+	Cryptography_icon -> Semantic_Web_icon;
+	Cryptography_icon -> Computers_icon;
+	Automata_icon -> Computers_icon;
+	AI_icon -> Automata_icon;
+	Automata_icon -> AI_icon;
+	Chaos_icon -> Computers_icon;
+	Chaos_icon -> AI_icon;
+	AI_icon -> Chaos_icon;
+	Computers_icon -> Chaos_icon;
+	XML_icon -> Semantic_Web_icon;
+	XML_icon -> Computers_icon;
+	Computers_icon -> XML_icon;
+	Ontology_icon -> Semantic_Web_icon;
+	Biology_icon -> AI_icon;
+	Biology_icon -> Chaos_icon;
+	Chaos_icon -> Biology_icon;
+	Chaos_icon -> Semantic_Web_icon;
+	Agents_icon -> Semantic_Web_icon;
+	Semantic_Web_icon -> Agents_icon;
+	Agents_icon -> AI_icon;
+	AI_icon -> Agents_icon;
+	Small_World_icon -> Chaos_icon;
+	Small_World_icon -> Agents_icon;
+	Small_World_icon -> Biology_icon;
+	Biology_icon -> Small_World_icon;
+	Social_Networks_icon -> Small_World_icon;
+	Social_Networks_icon -> Biology_icon;
+	Search_Engines_icon -> Semantic_Web_icon;
+	Computers_icon -> Search_Engines_icon;
+	Turing_icon -> Cryptography_icon;
+	Turing_icon -> Computers_icon;
+	Turing_icon -> Automata_icon;
+	Rejewski_icon -> Turing_icon;
+	Rejewski_icon -> Cryptography_icon;
+	Dertouzos_icon -> Computers_icon;
+	Dertouzos_icon -> Berners_Lee_icon;
+	Berners_Lee_icon -> Semantic_Web_icon;
+
+
+	{ rank=same; Rejewski_icon; Turing_icon; Dertouzos_icon; Berners_Lee_icon };
+	{ rank=same; Biology_icon; AI_icon; Social_Networks_icon };
+
+}

@@ -1,0 +1,8 @@
+digraph G {
+<abcde> [label=cholo];
+<this <b>is</b> a <i>node</i>> [label=<<table><tr><td>is another</td></tr></table>>]; 
+<this tabla <table></table><b>is</b> <i>another</i>>;
+<more <b>html</b>> -> <more <b>html</b>>;
+"<more <b>html</b>>" -> <this <b>is</b> a <i>node</i>>;
+<this <b>is</b> a <i>node</i>> -> <this <b>is</b> <i>another</i>>;
+}
