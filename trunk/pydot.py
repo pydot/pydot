@@ -345,7 +345,7 @@ def __find_executables(path):
     """
     
     success = False
-    progs = {'dot': '', 'twopi': '', 'neato': '', 'circo': '', 'fdp': ''}
+    progs = {'dot': '', 'twopi': '', 'neato': '', 'circo': '', 'fdp': '', 'sfdp': ''}
     
     was_quoted = False
     path = path.strip()
