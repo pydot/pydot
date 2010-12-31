@@ -17,7 +17,7 @@ Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
 """
 
 __author__ = 'Ero Carrera'
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 __license__ = 'MIT'
 
 import os
