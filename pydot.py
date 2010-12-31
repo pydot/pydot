@@ -139,7 +139,7 @@ dot_keywords = ['graph', 'subgraph', 'digraph', 'node', 'edge', 'strict']
 
 id_re_alpha_nums = re.compile('^[_a-zA-Z][a-zA-Z0-9_:,]*$')
 id_re_num = re.compile('^[0-9,]+$')
-id_re_with_port = re.compile('^.*:([^"]+|[^"]*\"[^"]*\"[^"]*)$')
+id_re_with_port = re.compile('^([^:]*):([^:]*)$')
 id_re_dbl_quoted = re.compile('^\".*\"$', re.S)
 id_re_html = re.compile('^<.*>$', re.S)
 
@@ -160,21 +160,15 @@ def needs_quotes( s ):
     if chars and not id_re_dbl_quoted.match(s):
         return True
         
-    res = id_re_alpha_nums.match(s)
-    if not res:
-        res = id_re_num.match(s)
-        if not res:
-            res = id_re_dbl_quoted.match(s)
-            if not res:
-                res = id_re_html.match(s)
-                if not res:
-                    res = id_re_with_port.match(s)
+    for test in [id_re_alpha_nums, id_re_num, id_re_dbl_quoted, id_re_html]:
+        if test.match(s):
+            return False
 
-    if not res:
-        return True
+    m = id_re_with_port.match(s)
+    if m:
+        return needs_quotes(m.group(1)) or needs_quotes(m.group(2))
 
-    return False
-
+    return True
 
 
 def quote_if_necessary(s):
@@ -188,7 +182,12 @@ def quote_if_necessary(s):
         return s
 
     if needs_quotes(s):
-            
+        replace = {'"'  : r'\"',
+                   "\n" : r'\n',
+                   "\r" : r'\r'}
+        for (a,b) in replace.items():
+            s = s.replace(a, b)
+
         return '"' + s + '"'
      
     return s   
