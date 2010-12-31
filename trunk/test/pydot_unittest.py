@@ -367,7 +367,13 @@ class TestGraphAPI(unittest.TestCase):
         self.assertRaises( TypeError,  self.graph_directed.add_subgraph, 'a' )
     
 
-
+    def test_quoting(self):
+        import string
+        g = pydot.Dot()
+        g.add_node(pydot.Node("test", label=string.printable))
+        #print g.to_string()
+        data = g.create( format='jpe' )
+        self.assertEqual( len(data) > 0, True )
 
 if __name__ == '__main__':
     
