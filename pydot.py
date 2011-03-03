@@ -11,13 +11,15 @@ Graphviz:       http://www.graphviz.org/
 DOT Language:   http://www.graphviz.org/doc/info/lang.html
 
 Programmed and tested with Graphviz 2.26.3 and Python 2.6 on OSX 10.6.4
-by Ero Carrera (c) 2004-2010  [ero@dkbza.org]
+
+Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
 
 Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
 """
 
+__revision__ = "$LastChangedRevision$"
 __author__ = 'Ero Carrera'
-__version__ = '1.0.4'
+__version__ = '1.0.%d' % int( __revision__[21:-2] )
 __license__ = 'MIT'
 
 import os

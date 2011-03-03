@@ -4,7 +4,7 @@
 The dotparser parses graphviz files in dot and dot files and transforms them
 into a class representation defined by pydot.
 
-The module needs pyparsing (tested with version 1.2.2) and pydot (tested with 0.9.10)
+The module needs pyparsing (tested with version 1.2.2) and pydot
 
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero@dkbza.org>
