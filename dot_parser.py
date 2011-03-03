@@ -372,7 +372,7 @@ def graph_definition():
         
         # token definitions
         
-        identifier = Word(alphanums + "_" ).setName("identifier")
+        identifier = Word(alphanums + "_." ).setName("identifier")
         
         double_quoted_string = QuotedString('"', multiline=True, unquoteResults=False) # dblQuotedString
 
