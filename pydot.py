@@ -106,7 +106,9 @@ class frozendict(dict):
             if isinstance(arg, dict):
                 arg = copy.copy(arg)
                 for k, v in arg.iteritems():
-                    if isinstance(v, dict):
+                    if isinstance(v, frozendict):
+                        arg[k] = v
+                    elif isinstance(v, dict):
                         arg[k] = frozendict(v)
                     elif isinstance(v, list):
                         v_ = list()
@@ -1357,22 +1359,23 @@ class Graph(object, Common):
 
         if not isinstance(graph_edge, Edge):
             raise TypeError('add_edge() received a non edge class object')
-            
+
         edge_points = ( graph_edge.get_source(), graph_edge.get_destination() )
 
         if self.obj_dict['edges'].has_key(edge_points):
-        
+
             edge_list = self.obj_dict['edges'][edge_points]
             edge_list.append(graph_edge.obj_dict)
-                
+
         else:
-        
+
             self.obj_dict['edges'][edge_points] = [ graph_edge.obj_dict ]
-         
+
+
         graph_edge.set_sequence( self.get_next_sequence_number() )
-        
+
         graph_edge.set_parent_graph( self.get_parent_graph() )
-            
+
 
 
     def del_edge(self, src_or_list, dst=None, index=None):
@@ -1572,7 +1575,7 @@ class Graph(object, Common):
             if self==self.get_parent_graph() and self.obj_dict['strict']:
             
                 graph.append('strict ')
-        
+
         if self.obj_dict['name'] == '':
             if 'show_keyword' in self.obj_dict and self.obj_dict['show_keyword']:
                 graph.append( 'subgraph {\n' )
@@ -1905,6 +1908,12 @@ class Dot(Graph):
         if prog is None:
             prog = self.prog
             
+        if isinstance(prog, (list, tuple)):
+            prog = prog[0]
+            args = prog[1:]
+        else:
+            args = []
+            
         if self.progs is None:
             self.progs = find_graphviz()
             if self.progs is None:
@@ -1940,9 +1949,11 @@ class Dot(Graph):
             f = file( os.path.join( tmp_dir, os.path.basename(img) ), 'wb' )
             f.write(f_data)
             f.close()
-
+        
+        cmdline = [self.progs[prog], '-T'+format, tmp_name] + args
+        
         p = subprocess.Popen(
-            (self.progs[prog], '-T'+format, tmp_name),
+            cmdline,
             cwd=tmp_dir,
             stderr=subprocess.PIPE, stdout=subprocess.PIPE)
             

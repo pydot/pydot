@@ -113,12 +113,50 @@ def push_top_graph_stmt(str, loc, toks):
         else:
             raise ValueError, "Unknown element statement: %r " % element
     
-        
+    
+    for g in top_graphs:
+        update_parent_graph_hierarchy(g)
     
     if len( top_graphs ) == 1:
         return top_graphs[0]
         
     return top_graphs
+
+
+def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
+
+
+    if parent_graph is None:
+        parent_graph = g
+        
+    for key_name in ('edges',):
+
+        if isinstance(g, pydot.frozendict):
+            item_dict = g
+        else:
+            item_dict = g.obj_dict
+            
+        if not item_dict.has_key( key_name ):
+            continue
+
+        for key, objs in item_dict[key_name].items():
+            for obj in objs:
+                if 'parent_graph' in obj and obj['parent_graph'].get_parent_graph()==g:
+                    if obj['parent_graph'] is g:
+                        pass
+                    else:
+                        obj['parent_graph'].set_parent_graph(parent_graph)
+
+                if key_name == 'edges' and len(key) == 2:
+                    for idx, vertex in enumerate( obj['points'] ):
+                        if isinstance( vertex, (pydot.Graph, pydot.Subgraph, pydot.Cluster)):
+                            vertex.set_parent_graph(parent_graph)
+                        if isinstance( vertex, pydot.frozendict):
+                            if vertex['parent_graph'] is g:
+                                pass
+                            else:
+                                vertex['parent_graph'].set_parent_graph(parent_graph)
+
 
 
 def add_defaults(element, defaults):
@@ -140,7 +178,7 @@ def add_elements(g, toks, defaults_graph=None, defaults_node=None, defaults_edge
         defaults_edge = {}
         
     for elm_idx, element in enumerate(toks):
-    
+        
         if isinstance(element, (pydot.Subgraph, pydot.Cluster)):
         
             add_defaults(element, defaults_graph)
@@ -429,7 +467,7 @@ def graph_definition():
         
         subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
         
-        edge_point << Group(subgraph | graph_stmt | node_id ).setName('edge_point')
+        edge_point << Group( subgraph | graph_stmt | node_id ).setName('edge_point')
         
         node_stmt = (node_id + Optional(attr_list) + Optional(semi.suppress())).setName("node_stmt")
         
