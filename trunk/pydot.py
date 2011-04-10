@@ -1255,7 +1255,7 @@ class Graph(object, Common):
         """
         
         if not isinstance(graph_node, Node):
-            raise TypeError('add_node() received a non node class object')
+            raise TypeError('add_node() received a non node class object: ' + str(graph_node))
 
             
         node = self.get_node(graph_node.get_name())
@@ -1358,7 +1358,7 @@ class Graph(object, Common):
         """
 
         if not isinstance(graph_edge, Edge):
-            raise TypeError('add_edge() received a non edge class object')
+            raise TypeError('add_edge() received a non edge class object: ' + str(graph_edge))
 
         edge_points = ( graph_edge.get_source(), graph_edge.get_destination() )
 
@@ -1481,7 +1481,7 @@ class Graph(object, Common):
         """
 
         if not isinstance(sgraph, Subgraph) and not isinstance(sgraph, Cluster):
-            raise TypeError('add_subgraph() received a non subgraph class object')
+            raise TypeError('add_subgraph() received a non subgraph class object:' + str(sgraph))
             
         if self.obj_dict['subgraphs'].has_key(sgraph.get_name()):
         
@@ -1903,6 +1903,12 @@ class Dot(Graph):
             
         which are automatically defined for all the supported formats.
         [create_ps(), create_gif(), create_dia(), ...]
+        
+        If 'prog' is a list instead of a string the fist item is expected
+        to be the program name, followed by any optional command-line
+        arguments for it:
+        
+            [ 'twopi', '-Tdot', '-s10' ]
         """
         
         if prog is None:
