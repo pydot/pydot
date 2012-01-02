@@ -141,11 +141,12 @@ class frozendict(dict):
 
 dot_keywords = ['graph', 'subgraph', 'digraph', 'node', 'edge', 'strict']
 
-id_re_alpha_nums = re.compile('^[_a-zA-Z][a-zA-Z0-9_:,]*$')
-id_re_num = re.compile('^[0-9,]+$')
-id_re_with_port = re.compile('^([^:]*):([^:]*)$')
-id_re_dbl_quoted = re.compile('^\".*\"$', re.S)
-id_re_html = re.compile('^<.*>$', re.S)
+id_re_alpha_nums = re.compile('^[_a-zA-Z][a-zA-Z0-9_,]*$', re.UNICODE)
+id_re_alpha_nums_with_ports = re.compile('^[_a-zA-Z][a-zA-Z0-9_,:\"]*[a-zA-Z0-9_,\"]+$', re.UNICODE)
+id_re_num = re.compile('^[0-9,]+$', re.UNICODE)
+id_re_with_port = re.compile('^([^:]*):([^:]*)$', re.UNICODE)
+id_re_dbl_quoted = re.compile('^\".*\"$', re.S|re.UNICODE)
+id_re_html = re.compile('^<.*>$', re.S|re.UNICODE)
 
 
 def needs_quotes( s ):
@@ -154,18 +155,25 @@ def needs_quotes( s ):
     It will check whether the string is solely composed
     by the characters allowed in an ID or not.
     If the string is one of the reserved keywords it will
-    need quotes too.
+    need quotes too but the user will need to add them
+    manually.
     """
-        
+    
+    # If the name is a reserved keyword it will need quotes but pydot
+    # can't tell when it's being used as a keyword or when it's simply
+    # a name. Hence the user needs to supply the quotes when an element
+    # would use a reserved keyword as name. This function will return
+    # false indicating that a keyword string, if provided as-is, won't
+    # need quotes.
     if s in dot_keywords:
         return False
 
     chars = [ord(c) for c in s if ord(c)>0x7f or ord(c)==0]
-    if chars and not id_re_dbl_quoted.match(s):
+    if chars and not id_re_dbl_quoted.match(s) and not id_re_html.match(s):
         return True
         
-    for test in [id_re_alpha_nums, id_re_num, id_re_dbl_quoted, id_re_html]:
-        if test.match(s):
+    for test_re in [id_re_alpha_nums, id_re_num, id_re_dbl_quoted, id_re_html, id_re_alpha_nums_with_ports]:
+        if test_re.match(s):
             return False
 
     m = id_re_with_port.match(s)
@@ -185,6 +193,9 @@ def quote_if_necessary(s):
     if not isinstance( s, basestring ):
         return s
 
+    if not s:
+        return s
+        
     if needs_quotes(s):
         replace = {'"'  : r'\"',
                    "\n" : r'\n',
@@ -591,7 +602,11 @@ class Common:
             if default_node_name in ('subgraph', 'digraph', 'cluster'):
                 default_node_name = 'graph'
                 
-            defaults = self.get_parent_graph().get_node( default_node_name )
+            g = self.get_parent_graph()
+            if g is not None:
+                defaults = g.get_node( default_node_name )
+            else:
+                return None
             
             # Multiple defaults could be set by having repeated 'graph [...]'
             # 'node [...]', 'edge [...]' statements. In such case, if the
@@ -743,7 +758,7 @@ class Node(object, Common):
             port = None
             if isinstance(name, basestring) and not name.startswith('"'):
                 idx = name.find(':')
-                if idx > 0:
+                if idx > 0 and idx+1 < len(name):
                     name, port = name[:idx], name[idx:]
 
             if isinstance(name, (long, int)):
@@ -1063,7 +1078,7 @@ class Graph(object, Common):
                 raise Error, 'Invalid type "%s". Accepted graph types are: graph, digraph, subgraph' % graph_type
     
     
-            self.obj_dict['name'] = graph_name
+            self.obj_dict['name'] = quote_if_necessary(graph_name)
             self.obj_dict['type'] = graph_type
             
             self.obj_dict['strict'] = strict
@@ -1879,7 +1894,19 @@ class Dot(Graph):
         
         dot_fd = file(path, "w+b")
         if format == 'raw':
-            dot_fd.write(self.to_string())
+            data = self.to_string()
+            if isinstance(data, basestring):
+                if not isinstance(data, unicode):
+                    try:
+                        data = unicode(data, 'utf-8')
+                    except:
+                        pass
+                        
+            try:
+                data = data.encode('utf-8')
+            except:
+                pass
+            dot_fd.write(data)
         else:
             dot_fd.write(self.create(prog, format))
         dot_fd.close()
@@ -1915,8 +1942,7 @@ class Dot(Graph):
             prog = self.prog
             
         if isinstance(prog, (list, tuple)):
-            prog = prog[0]
-            args = prog[1:]
+            prog, args = prog[0], prog[1:]
         else:
             args = []
             
