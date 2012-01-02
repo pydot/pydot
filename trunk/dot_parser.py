@@ -505,11 +505,9 @@ def parse_dot_data(data):
     global top_graphs
     
     top_graphs = list()
-    
-    
-    if data.startswith( codecs.BOM_UTF8 ):
-        data = data.decode( 'utf-8' ).lstrip( unicode(codecs.BOM_UTF8, "utf8") )
-        data = data.encode( 'ascii' )
+
+    if data.startswith(codecs.BOM_UTF8):
+        data = data.decode( 'utf-8' )
         
     try:
     
