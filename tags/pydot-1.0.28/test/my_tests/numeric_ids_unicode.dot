@@ -1,0 +1,6 @@
+digraph G {
+0[comment="{412A0B96-B10E-4227-9E99-4AB2CC00142C},{0A353BBE-A648-415A-BC5E-431ED6F5E7FD}", label="Wagen anheben\n[Bordwerkzeug-Tasche]"]; 
+1[comment="{5BF457F9-46A0-488C-A6C9-6F7281AC06AA},{E5F44E0B-8926-4B67-818A-F9E7A537D404}", label="Korrosionsbeständigkeit sicherstellen\n[Wagenheber (Zukaufteil)]"]; 
+2[comment="{3F78AD5D-42DF-4E1B-B872-57F216B36B23},{E5F44E0B-8926-4B67-818A-F9E7A537D404}", label="Kraft übertragen\n[Wagenheber (Zukaufteil)]"]; 
+3[comment="{79482A7A-F3F4-49DD-88CC-903AF72878A8},{E5F44E0B-8926-4B67-818A-F9E7A537D404}", label="Hubweg sicherstellen\n[Wagenheber (Zukaufteil)]"]; 
+}
