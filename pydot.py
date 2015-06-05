@@ -841,8 +841,11 @@ class Edge(object,  Common ):
     
     edge(src, dst, attribute=value, ...)
     
-    src: source node's name
-    dst: destination node's name
+    src: source node
+    dst: destination node
+
+    `src` and `dst` can be specified as a `Node` object or as the
+    node's name string.
     
     All the attributes defined in the Graphviz dot language should
     be supported.
