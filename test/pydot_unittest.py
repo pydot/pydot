@@ -253,13 +253,13 @@ class TestGraphAPI(unittest.TestCase):
                 parsed_data_hexdigest = self._render_with_pydot(fname)
             
                 original_data_hexdigest = self._render_with_graphviz(fname)
-            except Exception, excp:
-                print 'Failed redering BAD(%s)' % dot
+            except Exception as excp:
+                print('Failed redering BAD(%s)' % dot)
                 #print 'Error:', str(excp)
                 raise excp
             
             if parsed_data_hexdigest != original_data_hexdigest:
-                print 'BAD(%s)' % dot
+                print('BAD(%s)' % dot)
             
             self.assertEqual( parsed_data_hexdigest, original_data_hexdigest )
             
@@ -322,7 +322,7 @@ class TestGraphAPI(unittest.TestCase):
         
         self._reset_graphs()
         
-        names = set([ 'node_%05d' % i for i in xrange(10**4) ])
+        names = set([ 'node_%05d' % i for i in range(10**4) ])
         
         for name in names:
         

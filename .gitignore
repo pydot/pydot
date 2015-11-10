@@ -1,0 +1,9 @@
+.vs/
+__pycache__/
+build/
+dot_parser.py.bak
+pydot.py.bak
+pydot.pyproj
+pydot.sln
+setup.py.bak
+test/pydot_unittest.py.bak
