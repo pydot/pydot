@@ -2000,7 +2000,7 @@ class Dot(Graph):
             stdout_output.append(data)
         stdout.close()
             
-        stdout_output = ''.join(stdout_output)
+        stdout_output = b''.join(stdout_output)
         
         if not stderr.closed:
             stderr_output = list()
