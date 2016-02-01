@@ -2,7 +2,7 @@
 
 try:
     from distutils.core import setup
-except ImportError, excp:
+except ImportError as excp:
     from setuptools import setup
     
 import pydot
