@@ -6,10 +6,7 @@ except ImportError, excp:
     from setuptools import setup
     
 import pydot
-import os
 
-os.environ['COPY_EXTENDED_ATTRIBUTES_DISABLE'] = 'true'
-os.environ['COPYFILE_DISABLE'] = 'true'
 
 setup(	name = 'pydot',
     version = pydot.__version__,
