@@ -17,9 +17,9 @@ Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
 Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
 """
 
-__revision__ = "$LastChangedRevision$"
+__revision__ = '28'
 __author__ = 'Ero Carrera'
-__version__ = '1.0.%d' % int( __revision__[21:-2] )
+__version__ = '1.0.28'
 __license__ = 'MIT'
 
 import os
