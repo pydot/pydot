@@ -17,7 +17,6 @@ Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
 Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
 """
 
-__revision__ = '28'
 __author__ = 'Ero Carrera'
 __version__ = '1.0.29'
 __license__ = 'MIT'
