@@ -1590,14 +1590,14 @@ class Graph(object, Common):
 
                 graph.append('strict ')
 
-        if self.obj_dict['name'] == '':
-            if 'show_keyword' in self.obj_dict and self.obj_dict['show_keyword']:
-                graph.append( 'subgraph {\n' )
-            else:
-                graph.append( '{\n' )
-        else:
-            graph.append( '%s %s {\n' % (self.obj_dict['type'], self.obj_dict['name']) )
-
+        graph_type = self.obj_dict['type']
+        if (graph_type == 'subgraph' and
+                not self.obj_dict.get('show_keyword', True)):
+            graph_type = ''
+        s = '{type} {name} {{\n'.format(
+            type=graph_type,
+            name=self.obj_dict['name'])
+        graph.append(s)
 
         for attr in self.obj_dict['attributes'].iterkeys():
 
