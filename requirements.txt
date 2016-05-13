@@ -1,0 +1,4 @@
+# dev
+chardet
+coveralls
+nose
