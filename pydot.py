@@ -1074,7 +1074,7 @@ class Graph(object, Common):
             self.obj_dict['attributes'] = dict(attrs)
 
             if graph_type not in ['graph', 'digraph']:
-                raise Error, 'Invalid type "%s". Accepted graph types are: graph, digraph, subgraph' % graph_type
+                raise Error, 'Invalid type "%s". Accepted graph types are: graph, digraph' % graph_type
 
 
             self.obj_dict['name'] = quote_if_necessary(graph_name)
