@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-
 try:
-    from distutils.core import setup
-except ImportError, excp:
     from setuptools import setup
-    
+except ImportError:
+    from distutils.core import setup
 import pydot
 
 
