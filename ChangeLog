@@ -1,3 +1,11 @@
+## 1.0.29 (2016-05-16)
+
+- Maintenance release that keeps the same API
+- pin `pyparsing == 1.5.7`
+- update version number in source code
+- update `setup.py`
+
+
 2004-04-28 21:50  carrer
 
 	* pydot.py: Some of the changes already made should allow pydot to
