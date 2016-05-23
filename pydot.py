@@ -26,10 +26,13 @@ import re
 import subprocess
 import tempfile
 import copy
+import warnings
 try:
     import dot_parser
 except Exception, e:
-    print "Couldn't import dot_parser, loading of dot files will not be possible."
+    warnings.warn(
+        "Couldn't import dot_parser, "
+        "loading of dot files will not be possible.")
 
 
 
