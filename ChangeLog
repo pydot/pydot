@@ -1,3 +1,17 @@
+# `pydot` changelog
+
+
+## 1.1.0 (2016-05-23)
+
+- compatibility with `pyparsing >= 1.5.7`
+
+API:
+
+- `pydot.Graph.to_string`: hide `subgraph` keyword only if so requested
+- produce `warnings.warn` if `pydot.dot_parser` fails to import,
+  instead of `print`
+
+
 ## 1.0.29 (2016-05-16)
 
 - Maintenance release that keeps the same API
@@ -69,4 +83,3 @@
 2004-04-08 00:22  carrer
 
 	* pydot.py: Initial revision
-
