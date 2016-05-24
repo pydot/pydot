@@ -18,7 +18,7 @@ Distributed under MIT license [http://opensource.org/licenses/mit-license.html].
 """
 
 __author__ = 'Ero Carrera'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __license__ = 'MIT'
 
 import os
@@ -2037,4 +2037,3 @@ class Dot(Graph):
         os.unlink(tmp_name)
 
         return stdout_output
-
