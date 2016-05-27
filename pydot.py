@@ -416,7 +416,7 @@ def find_graphviz():
     It will look for 'dot', 'twopi' and 'neato' in all the directories
     specified in the PATH environment variable.
 
-    Thirdly: Default install location (Windows only)
+    Thirdly: Default install location
     It will look for 'dot', 'twopi' and 'neato' in the default install
     location under the "Program Files" directory.
 
