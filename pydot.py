@@ -412,9 +412,6 @@ def find_graphviz():
 
     Tries three methods:
 
-    First: Windows Registry (Windows only)
-    This requires Mark Hammond's pywin32 is installed.
-
     Secondly: Search the path
     It will look for 'dot', 'twopi' and 'neato' in all the directories
     specified in the PATH environment variable.
@@ -428,91 +425,6 @@ def find_graphviz():
 
     If this fails, it returns None.
     """
-
-    # Method 1 (Windows only)
-    #
-    if os.sys.platform == 'win32':
-
-        HKEY_LOCAL_MACHINE =    0x80000002
-        KEY_QUERY_VALUE =       0x0001
-
-        RegOpenKeyEx = None
-        RegQueryValueEx = None
-        RegCloseKey = None
-
-        try:
-            import win32api, win32con
-            RegOpenKeyEx = win32api.RegOpenKeyEx
-            RegQueryValueEx = win32api.RegQueryValueEx
-            RegCloseKey = win32api.RegCloseKey
-
-        except ImportError:
-            # Print a messaged suggesting they install these?
-            #
-            pass
-
-        try:
-            import ctypes
-
-            def RegOpenKeyEx(key, subkey, opt, sam):
-                result = ctypes.c_uint(0)
-                ctypes.windll.advapi32.RegOpenKeyExA(key, subkey, opt, sam, ctypes.byref(result))
-                return result.value
-
-            def RegQueryValueEx( hkey, valuename ):
-                data_type = ctypes.c_uint(0)
-                data_len = ctypes.c_uint(1024)
-                data = ctypes.create_string_buffer( 1024 )
-
-                res = ctypes.windll.advapi32.RegQueryValueExA(hkey, valuename, 0,
-                    ctypes.byref(data_type), data, ctypes.byref(data_len))
-
-                return data.value
-
-            RegCloseKey = ctypes.windll.advapi32.RegCloseKey
-
-        except ImportError:
-            # Print a messaged suggesting they install these?
-            #
-            pass
-
-        if RegOpenKeyEx is not None:
-
-            # Get the GraphViz install path from the registry
-            #
-            hkey = None
-            potentialKeys = [
-                "SOFTWARE\\ATT\\Graphviz",
-                "SOFTWARE\\AT&T Research Labs\\Graphviz",
-            ]
-            for potentialKey in potentialKeys:
-
-                try:
-                    hkey = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-                        potentialKey, 0, KEY_QUERY_VALUE )
-
-                    if hkey is not None:
-                        path = RegQueryValueEx( hkey, "InstallPath" )
-                        RegCloseKey( hkey )
-
-                        # The regitry variable might exist, left by old installations
-                        # but with no value, in those cases we keep searching...
-                        if not path:
-                            continue
-
-                        # Now append the "bin" subdirectory:
-                        #
-                        path = os.path.join(path, "bin")
-                        progs = __find_executables(path)
-                        if progs is not None :
-                            #print "Used Windows registry"
-                            return progs
-
-                except Exception, excp:
-                    #raise excp
-                    pass
-                else:
-                    break
 
 
 
