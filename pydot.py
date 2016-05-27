@@ -418,7 +418,7 @@ def find_graphviz():
 
     Thirdly: Default install location
     It will look for 'dot', 'twopi' and 'neato' in the default install
-    location under the "Program Files" directory.
+    location.
 
     It will return a dictionary containing the program names as keys
     and their paths as values.
@@ -437,33 +437,6 @@ def find_graphviz():
             if progs is not None :
                 #print "Used path"
                 return progs
-
-    # Method 3 (Windows only)
-    #
-    if os.sys.platform == 'win32':
-
-        # Try and work out the equivalent of "C:\Program Files" on this
-        # machine (might be on drive D:, or in a different language)
-        #
-
-        if os.environ.has_key('PROGRAMFILES'):
-
-            # Note, we could also use the win32api to get this
-            # information, but win32api may not be installed.
-
-            path = os.path.join(os.environ['PROGRAMFILES'], 'ATT', 'GraphViz', 'bin')
-
-        else:
-
-            #Just in case, try the default...
-            path = r"C:\Program Files\att\Graphviz\bin"
-
-        progs = __find_executables(path)
-
-        if progs is not None :
-
-            #print "Used default install location"
-            return progs
 
 
     for path in (
