@@ -403,10 +403,6 @@ def __find_executables(path):
         return None
 
 
-
-# The multi-platform version of this 'find_graphviz' function was
-# contributed by Peter Cock
-#
 def find_graphviz():
     """Search the `$PATH` for Graphviz's executables.
 
@@ -419,19 +415,14 @@ def find_graphviz():
 
 
 
-    # Method 2 (Linux, Windows etc)
-    #
     if os.environ.has_key('PATH'):
 
         for path in os.environ['PATH'].split(os.pathsep):
             progs = __find_executables(path)
             if progs is not None :
-                #print "Used path"
                 return progs
 
 
-    # Failed to find GraphViz
-    #
     return None
 
 
