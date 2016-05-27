@@ -408,19 +408,13 @@ def __find_executables(path):
 # contributed by Peter Cock
 #
 def find_graphviz():
-    """Locate Graphviz's executables in the system.
+    """Search the `$PATH` for Graphviz's executables.
 
-    Tries three methods:
+    Look for 'dot', 'twopi' and 'neato' in all the directories
+    specified in the `$PATH` environment variable.
 
-    Secondly: Search the path
-    It will look for 'dot', 'twopi' and 'neato' in all the directories
-    specified in the PATH environment variable.
-
-
-    It will return a dictionary containing the program names as keys
-    and their paths as values.
-
-    If this fails, it returns None.
+    Return a dictionary containing the program names as keys
+    and their paths as values, else `None`
     """
 
 
