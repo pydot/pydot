@@ -416,9 +416,6 @@ def find_graphviz():
     It will look for 'dot', 'twopi' and 'neato' in all the directories
     specified in the PATH environment variable.
 
-    Thirdly: Default install location
-    It will look for 'dot', 'twopi' and 'neato' in the default install
-    location.
 
     It will return a dictionary containing the program names as keys
     and their paths as values.
@@ -438,17 +435,6 @@ def find_graphviz():
                 #print "Used path"
                 return progs
 
-
-    for path in (
-        '/usr/bin', '/usr/local/bin',
-        '/opt/local/bin',
-        '/opt/bin', '/sw/bin', '/usr/share',
-        '/Applications/Graphviz.app/Contents/MacOS/' ):
-
-        progs = __find_executables(path)
-        if progs is not None :
-            #print "Used path"
-            return progs
 
     # Failed to find GraphViz
     #
