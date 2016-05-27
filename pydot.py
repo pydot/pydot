@@ -412,17 +412,11 @@ def find_graphviz():
     Return a dictionary containing the program names as keys
     and their paths as values, else `None`
     """
-
-
-
-    if os.environ.has_key('PATH'):
-
+    if 'PATH' in os.environ:
         for path in os.environ['PATH'].split(os.pathsep):
             progs = __find_executables(path)
-            if progs is not None :
+            if progs is not None:
                 return progs
-
-
     return None
 
 
