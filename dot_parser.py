@@ -1,10 +1,12 @@
 # -*- coding: Latin-1 -*-
 """Graphviz's dot language parser.
 
-The dotparser parses graphviz files in dot and dot files and transforms them
+The dotparser parses graphviz files in
+dot and dot files and transforms them
 into a class representation defined by pydot.
 
-The module needs pyparsing (tested with version 1.2.2) and pydot
+The module needs pyparsing
+(tested with version 1.2.2) and pydot
 
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero@dkbza.org>
@@ -22,10 +24,15 @@ import codecs
 
 from pyparsing import __version__ as pyparsing_version
 
-from pyparsing import ( nestedExpr, Literal, CaselessLiteral, Word, OneOrMore, ZeroOrMore,
-    Forward, NotAny, delimitedList, oneOf, Group, Optional, Combine, alphas, nums,
-    restOfLine, cStyleComment, nums, alphanums, printables, empty, quotedString,
-    ParseException, ParseResults, CharsNotIn, dblQuotedString, QuotedString, ParserElement )
+from pyparsing import (
+    nestedExpr, Literal, CaselessLiteral,
+    Word, OneOrMore, ZeroOrMore,
+    Forward, NotAny, delimitedList, oneOf,
+    Group, Optional, Combine, alphas, nums,
+    restOfLine, cStyleComment, nums, alphanums,
+    printables, empty, quotedString,
+    ParseException, ParseResults, CharsNotIn,
+    dblQuotedString, QuotedString, ParserElement )
 
 
 class P_AttrList:
@@ -75,8 +82,9 @@ def push_top_graph_stmt(str, loc, toks):
 
     for element in toks:
 
-        if( isinstance(element, (ParseResults, tuple, list)) and
-            len(element) == 1 and isinstance(element[0], basestring) ):
+        if (isinstance(element, (ParseResults, tuple, list)) and
+                len(element) == 1 and
+                isinstance(element[0], basestring)):
 
             element = element[0]
 
@@ -141,7 +149,8 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
 
         for key, objs in item_dict[key_name].items():
             for obj in objs:
-                if 'parent_graph' in obj and obj['parent_graph'].get_parent_graph()==g:
+                if ('parent_graph' in obj and
+                        obj['parent_graph'].get_parent_graph()==g):
                     if obj['parent_graph'] is g:
                         pass
                     else:
@@ -149,13 +158,16 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
 
                 if key_name == 'edges' and len(key) == 2:
                     for idx, vertex in enumerate( obj['points'] ):
-                        if isinstance( vertex, (pydot.Graph, pydot.Subgraph, pydot.Cluster)):
+                        if isinstance( vertex,
+                                      (pydot.Graph,
+                                       pydot.Subgraph, pydot.Cluster)):
                             vertex.set_parent_graph(parent_graph)
                         if isinstance( vertex, pydot.frozendict):
                             if vertex['parent_graph'] is g:
                                 pass
                             else:
-                                vertex['parent_graph'].set_parent_graph(parent_graph)
+                                vertex['parent_graph'].set_parent_graph(
+                                    parent_graph)
 
 
 
@@ -168,7 +180,8 @@ def add_defaults(element, defaults):
 
 
 
-def add_elements(g, toks, defaults_graph=None, defaults_node=None, defaults_edge=None):
+def add_elements(g, toks, defaults_graph=None,
+                 defaults_node=None, defaults_edge=None):
 
     if defaults_graph is None:
         defaults_graph = {}
@@ -197,7 +210,8 @@ def add_elements(g, toks, defaults_graph=None, defaults_node=None, defaults_edge
         elif isinstance(element, ParseResults):
 
             for e in element:
-                add_elements(g, [e], defaults_graph, defaults_node, defaults_edge)
+                add_elements(g, [e], defaults_graph,
+                             defaults_node, defaults_edge)
 
         elif isinstance(element, DefaultStatement):
 
@@ -218,7 +232,8 @@ def add_elements(g, toks, defaults_graph=None, defaults_node=None, defaults_edge
                 defaults_edge.update(element.attrs)
 
             else:
-                raise ValueError, "Unknown DefaultStatement: %s " % element.default_type
+                raise ValueError, (
+                    "Unknown DefaultStatement: %s " % element.default_type)
 
         elif isinstance(element, P_AttrList):
 
@@ -320,7 +335,9 @@ def push_edge_stmt(str, loc, toks):
 
     elif isinstance(toks[2][0], pydot.Graph):
 
-        e.append(pydot.Edge(n_prev, pydot.frozendict(toks[2][0].obj_dict), **attrs))
+        e.append(pydot.Edge(n_prev,
+                            pydot.frozendict(toks[2][0].obj_dict),
+                            **attrs))
 
     elif isinstance(toks[2][0], pydot.Node):
 
@@ -337,7 +354,8 @@ def push_edge_stmt(str, loc, toks):
 
         for n_next in [n for n in tuple(toks)[2::2]]:
 
-            if isinstance(n_next, P_AttrList) or not isinstance(n_next[0], type('')):
+            if (isinstance(n_next, P_AttrList) or
+                    not isinstance(n_next[0], type(''))):
                 continue
 
             n_next_port = do_node_ports( n_next )
@@ -412,7 +430,8 @@ def graph_definition():
 
         identifier = Word(alphanums + "_." ).setName("identifier")
 
-        double_quoted_string = QuotedString('"', multiline=True, unquoteResults=False) # dblQuotedString
+        double_quoted_string = QuotedString(
+            '"', multiline=True, unquoteResults=False)  # dblQuotedString
 
         noncomma = "".join([c for c in printables if c != ","])
         alphastring_ = OneOrMore(CharsNotIn(noncomma + ' '))
@@ -440,7 +459,8 @@ def graph_definition():
         port_angle = (at + ID).setName("port_angle")
 
         port_location = (OneOrMore(Group(colon + ID)) |
-            Group(colon + lparen + ID + comma + ID + rparen)).setName("port_location")
+            Group(colon + lparen +
+                  ID + comma + ID + rparen)).setName("port_location")
 
         port = (Group(port_location + Optional(port_angle)) |
             Group(port_angle + Optional(port_location))).setName("port")
@@ -452,13 +472,15 @@ def graph_definition():
         attr_list = OneOrMore(lbrack.suppress() + Optional(a_list) +
             rbrack.suppress()).setName("attr_list")
 
-        attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName("attr_stmt")
+        attr_stmt = (Group(graph_ | node_ | edge_) +
+                     attr_list).setName("attr_stmt")
 
         edgeop = (Literal("--") | Literal("->")).setName("edgeop")
 
         stmt_list = Forward()
         graph_stmt = Group(lbrace.suppress() + Optional(stmt_list) +
-            rbrace.suppress() + Optional(semi.suppress()) ).setName("graph_stmt")
+            rbrace.suppress() +
+            Optional(semi.suppress())).setName("graph_stmt")
 
 
         edge_point = Forward()
@@ -466,20 +488,27 @@ def graph_definition():
         edgeRHS = OneOrMore(edgeop + edge_point)
         edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
-        subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
+        subgraph = Group(
+            subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
 
-        edge_point << Group( subgraph | graph_stmt | node_id ).setName('edge_point')
+        edge_point << Group(
+            subgraph | graph_stmt | node_id).setName('edge_point')
 
-        node_stmt = (node_id + Optional(attr_list) + Optional(semi.suppress())).setName("node_stmt")
+        node_stmt = (
+            node_id + Optional(attr_list) +
+            Optional(semi.suppress())).setName("node_stmt")
 
         assignment = (ID + equals + righthand_id).setName("assignment")
-        stmt =  (assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt).setName("stmt")
+        stmt = (assignment | edge_stmt | attr_stmt |
+                subgraph | graph_stmt | node_stmt).setName("stmt")
         stmt_list << OneOrMore(stmt + Optional(semi.suppress()))
 
-        graphparser = OneOrMore( (Optional(strict_) + Group((graph_ | digraph_)) +
-            Optional(ID) + graph_stmt).setResultsName("graph") )
+        graphparser = OneOrMore(
+            (Optional(strict_) + Group((graph_ | digraph_)) +
+             Optional(ID) + graph_stmt).setResultsName("graph"))
 
-        singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
+        singleLineComment = Group(
+            "//" + restOfLine) | Group("#" + restOfLine)
 
 
         # actions

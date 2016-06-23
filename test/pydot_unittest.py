@@ -35,7 +35,8 @@ class TestGraphAPI(unittest.TestCase):
 
     def _reset_graphs(self):
 
-        self.graph_directed = pydot.Graph('testgraph', graph_type='digraph')
+        self.graph_directed = pydot.Graph('testgraph',
+                                          graph_type='digraph')
 
 
     def test_keep_graph_type(self):
@@ -71,7 +72,8 @@ class TestGraphAPI(unittest.TestCase):
         g.add_node(node)
         node.set('label','mine')
 
-        self.assertEqual( g.to_string(), 'digraph G {\nlegend [shape=box, label=mine];\n}\n' )
+        self.assertEqual(g.to_string(),
+                         'digraph G {\nlegend [shape=box, label=mine];\n}\n')
 
 
     def test_attribute_with_implicit_value(self):
@@ -93,8 +95,10 @@ class TestGraphAPI(unittest.TestCase):
 
         g.add_subgraph(s)
 
-        self.assertEqual( g.get_subgraphs()[0].get_name(), s.get_name() )
-        self.assertEqual( g.get_subgraph_list()[0].get_name(), s.get_name() )
+        self.assertEqual(g.get_subgraphs()[0].get_name(),
+                         s.get_name())
+        self.assertEqual(g.get_subgraph_list()[0].get_name(),
+                         s.get_name())
 
 
     def test_graph_pickling(self):
@@ -142,12 +146,16 @@ class TestGraphAPI(unittest.TestCase):
 
     def test_graph_with_shapefiles(self):
 
-        shapefile_dir = os.path.join(TEST_DIR, 'from-past-to-future')
-        dot_file = os.path.join( shapefile_dir, 'from-past-to-future.dot' )
+        shapefile_dir = os.path.join(TEST_DIR,
+                                     'from-past-to-future')
+        dot_file = os.path.join(shapefile_dir,
+                                'from-past-to-future.dot')
 
 
-        pngs = dot_files = [ os.path.join(shapefile_dir, fname) for
-            fname in os.listdir(shapefile_dir) if fname.endswith('.png') ]
+        pngs = dot_files = [
+            os.path.join(shapefile_dir, fname) for
+            fname in os.listdir(shapefile_dir)
+            if fname.endswith('.png')]
 
         f = file( dot_file, 'rt' )
         graph_data = f.read()
@@ -176,7 +184,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.assertEqual( len(graphs), 2 )
 
-        self.assertEqual( [g.get_name() for g in graphs], ['A', 'B'] )
+        self.assertEqual([g.get_name() for g in graphs],
+                         ['A', 'B'])
 
 
     def _render_with_graphviz(self, filename):
@@ -261,7 +270,9 @@ class TestGraphAPI(unittest.TestCase):
             if parsed_data_hexdigest != original_data_hexdigest:
                 print 'BAD(%s)' % dot
 
-            self.assertEqual( parsed_data_hexdigest, original_data_hexdigest )
+            self.assertEqual(
+                parsed_data_hexdigest,
+                original_data_hexdigest)
 
 
 
@@ -271,7 +282,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node(1) )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].get_name() , '1' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].get_name(), '1')
 
 
     def test_quoted_node_id(self):
@@ -280,7 +292,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node('"node"') )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].get_name() , '"node"' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].get_name(), '"node"')
 
 
     def test_quoted_node_id_to_string_no_attributes(self):
@@ -289,7 +302,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node('"node"') )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].to_string() , '"node";' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string(), '"node";')
 
     def test_keyword_node_id(self):
 
@@ -297,7 +311,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node('node') )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].get_name() , 'node' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].get_name(), 'node')
 
 
     def test_keyword_node_id_to_string_no_attributes(self):
@@ -306,7 +321,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node('node') )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].to_string() , '' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string() , '' )
 
 
     def test_keyword_node_id_to_string_with_attributes(self):
@@ -315,7 +331,9 @@ class TestGraphAPI(unittest.TestCase):
 
         self.graph_directed.add_node( pydot.Node('node', shape='box') )
 
-        self.assertEqual( self.graph_directed.get_nodes()[0].to_string() , 'node [shape=box];' )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string(),
+            'node [shape=box];')
 
 
     def test_names_of_a_thousand_nodes(self):
@@ -328,7 +346,9 @@ class TestGraphAPI(unittest.TestCase):
 
             self.graph_directed.add_node( pydot.Node(name, label=name) )
 
-        self.assertEqual( set([ n.get_name() for n in self.graph_directed.get_nodes() ]), names )
+        self.assertEqual(
+            set([n.get_name()
+                 for n in self.graph_directed.get_nodes()]), names)
 
 
     def test_executable_not_found_exception(self):
