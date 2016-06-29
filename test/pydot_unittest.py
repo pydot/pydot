@@ -157,7 +157,7 @@ class TestGraphAPI(unittest.TestCase):
             fname in os.listdir(shapefile_dir)
             if fname.endswith('.png')]
 
-        f = file( dot_file, 'rt' )
+        f = open(dot_file, 'rt')
         graph_data = f.read()
         f.close()
 
@@ -193,7 +193,7 @@ class TestGraphAPI(unittest.TestCase):
         p = subprocess.Popen(
             ( DOT_BINARY_PATH , '-Tjpe', ),
             cwd = os.path.dirname(filename),
-            stdin=file(filename, 'rt'),
+            stdin=open(filename, 'rt'),
             stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
         stdout = p.stdout
@@ -218,7 +218,7 @@ class TestGraphAPI(unittest.TestCase):
 
     def _render_with_pydot(self, filename):
 
-        #f = file(filename, 'rt')
+        #f = open(filename, 'rt')
         #graph_data = f.read()
         #f.close()
 

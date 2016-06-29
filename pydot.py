@@ -240,7 +240,7 @@ def graph_from_dot_file(path):
     representing the graph.
     """
 
-    fd = file(path, 'rb')
+    fd = open(path, 'rb')
     data = fd.read()
     fd.close()
 
@@ -1848,7 +1848,7 @@ class Dot(Graph):
         if prog is None:
             prog = self.prog
 
-        dot_fd = file(path, "w+b")
+        dot_fd = open(path, "w+b")
         if format == 'raw':
             data = self.to_string()
             if isinstance(data, basestring):
@@ -1931,15 +1931,14 @@ class Dot(Graph):
 
             # Get its data
             #
-            f = file(img, 'rb')
+            f = open(img, 'rb')
             f_data = f.read()
             f.close()
 
             # And copy it under a file with the same name in
             # the temporary directory
             #
-            f = file( os.path.join( tmp_dir,
-                                   os.path.basename(img) ), 'wb' )
+            f = open(os.path.join(tmp_dir, os.path.basename(img)), 'wb' )
             f.write(f_data)
             f.close()
 
