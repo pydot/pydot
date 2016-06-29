@@ -16,6 +16,7 @@ __author__ = ['Michael Krause', 'Ero Carrera']
 __license__ = 'MIT'
 
 
+from __future__ import division
 import sys
 import glob
 import pydot

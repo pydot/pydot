@@ -24,6 +24,8 @@ __author__ = 'Ero Carrera'
 __version__ = '1.1.1'
 __license__ = 'MIT'
 
+
+from __future__ import division
 import os
 import re
 import subprocess

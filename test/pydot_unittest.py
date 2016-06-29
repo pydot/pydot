@@ -4,8 +4,7 @@
 # -test graph generation APIs (from adjacency, etc..)
 # -test del_node, del_edge methods
 # -test Common.set method
-
-
+from __future__ import division
 import os
 try:
     from hashlib import sha256
