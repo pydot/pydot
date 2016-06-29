@@ -18,12 +18,6 @@ Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
 Distributed under MIT license
 [http://opensource.org/licenses/mit-license.html].
 """
-
-__author__ = 'Ero Carrera'
-__version__ = '1.1.1'
-__license__ = 'MIT'
-
-
 from __future__ import division
 from __future__ import print_function
 import os
@@ -39,6 +33,10 @@ except Exception as e:
         "Couldn't import dot_parser, "
         "loading of dot files will not be possible.")
 
+
+__author__ = 'Ero Carrera'
+__version__ = '1.1.1'
+__license__ = 'MIT'
 
 
 GRAPH_ATTRIBUTES = set( ['Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',

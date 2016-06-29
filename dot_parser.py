@@ -10,11 +10,6 @@ The module needs pyparsing
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero@dkbza.org>
 """
-
-__author__ = ['Michael Krause', 'Ero Carrera']
-__license__ = 'MIT'
-
-
 from __future__ import division
 from __future__ import print_function
 import sys
@@ -34,6 +29,10 @@ from pyparsing import (
     printables, empty, quotedString,
     ParseException, ParseResults, CharsNotIn,
     dblQuotedString, QuotedString, ParserElement )
+
+
+__author__ = ['Michael Krause', 'Ero Carrera']
+__license__ = 'MIT'
 
 
 class P_AttrList(object):
