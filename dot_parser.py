@@ -145,7 +145,7 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
         else:
             item_dict = g.obj_dict
 
-        if not item_dict.has_key( key_name ):
+        if key_name not in item_dict:
             continue
 
         for key, objs in item_dict[key_name].items():

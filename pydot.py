@@ -1196,7 +1196,7 @@ class Graph(Common):
         if isinstance(name, Node):
             name = name.get_name()
 
-        if self.obj_dict['nodes'].has_key(name):
+        if name in self.obj_dict['nodes']:
 
             if (index is not None and
                 index < len(self.obj_dict['nodes'][name])):
@@ -1222,7 +1222,7 @@ class Graph(Common):
 
         match = list()
 
-        if self.obj_dict['nodes'].has_key(name):
+        if name in self.obj_dict['nodes']:
 
             match.extend(
                 [Node(obj_dict=obj_dict)
@@ -1269,7 +1269,7 @@ class Graph(Common):
         edge_points = ( graph_edge.get_source(),
                        graph_edge.get_destination() )
 
-        if self.obj_dict['edges'].has_key(edge_points):
+        if edge_points in self.obj_dict['edges']:
 
             edge_list = self.obj_dict['edges'][edge_points]
             edge_list.append(graph_edge.obj_dict)
@@ -1315,7 +1315,7 @@ class Graph(Common):
         if isinstance(dst, Node):
             dst = dst.get_name()
 
-        if self.obj_dict['edges'].has_key( (src, dst) ):
+        if (src, dst) in self.obj_dict['edges']:
 
             if (index is not None and
                 index < len(self.obj_dict['edges'][(src, dst)])):
@@ -1348,9 +1348,9 @@ class Graph(Common):
 
         match = list()
 
-        if self.obj_dict['edges'].has_key( edge_points ) or (
+        if edge_points in self.obj_dict['edges'] or (
             self.get_top_graph_type() == 'graph' and
-            self.obj_dict['edges'].has_key( edge_points_reverse )):
+            edge_points_reverse in self.obj_dict['edges']):
 
             edges_obj_dict = self.obj_dict['edges'].get(
                 edge_points,
@@ -1400,7 +1400,7 @@ class Graph(Common):
                 'add_subgraph() received a non subgraph class object:' +
                 str(sgraph))
 
-        if self.obj_dict['subgraphs'].has_key(sgraph.get_name()):
+        if sgraph.get_name() in self.obj_dict['subgraphs']:
 
             sgraph_list = self.obj_dict['subgraphs'][ sgraph.get_name() ]
             sgraph_list.append( sgraph.obj_dict )
@@ -1429,7 +1429,7 @@ class Graph(Common):
 
         match = list()
 
-        if self.obj_dict['subgraphs'].has_key( name ):
+        if name in self.obj_dict['subgraphs']:
 
             sgraphs_obj_dict = self.obj_dict['subgraphs'].get( name )
 
@@ -1897,7 +1897,7 @@ class Dot(Graph):
                 raise InvocationException(
                     'GraphViz\'s executables not found' )
 
-        if not self.progs.has_key(prog):
+        if prog not in self.progs:
             raise InvocationException(
                 'GraphViz\'s executable "%s" not found' % prog )
 
