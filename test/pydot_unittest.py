@@ -1,4 +1,5 @@
 # coding=utf-8
+"""Unit testing of `pydot`."""
 # TODO:
 # -test graph generation APIs (from adjacency, etc..)
 # -test del_node, del_edge methods
