@@ -1,29 +1,56 @@
-pydot - Python interface to Graphviz's Dot language
-Ero Carrera (c) 2004-2007
-ero@dkbza.org
+[![Build Status][build_img]][travis]
 
-This code is distributed under the MIT license.
 
-Requirements:
--------------
+About
+=====
 
-pyparsing: pydot requires the pyparsing module in order to be
-	able to load DOT files.
+`pydot`:
 
-GraphViz:  is needed in order to render the graphs into any of
-	the plethora of output formats supported.
+  - is an interface to [Graphviz][1]
+  - can parse and dump into the [DOT language][2] used by GraphViz,
+  - is written in pure Python,
 
-Installation:
--------------
+and [`networkx`][3] can convert its graphs to `pydot`.
 
-Should suffice with doing:
 
- python setup.py install
+Installation
+============
 
-Needless to say, no installation is needed just to use the module. A mere:
+From [PyPI][4] using [`pip`][5]:
 
- import pydot
+`pip install pydot`
 
-should do it, provided that the directory containing the modules is on Python
-module search path.
+From source:
 
+`python setup.py install`
+
+
+Dependencies
+============
+
+- [`pyparsing`][6]: used only for *loading* DOT files,
+  installed automatically during `pydot` installation.
+
+- GraphViz: used to render graphs as PDF, PNG, SVG, etc.
+  Should be installed separately, using your system's
+  [package manager][7], something similar (e.g., [MacPorts][8]),
+  or from [its source][9].
+
+
+License
+=======
+
+Distributed under an [MIT license][10].
+
+[1]: http://www.graphviz.org
+[2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
+[3]: https://github.com/networkx/networkx
+[4]: https://pypi.python.org/pypi
+[5]: https://github.com/pypa/pip
+[6]: http://pyparsing.wikispaces.com/
+[7]: https://en.wikipedia.org/wiki/Package_manager
+[8]: https://www.macports.org
+[9]: https://github.com/ellson/graphviz
+[10]: https://github.com/erocarrera/pydot/blob/master/LICENSE
+[build_img]: https://travis-ci.org/erocarrera/pydot.svg?branch=master
+[travis]: https://travis-ci.org/erocarrera/pydot
