@@ -23,6 +23,7 @@ import subprocess
 import tempfile
 import copy
 import warnings
+
 try:
     import dot_parser
 except Exception as e:

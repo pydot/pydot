@@ -9,7 +9,6 @@ Fixes by: Ero Carrera <ero@dkbza.org>
 """
 from __future__ import division
 from __future__ import print_function
-import pydot
 import codecs
 
 from pyparsing import (
@@ -22,6 +21,7 @@ from pyparsing import (
     ParseException, ParseResults, CharsNotIn,
     QuotedString)
 
+import pydot
 
 __author__ = ['Michael Krause', 'Ero Carrera']
 __license__ = 'MIT'
