@@ -5,6 +5,7 @@
 # -test del_node, del_edge methods
 # -test Common.set method
 from __future__ import division
+from __future__ import print_function
 import os
 try:
     from hashlib import sha256
@@ -262,12 +263,12 @@ class TestGraphAPI(unittest.TestCase):
 
                 original_data_hexdigest = self._render_with_graphviz(fname)
             except Exception as excp:
-                print 'Failed redering BAD(%s)' % dot
-                #print 'Error:', str(excp)
+                print('Failed redering BAD({s})'.format(s=dot))
+                # print('Error: {s}'.format(s=excp))
                 raise excp
 
             if parsed_data_hexdigest != original_data_hexdigest:
-                print 'BAD(%s)' % dot
+                print('BAD({s})'.format(s=dot))
 
             self.assertEqual(
                 parsed_data_hexdigest,

@@ -17,6 +17,7 @@ __license__ = 'MIT'
 
 
 from __future__ import division
+from __future__ import print_function
 import sys
 import glob
 import pydot
@@ -559,8 +560,8 @@ def parse_dot_data(data):
             return [g for g in tokens]
 
     except ParseException as err:
-
-        print err.line
-        print " "*(err.column-1) + "^"
-        print err
+        print(
+            err.line +
+            " "*(err.column-1) + "^" +
+            err)
         return None

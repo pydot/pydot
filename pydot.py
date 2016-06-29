@@ -26,6 +26,7 @@ __license__ = 'MIT'
 
 
 from __future__ import division
+from __future__ import print_function
 import os
 import re
 import subprocess
@@ -1983,7 +1984,7 @@ class Dot(Graph):
                  ' %d. stderr follows: %s') % (
                     status, stderr_output))
         elif stderr_output:
-            print stderr_output
+            print(stderr_output)
 
         # For each of the image files...
         #
