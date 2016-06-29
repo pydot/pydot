@@ -1539,8 +1539,8 @@ class Graph(Common):
             edge_obj_dicts.extend(self.obj_dict['edges'][k])
 
         if edge_obj_dicts:
-            edge_src_set, edge_dst_set = zip(
-                *[obj['points'] for obj in edge_obj_dicts])
+            edge_src_set, edge_dst_set = list(zip(
+                *[obj['points'] for obj in edge_obj_dicts]))
             edge_src_set, edge_dst_set = set(edge_src_set), set(edge_dst_set)
         else:
             edge_src_set, edge_dst_set = set(), set()
