@@ -379,7 +379,7 @@ def __find_executables(path):
 
     if os.path.isdir(path) :
 
-        for prg in progs.iterkeys():
+        for prg in progs:
 
             if progs[prg]:
                 continue
@@ -1512,7 +1512,7 @@ class Graph(Common):
             name=self.obj_dict['name'])
         graph.append(s)
 
-        for attr in self.obj_dict['attributes'].iterkeys():
+        for attr in self.obj_dict['attributes']:
 
             if self.obj_dict['attributes'].get(attr, None) is not None:
 
