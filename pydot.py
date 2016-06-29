@@ -1473,15 +1473,18 @@ class Graph(Common):
 
         self.obj_dict['parent_graph'] = parent_graph
 
-        for obj_list in self.obj_dict['nodes'].itervalues():
+        for k in self.obj_dict['nodes']:
+            obj_list = self.obj_dict['nodes'][k]
             for obj in obj_list:
                 obj['parent_graph'] = parent_graph
 
-        for obj_list in self.obj_dict['edges'].itervalues():
+        for k in self.obj_dict['edges']:
+            obj_list = self.obj_dict['edges'][k]
             for obj in obj_list:
                 obj['parent_graph'] = parent_graph
 
-        for obj_list in self.obj_dict['subgraphs'].itervalues():
+        for k in self.obj_dict['subgraphs']:
+            obj_list = self.obj_dict['subgraphs'][k]
             for obj in obj_list:
                 Graph(obj_dict=obj).set_parent_graph(parent_graph)
 
@@ -1529,8 +1532,8 @@ class Graph(Common):
         edges_done = set()
 
         edge_obj_dicts = list()
-        for e in self.obj_dict['edges'].itervalues():
-            edge_obj_dicts.extend(e)
+        for k in self.obj_dict['edges']:
+            edge_obj_dicts.extend(self.obj_dict['edges'][k])
 
         if edge_obj_dicts:
             edge_src_set, edge_dst_set = zip(
@@ -1540,12 +1543,12 @@ class Graph(Common):
             edge_src_set, edge_dst_set = set(), set()
 
         node_obj_dicts = list()
-        for e in self.obj_dict['nodes'].itervalues():
-            node_obj_dicts.extend(e)
+        for k in self.obj_dict['nodes']:
+            node_obj_dicts.extend(self.obj_dict['nodes'][k])
 
         sgraph_obj_dicts = list()
-        for sg in self.obj_dict['subgraphs'].itervalues():
-            sgraph_obj_dicts.extend(sg)
+        for k in self.obj_dict['subgraphs']:
+            sgraph_obj_dicts.extend(self.obj_dict['subgraphs'][k])
 
 
         obj_list = [(obj['sequence'], obj)
