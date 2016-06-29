@@ -1,3 +1,4 @@
+# coding=utf-8
 # TODO:
 # -test graph generation APIs (from adjacency, etc..)
 # -test del_node, del_edge methods
