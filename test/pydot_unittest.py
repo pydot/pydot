@@ -262,7 +262,7 @@ class TestGraphAPI(unittest.TestCase):
                 parsed_data_hexdigest = self._render_with_pydot(fname)
 
                 original_data_hexdigest = self._render_with_graphviz(fname)
-            except Exception, excp:
+            except Exception as excp:
                 print 'Failed redering BAD(%s)' % dot
                 #print 'Error:', str(excp)
                 raise excp

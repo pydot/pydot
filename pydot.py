@@ -32,7 +32,7 @@ import copy
 import warnings
 try:
     import dot_parser
-except Exception, e:
+except Exception as e:
     warnings.warn(
         "Couldn't import dot_parser, "
         "loading of dot files will not be possible.")
@@ -97,7 +97,7 @@ CLUSTER_ATTRIBUTES = set( ['K', 'URL', 'bgcolor', 'color', 'colorscheme',
 #
 class frozendict(dict):
     def _blocked_attribute(obj):
-        raise AttributeError, "A frozendict cannot be modified."
+        raise AttributeError('A frozendict cannot be modified.')
     _blocked_attribute = property(_blocked_attribute)
 
     __delitem__ = __setitem__ = clear = _blocked_attribute
@@ -794,7 +794,8 @@ class Edge(Common):
         """
 
         if not isinstance(edge, Edge):
-            raise Error, "Can't compare and edge to a non-edge object."
+            raise Error('Can not compare and '
+                        'edge to a non-edge object.')
 
         if self.get_parent_graph().get_top_graph_type() == 'graph':
 
@@ -1843,7 +1844,7 @@ class Dot(Graph):
                 if not isinstance(data, unicode):
                     try:
                         data = unicode(data, 'utf-8')
-                    except:
+                    except Exception:
                         pass
 
             try:
