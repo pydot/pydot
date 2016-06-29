@@ -16,7 +16,7 @@ from pyparsing import (
     nestedExpr, Literal, CaselessLiteral,
     Word, OneOrMore,
     Forward,
-    Group, Optional, Combine, nums,
+    Group, Optional, Combine,
     restOfLine, cStyleComment, nums, alphanums,
     printables,
     ParseException, ParseResults, CharsNotIn,
