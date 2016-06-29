@@ -10,9 +10,6 @@ pydot Homepage: http://code.google.com/p/pydot/
 Graphviz:       http://www.graphviz.org/
 DOT Language:   http://www.graphviz.org/doc/info/lang.html
 
-Programmed and tested with Graphviz 2.26.3 and
-Python 2.6 on OSX 10.6.4
-
 Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
 
 Distributed under MIT license
