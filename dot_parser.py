@@ -12,8 +12,6 @@ from __future__ import print_function
 import pydot
 import codecs
 
-from pyparsing import __version__ as pyparsing_version
-
 from pyparsing import (
     nestedExpr, Literal, CaselessLiteral,
     Word, OneOrMore,
@@ -540,10 +538,7 @@ def parse_dot_data(data):
     try:
 
         graphparser = graph_definition()
-
-        if pyparsing_version >= '1.2':
-            graphparser.parseWithTabs()
-
+        graphparser.parseWithTabs()
         tokens = graphparser.parseString(data)
 
         if len(tokens) == 1:
