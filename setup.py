@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Installation script."""
 try:
     from setuptools import setup
 except ImportError:
