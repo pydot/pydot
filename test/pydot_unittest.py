@@ -7,11 +7,7 @@
 from __future__ import division
 from __future__ import print_function
 import os
-try:
-    from hashlib import sha256
-except ImportError:
-    import sha
-    sha256 = sha.new
+from hashlib import sha256
 import subprocess
 
 import pydot
