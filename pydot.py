@@ -110,7 +110,8 @@ class frozendict(dict):
         for arg in args:
             if isinstance(arg, dict):
                 arg = copy.copy(arg)
-                for k, v in arg.iteritems():
+                for k in arg:
+                    v = arg[k]
                     if isinstance(v, frozendict):
                         arg[k] = v
                     elif isinstance(v, dict):
@@ -137,7 +138,7 @@ class frozendict(dict):
         try:
             return self._cached_hash
         except AttributeError:
-            h = self._cached_hash = hash(tuple(sorted(self.iteritems())))
+            h = self._cached_hash = hash(tuple(sorted(self.items())))
             return h
 
     def __repr__(self):
@@ -678,7 +679,8 @@ class Node(Common):
 
         node_attr = list()
 
-        for attr, value in self.obj_dict['attributes'].iteritems():
+        for attr in self.obj_dict['attributes']:
+            value = self.obj_dict['attributes'][attr]
             if value is not None:
                 node_attr.append(
                     '%s=%s' % (attr, quote_if_necessary(value) ) )
@@ -881,8 +883,8 @@ class Edge(Common):
 
         edge_attr = list()
 
-        for attr, value in self.obj_dict['attributes'].iteritems():
-
+        for attr in self.obj_dict['attributes']:
+            value = self.obj_dict['attributes'][attr]
             if value is not None:
                 edge_attr.append(
                     '%s=%s' % (attr, quote_if_necessary(value) ) )
@@ -1246,7 +1248,8 @@ class Graph(Common):
 
         node_objs = list()
 
-        for node, obj_dict_list in self.obj_dict['nodes'].iteritems():
+        for node in self.obj_dict['nodes']:
+                obj_dict_list = self.obj_dict['nodes'][node]
                 node_objs.extend( [ Node( obj_dict = obj_d )
                                    for obj_d in obj_dict_list ] )
 
@@ -1378,7 +1381,8 @@ class Graph(Common):
 
         edge_objs = list()
 
-        for edge, obj_dict_list in self.obj_dict['edges'].iteritems():
+        for edge in self.obj_dict['edges']:
+                obj_dict_list = self.obj_dict['edges'][edge]
                 edge_objs.extend(
                     [Edge(obj_dict=obj_d)
                      for obj_d in obj_dict_list])
@@ -1455,7 +1459,8 @@ class Graph(Common):
 
         sgraph_objs = list()
 
-        for sgraph, obj_dict_list in self.obj_dict['subgraphs'].iteritems():
+        for sgraph in self.obj_dict['subgraphs']:
+                obj_dict_list = self.obj_dict['subgraphs'][sgraph]
                 sgraph_objs.extend(
                     [Subgraph(obj_dict=obj_d)
                      for obj_d in obj_dict_list])
