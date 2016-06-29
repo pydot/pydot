@@ -13,7 +13,6 @@ except ImportError:
 import subprocess
 
 import pydot
-import dot_parser
 import unittest
 
 

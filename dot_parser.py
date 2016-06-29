@@ -12,23 +12,20 @@ Fixes by: Ero Carrera <ero@dkbza.org>
 """
 from __future__ import division
 from __future__ import print_function
-import sys
-import glob
 import pydot
-import re
 import codecs
 
 from pyparsing import __version__ as pyparsing_version
 
 from pyparsing import (
     nestedExpr, Literal, CaselessLiteral,
-    Word, OneOrMore, ZeroOrMore,
-    Forward, NotAny, delimitedList, oneOf,
-    Group, Optional, Combine, alphas, nums,
+    Word, OneOrMore,
+    Forward,
+    Group, Optional, Combine, nums,
     restOfLine, cStyleComment, nums, alphanums,
-    printables, empty, quotedString,
+    printables,
     ParseException, ParseResults, CharsNotIn,
-    dblQuotedString, QuotedString, ParserElement )
+    QuotedString)
 
 
 __author__ = ['Michael Krause', 'Ero Carrera']
