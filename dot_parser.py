@@ -35,7 +35,7 @@ from pyparsing import (
     dblQuotedString, QuotedString, ParserElement )
 
 
-class P_AttrList:
+class P_AttrList(object):
 
     def __init__(self, toks):
 
