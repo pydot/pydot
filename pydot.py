@@ -1859,25 +1859,18 @@ class Dot(Graph):
         tmp_fd, tmp_name = tempfile.mkstemp()
         os.close(tmp_fd)
         self.write(tmp_name)
-        tmp_dir = os.path.dirname(tmp_name )
-
+        tmp_dir = os.path.dirname(tmp_name)
         # For each of the image files...
-        #
         for img in self.shape_files:
-
             # Get its data
-            #
             f = open(img, 'rb')
             f_data = f.read()
             f.close()
-
             # And copy it under a file with the same name in
             # the temporary directory
-            #
-            f = open(os.path.join(tmp_dir, os.path.basename(img)), 'wb' )
+            f = open(os.path.join(tmp_dir, os.path.basename(img)), 'wb')
             f.write(f_data)
             f.close()
-
         # explicitly inherit `$PATH`, on Windows too,
         # with `shell=False`
         env = dict()
@@ -1899,7 +1892,6 @@ class Dot(Graph):
                 raise
         stderr = p.stderr
         stdout = p.stdout
-
         stdout_output = list()
         while True:
             data = stdout.read()
@@ -1907,9 +1899,7 @@ class Dot(Graph):
                 break
             stdout_output.append(data)
         stdout.close()
-
         stdout_output = ''.join(stdout_output)
-
         if not stderr.closed:
             stderr_output = list()
             while True:
@@ -1918,29 +1908,19 @@ class Dot(Graph):
                     break
                 stderr_output.append(data)
             stderr.close()
-
             if stderr_output:
                 stderr_output = ''.join(stderr_output)
-
-        #pid, status = os.waitpid(p.pid, 0)
+        # pid, status = os.waitpid(p.pid, 0)
         status = p.wait()
-
-        if status != 0 :
+        if status != 0:
             raise InvocationException(
                 ('Program terminated with status:'
                  ' %d. stderr follows: %s') % (
                     status, stderr_output))
         elif stderr_output:
             print(stderr_output)
-
         # For each of the image files...
-        #
         for img in self.shape_files:
-
-            # remove it
-            #
             os.unlink(os.path.join(tmp_dir, os.path.basename(img)))
-
         os.unlink(tmp_name)
-
         return stdout_output
