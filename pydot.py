@@ -1735,22 +1735,6 @@ class Dot(Graph):
         self.prog = prog
 
 
-    def set_graphviz_executables(self, paths):
-        """Allows to manually specify location of GraphViz executables.
-
-        The argument to this method should be
-        a dictionary where the keys are as follows:
-
-            {'dot': '', 'twopi': '', 'neato': '', 'circo': '', 'fdp': ''}
-
-        and the values are the paths to
-        the corresponding executable, including the name
-        of the executable itself.
-        """
-
-        self.progs = paths
-
-
     def write(self, path, prog=None, format='raw'):
         """Writes a graph to a file.
 
