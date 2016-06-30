@@ -1780,7 +1780,7 @@ class Dot(Graph):
 
             try:
                 data = data.encode('utf-8')
-            except:
+            except Exception:
                 pass
             dot_fd.write(data)
         else:
@@ -1788,7 +1788,6 @@ class Dot(Graph):
         dot_fd.close()
 
         return True
-
 
 
     def create(self, prog=None, format='ps'):
