@@ -1804,12 +1804,16 @@ class Dot(Graph):
 
             create_'format'(prog='program')
 
-        which are automatically defined for all the supported formats.
-        [create_ps(), create_gif(), create_dia(), ...]
+        which are automatically defined for all the supported formats,
+        for example:
 
-        If 'prog' is a list instead of a string the fist item is expected
-        to be the program name, followed by any optional command-line
-        arguments for it:
+          - `create_ps()`
+          - `create_gif()`
+          - `create_dia()`
+
+        If 'prog' is a list, instead of a string,
+        then the fist item is expected to be the program name,
+        followed by any optional command-line arguments for it:
 
             [ 'twopi', '-Tdot', '-s10' ]
 
