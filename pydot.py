@@ -559,7 +559,7 @@ class Node(Common):
                 if idx > 0 and idx+1 < len(name):
                     name, port = name[:idx], name[idx:]
 
-            if isinstance(name, (long, int)):
+            if isinstance(name, int):
                 name = str(name)
 
             self.obj_dict['name'] = quote_if_necessary(name)
@@ -790,7 +790,7 @@ class Edge(Common):
 
         if isinstance(src, frozendict):
             edge = [ Subgraph(obj_dict=src).to_string() ]
-        elif isinstance(src, (int, long)):
+        elif isinstance(src, int):
             edge = [ str(src) ]
         else:
             edge = [ src ]
@@ -806,7 +806,7 @@ class Edge(Common):
 
         if isinstance(dst, frozendict):
             edge.append( Subgraph(obj_dict=dst).to_string() )
-        elif isinstance(dst, (int, long)):
+        elif isinstance(dst, int):
             edge.append( str(dst) )
         else:
             edge.append( dst )
@@ -1237,7 +1237,7 @@ class Graph(Common):
         """
 
         if isinstance( src_or_list, (list, tuple)):
-            if dst is not None and isinstance(dst, (int, long)):
+            if dst is not None and isinstance(dst, int):
                 index = dst
             src, dst = src_or_list
         else:
