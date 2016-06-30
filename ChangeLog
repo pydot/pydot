@@ -1,6 +1,48 @@
 # `pydot` changelog
 
 
+## 1.2.0 (2016-07-01)
+
+- Python 3 compatibility
+- bumped dependency to `pyparsing >= 2.1.4`
+- tests running on Travis CI
+- tests require `chardet`
+- detect character encoding for most test files
+  using the package `chardet`
+
+API:
+
+- on all operating systems, search GraphViz
+  executables in environment `$PATH`,
+  using `subprocess.Popen`.
+  No paths hard-coded due to security and privacy issues.
+
+- add option to pass GraphViz executable name
+  or absolute path as `prog` to `pydot.Dot.write_*` methods.
+  This provides an alternative to
+  adding GraphViz to the `$PATH`.
+
+- the functions:
+    - `pydot.graph_from_dot_data`
+    - `pydot.graph_from_dot_file`
+    - `dot_parser.parse_dot_data`
+  changed to always return a `list` of graphs,
+  instead of behaving differently for singletons.
+
+- require that the user explicitly give an encoding to
+  the function `pydot.graph_from_dot_file`,
+  with default encoding same as `io.open`.
+
+- decode to unicode at program boundaries, and
+  treat binary images as bytes,
+  for more compatibility with python 3.
+  Use `io.open`, instead of the built-in `open`.
+
+- rm function `pydot.set_graphviz_executables`
+
+- rm attribute `pydot.Dot.progs`
+
+
 ## 1.1.0 (2016-05-23)
 
 - compatibility with `pyparsing >= 1.5.7`
