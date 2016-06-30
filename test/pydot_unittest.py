@@ -200,32 +200,18 @@ class TestGraphAPI(unittest.TestCase):
                 break
             stdout_output.append(data)
         stdout.close()
-
         if stdout_output:
             stdout_output = ''.join(stdout_output)
-
-        #pid, status = os.waitpid(p.pid, 0)
+        # pid, status = os.waitpid(p.pid, 0)
         status = p.wait()
-
-
         return sha256(stdout_output).hexdigest()
 
 
     def _render_with_pydot(self, filename):
-
-        #f = open(filename, 'rt')
-        #graph_data = f.read()
-        #f.close()
-
-        #g = dot_parser.parse_dot_data(graph_data)
-        #g = pydot.parse_from_dot_data(graph_data)
         g = pydot.graph_from_dot_file(filename)
-
-        if not isinstance( g, list ):
+        if not isinstance(g, list):
             g = [g]
-
-        jpe_data = ''.join( [ _g.create( format='jpe' ) for _g in g ] )
-
+        jpe_data = ''.join([_g.create(format='jpe') for _g in g])
         return sha256(jpe_data).hexdigest()
 
 
