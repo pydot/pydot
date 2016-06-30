@@ -10,6 +10,7 @@ Fixes by: Ero Carrera <ero@dkbza.org>
 from __future__ import division
 from __future__ import print_function
 import codecs
+import sys
 
 from pyparsing import (
     nestedExpr, Literal, CaselessLiteral,
@@ -25,6 +26,13 @@ import pydot
 
 __author__ = ['Michael Krause', 'Ero Carrera']
 __license__ = 'MIT'
+
+
+PY3 = sys.version_info >= (3, 0, 0)
+if PY3:
+    str_type = str
+else:
+    str_type = basestring
 
 
 class P_AttrList(object):
@@ -76,7 +84,7 @@ def push_top_graph_stmt(str, loc, toks):
 
         if (isinstance(element, (ParseResults, tuple, list)) and
                 len(element) == 1 and
-                isinstance(element[0], basestring)):
+                isinstance(element[0], str_type)):
 
             element = element[0]
 
@@ -92,7 +100,7 @@ def push_top_graph_stmt(str, loc, toks):
 
             top_graphs.append( g )
 
-        elif isinstance( element, basestring):
+        elif isinstance( element, str_type):
             g.set_name( element )
 
         elif isinstance(element, pydot.Subgraph):

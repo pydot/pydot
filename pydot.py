@@ -20,6 +20,7 @@ from __future__ import print_function
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import copy
 import warnings
@@ -35,6 +36,13 @@ except Exception as e:
 __author__ = 'Ero Carrera'
 __version__ = '1.1.1'
 __license__ = 'MIT'
+
+
+PY3 = sys.version_info >= (3, 0, 0)
+if PY3:
+    str_type = str
+else:
+    str_type = basestring
 
 
 GRAPH_ATTRIBUTES = set( ['Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
@@ -197,7 +205,7 @@ def quote_if_necessary(s):
             return 'True'
         return 'False'
 
-    if not isinstance( s, basestring ):
+    if not isinstance( s, str_type):
         return s
 
     if not s:
@@ -546,7 +554,7 @@ class Node(Common):
             # Remove the compass point
             #
             port = None
-            if isinstance(name, basestring) and not name.startswith('"'):
+            if isinstance(name, str_type) and not name.startswith('"'):
                 idx = name.find(':')
                 if idx > 0 and idx+1 < len(name):
                     name, port = name[:idx], name[idx:]
@@ -1711,7 +1719,7 @@ class Dot(Graph):
         graph is going to be rendered.
         """
 
-        if isinstance( file_paths, basestring ):
+        if isinstance( file_paths, str_type):
             self.shape_files.append( file_paths )
 
         if isinstance( file_paths, (list, tuple) ):
@@ -1771,7 +1779,7 @@ class Dot(Graph):
         dot_fd = open(path, "w+b")
         if format == 'raw':
             data = self.to_string()
-            if isinstance(data, basestring):
+            if isinstance(data, str_type):
                 if not isinstance(data, unicode):
                     try:
                         data = unicode(data, 'utf-8')
