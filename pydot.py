@@ -352,81 +352,6 @@ def graph_from_incidence_matrix(matrix, node_prefix='', directed=False):
     return graph
 
 
-
-
-def __find_executables(path):
-    """Used by find_graphviz
-
-    path - single directory as a string
-
-    If any of the executables are found, it will return a dictionary
-    containing the program names as keys and their paths as values.
-
-    Otherwise returns None
-    """
-
-    success = False
-    progs = {'dot': '', 'twopi': '', 'neato': '',
-             'circo': '', 'fdp': '', 'sfdp': ''}
-
-    was_quoted = False
-    path = path.strip()
-    if path.startswith('"') and path.endswith('"'):
-        path = path[1:-1]
-        was_quoted =  True
-
-    if os.path.isdir(path) :
-
-        for prg in progs:
-
-            if progs[prg]:
-                continue
-
-            if os.path.exists( os.path.join(path, prg) ):
-
-                if was_quoted:
-                    progs[prg] = '"' + os.path.join(path, prg) + '"'
-                else:
-                    progs[prg] = os.path.join(path, prg)
-
-                success = True
-
-            elif os.path.exists( os.path.join(path, prg + '.exe') ):
-
-                if was_quoted:
-                    progs[prg] = (
-                        '"' + os.path.join(path, prg + '.exe') + '"')
-                else:
-                    progs[prg] = os.path.join(path, prg + '.exe')
-
-                success = True
-
-    if success:
-
-        return progs
-
-    else:
-
-        return None
-
-
-def find_graphviz():
-    """Search the `$PATH` for Graphviz's executables.
-
-    Look for 'dot', 'twopi' and 'neato' in all the directories
-    specified in the `$PATH` environment variable.
-
-    Return a dictionary containing the program names as keys
-    and their paths as values, else `None`
-    """
-    if 'PATH' in os.environ:
-        for path in os.environ['PATH'].split(os.pathsep):
-            progs = __find_executables(path)
-            if progs is not None:
-                return progs
-    return None
-
-
 class Common(object):
     """Common information to several classes.
 
@@ -1887,34 +1812,50 @@ class Dot(Graph):
         arguments for it:
 
             [ 'twopi', '-Tdot', '-s10' ]
-        """
 
+
+        @param prog: either:
+
+          - name of GraphViz executable that
+            can be found in the `$PATH`, or
+
+          - absolute path to GraphViz executable.
+
+          If you have added GraphViz to the `$PATH` and
+          use its executables as installed
+          (without renaming any of them)
+          then their names are:
+
+            - `'dot'`
+            - `'twopi'`
+            - `'neato'`
+            - `'circo'`
+            - `'fdp'`
+            - `'sfdp'`
+
+          On Windows, these have the notorious ".exe" extension that,
+          only for the above strings, will be added automatically.
+
+          The `$PATH` is inherited from `os.env['PATH']` and
+          passed to `subprocess.Popen` using the `env` argument.
+
+          If you haven't added GraphViz to your `$PATH` on Windows,
+          then you may want to give the absolute path to the
+          executable (for example, to `dot.exe`) in `prog`.
+        """
+        default_names = {'dot', 'twopi', 'neato',
+                         'circo', 'fdp', 'sfdp'}
         if prog is None:
             prog = self.prog
-
+        assert prog is not None
         if isinstance(prog, (list, tuple)):
             prog, args = prog[0], prog[1:]
         else:
             args = []
-
-        if self.progs is None:
-            self.progs = find_graphviz()
-            if self.progs is None:
-                raise InvocationException(
-                    'GraphViz\'s executables not found' )
-
-        if prog not in self.progs:
-            raise InvocationException(
-                'GraphViz\'s executable "%s" not found' % prog )
-
-        if (not os.path.exists( self.progs[prog] ) or
-                not os.path.isfile( self.progs[prog] )):
-            raise InvocationException((
-                'GraphViz\'s executable "{s}" is '
-                'not a file or doesn\'t exist').format(
-                    s=self.progs[prog]))
-
-
+        if os.name == 'nt' and prog in default_names:
+            if not prog.endswith('.exe'):
+                prog += '.exe'
+        # temp file
         tmp_fd, tmp_name = tempfile.mkstemp()
         os.close(tmp_fd)
         self.write(tmp_name)
@@ -1937,13 +1878,25 @@ class Dot(Graph):
             f.write(f_data)
             f.close()
 
-        cmdline = [self.progs[prog], '-T'+format, tmp_name] + args
-
-        p = subprocess.Popen(
-            cmdline,
-            cwd=tmp_dir,
-            stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-
+        # explicitly inherit `$PATH`, on Windows too,
+        # with `shell=False`
+        env = dict()
+        env['PATH'] = os.environ['PATH']
+        cmdline = [prog, '-T' + format, tmp_name] + args
+        try:
+            p = subprocess.Popen(
+                cmdline,
+                env=env,
+                cwd=tmp_dir,
+                shell=False,
+                stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        except OSError as e:
+            if e.errno == os.errno.ENOENT:
+                raise Exception(
+                    '"{prog}" not found in path.'.format(
+                        prog=prog))
+            else:
+                raise
         stderr = p.stderr
         stdout = p.stdout
 
