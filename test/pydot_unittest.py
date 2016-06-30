@@ -333,15 +333,8 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def test_executable_not_found_exception(self):
-
-
-        paths = {'dot': 'invalid_executable_path'}
-
-        graph = pydot.Dot( 'graphname', graph_type='digraph' )
-
-        graph.set_graphviz_executables( paths )
-
-        self.assertRaises( pydot.InvocationException,  graph.create )
+        graph = pydot.Dot('graphname', graph_type='digraph')
+        self.assertRaises(Exception,  graph.create, prog='dothehe')
 
 
     def test_graph_add_node_argument_type(self):
