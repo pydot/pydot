@@ -258,7 +258,7 @@ class TestGraphAPI(unittest.TestCase):
 
                 original_data_hexdigest = self._render_with_graphviz(fname)
             except Exception as excp:
-                print('Failed redering BAD({s})'.format(s=dot))
+                print('Failed rendering BAD({s})'.format(s=dot))
                 # print('Error: {s}'.format(s=excp))
                 raise excp
 
