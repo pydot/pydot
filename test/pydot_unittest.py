@@ -14,7 +14,7 @@ import pydot
 import unittest
 
 
-DOT_BINARY_PATH         = pydot.find_graphviz()['dot']
+DOT_BINARY_PATH         = 'dot'
 TEST_DIR                = './'
 REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'graphs')
 MY_REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'my_tests')
