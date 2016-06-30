@@ -1648,9 +1648,6 @@ class Dot(Graph):
         Graph.__init__(self, *argsl, **argsd)
 
         self.shape_files = list()
-
-        self.progs = None
-
         self.formats = [
             'canon', 'cmap', 'cmapx',
             'cmapx_np', 'dia', 'dot',
