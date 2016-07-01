@@ -9,7 +9,6 @@ Fixes by: Ero Carrera <ero@dkbza.org>
 """
 from __future__ import division
 from __future__ import print_function
-import codecs
 import sys
 
 from pyparsing import (
@@ -534,15 +533,11 @@ def graph_definition():
     return graphparser
 
 
-def parse_dot_data(data):
-
+def parse_dot_data(s):
+    """Parse DOT description in (unicode) string `s`."""
     global top_graphs
 
     top_graphs = list()
-
-    if data.startswith(codecs.BOM_UTF8):
-        data = data.decode( 'utf-8' )
-
     try:
 
         graphparser = graph_definition()
