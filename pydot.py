@@ -1757,29 +1757,18 @@ class Dot(Graph):
         which are automatically defined for all the supported formats.
         [write_ps(), write_gif(), write_dia(), ...]
         """
-
         if prog is None:
             prog = self.prog
-
-        dot_fd = open(path, "w+b")
         if format == 'raw':
-            data = self.to_string()
-            if isinstance(data, str_type):
-                if not isinstance(data, unicode):
-                    try:
-                        data = unicode(data, 'utf-8')
-                    except Exception:
-                        pass
-
-            try:
-                data = data.encode('utf-8')
-            except Exception:
-                pass
-            dot_fd.write(data)
+            s = self.to_string()
+            mode = 'wt'
+            if not PY3:
+                s = unicode(s)
         else:
-            dot_fd.write(self.create(prog, format))
-        dot_fd.close()
-
+            s = self.create(prog, format)
+            mode = 'wb'
+        with io.open(path, mode=mode) as f:
+            f.write(s)
         return True
 
 
