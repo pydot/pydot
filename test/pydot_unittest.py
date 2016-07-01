@@ -65,11 +65,11 @@ class TestGraphAPI(unittest.TestCase):
         node = pydot.Node('legend')
         node.set("shape", 'box')
         g.add_node(node)
-        node.set('label','mine')
-
-        self.assertEqual(g.to_string(),
-                         'digraph G {\nlegend [shape=box, label=mine];\n}\n')
-
+        node.set('label', 'mine')
+        s = g.to_string()
+        s_0 = 'digraph G {\nlegend [label=mine, shape=box];\n}\n'
+        s_1 = 'digraph G {\nlegend [shape=box, label=mine];\n}\n'
+        assert s == s_0 or s == s_1, (s, s_0)
 
     def test_attribute_with_implicit_value(self):
 
