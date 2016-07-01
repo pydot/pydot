@@ -224,15 +224,15 @@ def quote_if_necessary(s):
 
 
 
-def graph_from_dot_data(data):
-    """Load graph as defined by data in DOT format.
+def graph_from_dot_data(s):
+    """Load graphs from DOT description in (unicode) string `s`.
 
     The data is assumed to be in DOT format. It will
     be parsed and a Dot class will be returned,
     representing the graph.
     """
+    return dot_parser.parse_dot_data(s)
 
-    return dot_parser.parse_dot_data(data)
 
 
 def graph_from_dot_file(path):
