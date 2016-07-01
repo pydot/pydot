@@ -7,9 +7,11 @@
 from __future__ import division
 from __future__ import print_function
 from hashlib import sha256
+import io
 import os
 import subprocess
 
+import chardet
 import pydot
 import unittest
 
@@ -164,9 +166,8 @@ class TestGraphAPI(unittest.TestCase):
         jpe_data = g.create( format='jpe' )
 
         hexdigest = sha256(jpe_data).hexdigest()
-
-        hexdigest_original = self._render_with_graphviz(dot_file)
-
+        hexdigest_original = self._render_with_graphviz(
+            dot_file, encoding='ascii')
         self.assertEqual( hexdigest, hexdigest_original )
 
 
@@ -178,34 +179,18 @@ class TestGraphAPI(unittest.TestCase):
         names = [g.get_name() for g in graphs]
         assert names == ['A', 'B'], names
 
-
-
-    def _render_with_graphviz(self, filename):
-
+    def _render_with_graphviz(self, filename, encoding):
         p = subprocess.Popen(
-            ( DOT_BINARY_PATH , '-Tjpe', ),
-            cwd = os.path.dirname(filename),
-            stdin=open(filename, 'rt'),
-            stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            [DOT_BINARY_PATH, '-Tjpe'],
+            cwd=os.path.dirname(filename),
+            stdin=io.open(filename, 'rt', encoding=encoding),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        stdout_data, stderr_data = p.communicate()
+        return sha256(stdout_data).hexdigest()
 
-        stdout = p.stdout
-
-        stdout_output = list()
-        while True:
-            data = stdout.read()
-            if not data:
-                break
-            stdout_output.append(data)
-        stdout.close()
-        if stdout_output:
-            stdout_output = ''.join(stdout_output)
-        # pid, status = os.waitpid(p.pid, 0)
-        status = p.wait()
-        return sha256(stdout_output).hexdigest()
-
-
-    def _render_with_pydot(self, filename):
-        c = pydot.graph_from_dot_file(filename)
+    def _render_with_pydot(self, filename, encoding):
+        c = pydot.graph_from_dot_file(filename, encoding=encoding)
         sha = ''
         for g in c:
             jpe_data = g.create(format='jpe')
@@ -223,36 +208,23 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def _render_and_compare_dot_files(self, directory):
-
-        dot_files = [ fname for fname in os.listdir(directory) if
-            fname.endswith('.dot') ] ##and fname.startswith('')]
-
-        for dot in dot_files:
-
-            #print 'Processing: %s' % dot
-
+        # files that confuse `chardet`
+        encodings = {
+            'Latin1.dot': 'latin-1'}
+        dot_files = [
+            fname for fname in os.listdir(directory)
+            if fname.endswith('.dot')]
+        for fname in dot_files:
+            fpath = os.path.join(directory, fname)
+            with open(fpath, 'rb') as f:
+                s = f.read()
+            estimate = chardet.detect(s)
+            encoding = encodings.get(fname, estimate['encoding'])
             os.sys.stdout.write('#')
             os.sys.stdout.flush()
-
-            fname = os.path.join(directory, dot)
-
-            try:
-                parsed_data_hexdigest = self._render_with_pydot(fname)
-
-                original_data_hexdigest = self._render_with_graphviz(fname)
-            except Exception as excp:
-                print('Failed rendering BAD({s})'.format(s=dot))
-                # print('Error: {s}'.format(s=excp))
-                raise excp
-
-            if parsed_data_hexdigest != original_data_hexdigest:
-                print('BAD({s})'.format(s=dot))
-
-            self.assertEqual(
-                parsed_data_hexdigest,
-                original_data_hexdigest)
-
-
+            pydot_sha = self._render_with_pydot(fpath, encoding)
+            pydot_sha = self._render_with_graphviz(fpath, encoding)
+            assert pydot_sha == pydot_sha, (pydot_sha, pydot_sha)
 
     def test_numeric_node_id(self):
 
