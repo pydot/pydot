@@ -1773,13 +1773,14 @@ class Dot(Graph):
 
 
     def create(self, prog=None, format='ps'):
-        """Creates and returns a Postscript representation of the graph.
+        """Creates and returns a binary image for the graph.
 
         create will write the graph to a temporary dot file and process
         it with the program given by 'prog' (which defaults to 'twopi'),
-        reading the Postscript output and returning it as a string is the
-        operation is successful.
-        On failure None is returned.
+        reading the binary image output and return it as:
+
+        - `str` of bytes in Python 2
+        - `bytes` in Python 3
 
         There's also the preferred possibility of using:
 
