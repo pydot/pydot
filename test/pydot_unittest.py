@@ -9,6 +9,8 @@ from __future__ import print_function
 from hashlib import sha256
 import io
 import os
+import pickle
+import string
 import subprocess
 
 import chardet
@@ -101,7 +103,6 @@ class TestGraphAPI(unittest.TestCase):
 
     def test_graph_pickling(self):
 
-        import pickle
 
         g = pydot.Graph()
         s = pydot.Subgraph("foo")
@@ -328,7 +329,6 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def test_quoting(self):
-        import string
         g = pydot.Dot()
         g.add_node(pydot.Node("test", label=string.printable))
         #print g.to_string()
