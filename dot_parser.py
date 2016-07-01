@@ -536,19 +536,12 @@ def graph_definition():
 def parse_dot_data(s):
     """Parse DOT description in (unicode) string `s`."""
     global top_graphs
-
     top_graphs = list()
     try:
-
         graphparser = graph_definition()
         graphparser.parseWithTabs()
-        tokens = graphparser.parseString(data)
-
-        if len(tokens) == 1:
-            return tokens[0]
-        else:
-            return [g for g in tokens]
-
+        tokens = graphparser.parseString(s)
+        return list(tokens)
     except ParseException as err:
         print(
             err.line +
