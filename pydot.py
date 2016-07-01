@@ -1876,37 +1876,18 @@ class Dot(Graph):
                         prog=prog))
             else:
                 raise
-        stderr = p.stderr
-        stdout = p.stdout
-        stdout_output = list()
-        while True:
-            data = stdout.read()
-            if not data:
-                break
-            stdout_output.append(data)
-        stdout.close()
-        stdout_output = ''.join(stdout_output)
-        if not stderr.closed:
-            stderr_output = list()
-            while True:
-                data = stderr.read()
-                if not data:
-                    break
-                stderr_output.append(data)
-            stderr.close()
-            if stderr_output:
-                stderr_output = ''.join(stderr_output)
-        # pid, status = os.waitpid(p.pid, 0)
-        status = p.wait()
-        if status != 0:
-            raise InvocationException(
-                ('Program terminated with status:'
-                 ' %d. stderr follows: %s') % (
-                    status, stderr_output))
-        elif stderr_output:
-            print(stderr_output)
-        # For each of the image files...
+        stdout_data, stderr_data = p.communicate()
+        # clean file litter
         for img in self.shape_files:
             os.unlink(os.path.join(tmp_dir, os.path.basename(img)))
         os.unlink(tmp_name)
-        return stdout_output
+        # print(stdout_data)
+        if p.returncode != 0:
+            print(
+                ('{cmdline} return code: {c}\n\n'
+                 'stdout, stderr:\n {out}\n\n').format(
+                     c=p.returncode,
+                     out=stdout_data,
+                     err=stderr_data))
+        assert p.returncode == 0, p.returncode
+        return stdout_data
