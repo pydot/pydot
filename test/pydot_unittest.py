@@ -171,16 +171,13 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def test_multiple_graphs(self):
-
         graph_data = 'graph A { a->b };\ngraph B {c->d}'
-
-        #graphs = dot_parser.parse_dot_data(graph_data)
         graphs = pydot.graph_from_dot_data(graph_data)
+        n = len(graphs)
+        assert n == 2, n
+        names = [g.get_name() for g in graphs]
+        assert names == ['A', 'B'], names
 
-        self.assertEqual( len(graphs), 2 )
-
-        self.assertEqual([g.get_name() for g in graphs],
-                         ['A', 'B'])
 
 
     def _render_with_graphviz(self, filename):
