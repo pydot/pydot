@@ -110,10 +110,7 @@ class TestGraphAPI(unittest.TestCase):
         g.add_edge( pydot.Edge('A','C') )
         g.add_edge( pydot.Edge( ('D','E') ) )
         g.add_node( pydot.Node( 'node!' ) )
-
-        self.assertEqual( type(pickle.dumps(g)), str )
-
-
+        pickle.dumps(g)
 
     def test_unicode_ids(self):
 
