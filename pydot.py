@@ -18,6 +18,7 @@ Distributed under MIT license
 from __future__ import division
 from __future__ import print_function
 import copy
+import io
 import os
 import re
 import subprocess
@@ -234,20 +235,23 @@ def graph_from_dot_data(s):
     return dot_parser.parse_dot_data(s)
 
 
-
-def graph_from_dot_file(path):
-    """Load graph as defined by a DOT file.
+def graph_from_dot_file(path, encoding=None):
+    """Load graphs as defined by a DOT file.
 
     The file is assumed to be in DOT format. It will
     be loaded, parsed and a Dot class will be returned,
     representing the graph.
+
+    @param path: to dot file
+    @param encoding: passed to `io.open`.
+        For example, `'utf-8'`.
     """
-
-    fd = open(path, 'rb')
-    data = fd.read()
-    fd.close()
-
-    return graph_from_dot_data(data)
+    with io.open(path, 'rt', encoding=encoding) as f:
+        s = f.read()
+    if not PY3:
+        s = unicode(s)
+    graphs = graph_from_dot_data(s)
+    return graphs
 
 
 
