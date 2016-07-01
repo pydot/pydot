@@ -74,7 +74,8 @@ class TestGraphAPI(unittest.TestCase):
     def test_attribute_with_implicit_value(self):
 
         d='digraph {\na -> b[label="hi", decorate];\n}'
-        g = pydot.graph_from_dot_data(d)
+        graphs = pydot.graph_from_dot_data(d)
+        (g,) = graphs
         attrs = g.get_edges()[0].get_attributes()
 
         self.assertEqual( 'decorate' in attrs, True )
@@ -128,9 +129,8 @@ class TestGraphAPI(unittest.TestCase):
 
         self.assertEqual( g.get_edges()[0].get_source(), node1 )
         self.assertEqual( g.get_edges()[0].get_destination(), node2 )
-
-        #g2 = dot_parser.parse_dot_data( g.to_string() )
-        g2 = pydot.graph_from_dot_data( g.to_string() )
+        graphs = pydot.graph_from_dot_data(g.to_string())
+        (g2,) = graphs
 
         self.assertEqual( g2.get_node(node1)[0].get_name(), node1 )
         self.assertEqual( g2.get_node(node2)[0].get_name(), node2 )
@@ -157,8 +157,8 @@ class TestGraphAPI(unittest.TestCase):
         f.close()
 
         #g = dot_parser.parse_dot_data(graph_data)
-        g = pydot.graph_from_dot_data(graph_data)
-
+        graphs = pydot.graph_from_dot_data(graph_data)
+        (g,) = graphs
         g.set_shape_files( pngs )
 
         jpe_data = g.create( format='jpe' )
@@ -208,12 +208,12 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def _render_with_pydot(self, filename):
-        g = pydot.graph_from_dot_file(filename)
-        if not isinstance(g, list):
-            g = [g]
-        jpe_data = ''.join([_g.create(format='jpe') for _g in g])
-        return sha256(jpe_data).hexdigest()
-
+        c = pydot.graph_from_dot_file(filename)
+        sha = ''
+        for g in c:
+            jpe_data = g.create(format='jpe')
+            sha += sha256(jpe_data).hexdigest()
+        return sha
 
     def test_my_regression_tests(self):
 
