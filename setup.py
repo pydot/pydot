@@ -32,5 +32,4 @@ setup(
     long_description="\n".join(pydot.__doc__.split('\n')),
     py_modules=['pydot', 'dot_parser'],
     install_requires=['pyparsing>=2.1.4'],
-    tests_require=['chardet'],
-    data_files=[('.', ['LICENSE', 'README.md'])])
+    tests_require=['chardet'])
