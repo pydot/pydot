@@ -1829,8 +1829,9 @@ class Dot(Graph):
           then you may want to give the absolute path to the
           executable (for example, to `dot.exe`) in `prog`.
         """
-        default_names = {'dot', 'twopi', 'neato',
-                         'circo', 'fdp', 'sfdp'}
+        default_names = set([
+            'dot', 'twopi', 'neato',
+            'circo', 'fdp', 'sfdp'])
         if prog is None:
             prog = self.prog
         assert prog is not None
