@@ -1862,7 +1862,7 @@ class Dot(Graph):
         # with `shell=False`
         env = dict()
         env['PATH'] = os.environ['PATH']
-        cmdline = [prog, '-T' + format, tmp_name] + args
+        cmdline = [prog, '-T' + format] + args + [tmp_name]
         try:
             p = subprocess.Popen(
                 cmdline,
