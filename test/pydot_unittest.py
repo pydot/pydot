@@ -12,6 +12,7 @@ import os
 import pickle
 import string
 import subprocess
+import sys
 
 import chardet
 import pydot
@@ -336,7 +337,7 @@ class TestGraphAPI(unittest.TestCase):
         self.assertEqual( len(data) > 0, True )
 
 if __name__ == '__main__':
-
-    suite = unittest.TestLoader().loadTestsFromTestCase( TestGraphAPI )
-
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    if sys.version_info >= (2, 7):
+        unittest.main(verbosity=2)
+    else:
+        unittest.main()
