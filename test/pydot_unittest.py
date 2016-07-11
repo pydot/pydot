@@ -289,7 +289,7 @@ class TestGraphAPI(unittest.TestCase):
 
         self._reset_graphs()
 
-        names = set([ 'node_%05d' % i for i in xrange(10**4) ])
+        names = set([ 'node_%05d' % i for i in range(10**3) ])
 
         for name in names:
 
