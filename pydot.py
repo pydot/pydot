@@ -1886,7 +1886,7 @@ class Dot(Graph):
         if p.returncode != 0:
             print(
                 ('{cmdline} return code: {c}\n\n'
-                 'stdout, stderr:\n {out}\n\n').format(
+                 'stdout, stderr:\n {out}\n{err}\n').format(
                      cmdline=cmdline,
                      c=p.returncode,
                      out=stdout_data,
