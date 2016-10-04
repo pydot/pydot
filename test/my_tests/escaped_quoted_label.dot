@@ -1,0 +1,3 @@
+digraph G {
+    a [label="Graph with quoted dash \"-\" string"];
+}
