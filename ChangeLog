@@ -1,9 +1,16 @@
 # `pydot` changelog
 
 
+## 1.2.3 (2016-10-06)
+
+- support Python 2.6
+- several corrections
+- quote empty strings to avoid graphviz errors
+
+
 ## 1.2.0 (2016-07-01)
 
-- Python 3 compatibility
+- support Python 3
 - bumped dependency to `pyparsing >= 2.1.4`
 - tests running on Travis CI
 - tests require `chardet`
