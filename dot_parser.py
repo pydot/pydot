@@ -353,22 +353,23 @@ def push_edge_stmt(str, loc, toks):
 
         e.append(pydot.Edge(n_prev, name_port, **attrs))
 
-    elif isinstance(toks[2][0], type('')):
+    # if the target of this edge is the name of a node
+    elif isinstance(toks[2][0], str_type):
 
         for n_next in [n for n in tuple(toks)[2::2]]:
 
             if (isinstance(n_next, P_AttrList) or
-                    not isinstance(n_next[0], type(''))):
+                    not isinstance(n_next[0], str_type)):
                 continue
 
             n_next_port = do_node_ports( n_next )
             e.append(pydot.Edge(n_prev, n_next[0]+n_next_port, **attrs))
 
             n_prev = n_next[0]+n_next_port
-
     else:
-        # UNEXPECTED EDGE TYPE
-        pass
+        raise Exception(
+            'Edge target {r} with type {s} unsupported.'.format(
+                r=toks[2][0], s=type(toks[2][0])))
 
     return e
 
