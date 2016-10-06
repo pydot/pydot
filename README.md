@@ -11,6 +11,8 @@ About
   - is written in pure Python,
 
 and [`networkx`][3] can convert its graphs to `pydot`.
+Development occurs at [github][11] (under branch `dev`),
+where you can report issues and contribute code.
 
 
 Installation
@@ -52,5 +54,6 @@ Distributed under an [MIT license][10].
 [8]: https://www.macports.org
 [9]: https://github.com/ellson/graphviz
 [10]: https://github.com/erocarrera/pydot/blob/master/LICENSE
+[11]: https://github.com/erocarrera/pydot
 [build_img]: https://travis-ci.org/erocarrera/pydot.svg?branch=master
 [travis]: https://travis-ci.org/erocarrera/pydot
