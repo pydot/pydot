@@ -6,7 +6,7 @@ Graphviz's dot language.
 
 References:
 
-pydot Homepage: http://code.google.com/p/pydot/
+pydot Homepage: https://github.com/erocarrera/pydot
 Graphviz:       http://www.graphviz.org/
 DOT Language:   http://www.graphviz.org/doc/info/lang.html
 
