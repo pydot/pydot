@@ -192,7 +192,7 @@ class TestGraphAPI(unittest.TestCase):
         c = pydot.graph_from_dot_file(filename, encoding=encoding)
         sha = ''
         for g in c:
-            jpe_data = g.create(format='jpe')
+            jpe_data = g.create(format='jpe', encoding=encoding)
             sha += sha256(jpe_data).hexdigest()
         return sha
 
