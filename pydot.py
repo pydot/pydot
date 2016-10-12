@@ -670,9 +670,7 @@ class Edge(Common):
     """
 
     def __init__(self, src='', dst='', obj_dict=None, **attrs):
-        if obj_dict is not None:
-            self.obj_dict = obj_dict
-        else:
+        if obj_dict is None:
             self.obj_dict = dict()
             # Copy the attributes
             self.obj_dict[ 'attributes' ] = dict( attrs )
@@ -687,6 +685,8 @@ class Edge(Common):
             points = (quote_if_necessary(src),
                       quote_if_necessary(dst))
             self.obj_dict['points'] = points
+        else:
+            self.obj_dict = obj_dict
         self.create_attribute_methods(EDGE_ATTRIBUTES)
 
 
