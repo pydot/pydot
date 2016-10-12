@@ -670,21 +670,21 @@ class Edge(Common):
     """
 
     def __init__(self, src='', dst='', obj_dict=None, **attrs):
+        self.obj_dict = dict()
+        if isinstance(src, Node):
+            src = src.get_name()
+        if isinstance(dst, Node):
+            dst = dst.get_name()
+        points = (quote_if_necessary(src),
+                  quote_if_necessary(dst))
+        self.obj_dict['points'] = points
         if obj_dict is None:
-            self.obj_dict = dict()
             # Copy the attributes
             self.obj_dict[ 'attributes' ] = dict( attrs )
             self.obj_dict[ 'type' ] = 'edge'
             self.obj_dict[ 'parent_graph' ] = None
             self.obj_dict[ 'parent_edge_list' ] = None
             self.obj_dict[ 'sequence' ] = None
-            if isinstance(src, Node):
-                src = src.get_name()
-            if isinstance(dst, Node):
-                dst = dst.get_name()
-            points = (quote_if_necessary(src),
-                      quote_if_necessary(dst))
-            self.obj_dict['points'] = points
         else:
             self.obj_dict = obj_dict
         self.create_attribute_methods(EDGE_ATTRIBUTES)
