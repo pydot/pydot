@@ -670,8 +670,6 @@ class Edge(Common):
     """
 
     def __init__(self, src='', dst='', obj_dict=None, **attrs):
-        if isinstance(src, (list, tuple)) and dst == '':
-            src, dst = src
         if obj_dict is not None:
             self.obj_dict = obj_dict
         else:
