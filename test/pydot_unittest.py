@@ -179,12 +179,13 @@ class TestGraphAPI(unittest.TestCase):
         assert names == ['A', 'B'], names
 
     def _render_with_graphviz(self, filename, encoding):
-        p = subprocess.Popen(
-            [DOT_BINARY_PATH, '-Tjpe'],
-            cwd=os.path.dirname(filename),
-            stdin=io.open(filename, 'rt', encoding=encoding),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        with io.open(filename, 'rt', encoding=encoding) as stdin:
+            p = subprocess.Popen(
+                [DOT_BINARY_PATH, '-Tjpe'],
+                cwd=os.path.dirname(filename),
+                stdin=stdin,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
         stdout_data, stderr_data = p.communicate()
         return sha256(stdout_data).hexdigest()
 
