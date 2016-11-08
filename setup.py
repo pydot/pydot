@@ -10,7 +10,7 @@ import pydot
 setup(
     name='pydot',
     version=pydot.__version__,
-    description='Python interface to Graphviz\'s Dot',
+    description="Python interface to Graphviz's Dot",
     author='Ero Carrera',
     author_email='ero@dkbza.org',
     maintainer='Ioannis Filippidis',
