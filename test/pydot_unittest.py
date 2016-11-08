@@ -13,6 +13,7 @@ import pickle
 import string
 import subprocess
 import sys
+import warnings
 
 import chardet
 import pydot
@@ -144,6 +145,11 @@ class TestGraphAPI(unittest.TestCase):
 
         shapefile_dir = os.path.join(TEST_DIR,
                                      'from-past-to-future')
+        # image files are omitted from sdist
+        if not os.path.isdir(shapefile_dir):
+            warnings.warn('Skipping tests that involve images, '
+                          'they can be found in the `git` repository.')
+            return
         dot_file = os.path.join(shapefile_dir,
                                 'from-past-to-future.dot')
 
