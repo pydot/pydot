@@ -21,7 +21,7 @@ import unittest
 
 
 DOT_BINARY_PATH         = 'dot'
-TEST_DIR                = './'
+TEST_DIR                = os.path.dirname(__file__)
 REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'graphs')
 MY_REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'my_tests')
 
