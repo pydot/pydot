@@ -1606,7 +1606,7 @@ class Cluster(Graph):
         if obj_dict is None:
 
             self.obj_dict['type'] = 'subgraph'
-            self.obj_dict['name'] = 'cluster_'+graph_name
+            self.obj_dict['name'] = quote_if_necessary('cluster_'+graph_name)
 
         self.create_attribute_methods(CLUSTER_ATTRIBUTES)
 
