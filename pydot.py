@@ -1878,7 +1878,7 @@ class Dot(Graph):
                 stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         except OSError as e:
             if e.errno == os.errno.ENOENT:
-                raise Exception(
+                raise FileNotFoundError(
                     '"{prog}" not found in path.'.format(
                         prog=prog))
             else:
