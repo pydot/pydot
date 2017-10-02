@@ -1768,7 +1768,7 @@ class Dot(Graph):
         if format == 'raw':
             s = self.to_string()
             if not PY3:
-                s = unicode(s)
+                s = unicode(s, encoding=encoding, errors='replace')
             
             with io.open(path, mode='wt', encoding=encoding) as f:
                 f.write(s)
