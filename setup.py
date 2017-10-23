@@ -1,5 +1,22 @@
 #!/usr/bin/env python
-"""Installation script."""
+"""Graphviz's dot language Python interface.
+
+This module provides with a full interface to
+create handle modify and process graphs in
+Graphviz's dot language.
+
+References:
+
+* pydot Homepage: https://github.com/erocarrera/pydot
+* Graphviz:       http://www.graphviz.org/
+* DOT Language:   http://www.graphviz.org/doc/info/lang.html
+
+Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
+
+Distributed under MIT license
+[http://opensource.org/licenses/mit-license.html].
+"""
+
 try:
     from setuptools import setup
 except ImportError:
@@ -29,7 +46,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Visualization',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    long_description="\n".join(pydot.__doc__.split('\n')),
+    long_description=__doc__,
     py_modules=['pydot', 'dot_parser'],
     install_requires=['pyparsing>=2.1.4'],
     tests_require=['chardet'])
