@@ -1646,27 +1646,18 @@ class Dot(Graph):
         # the methods enabling the creation
         # of output in any of the supported formats.
         for frmt in self.formats:
-            self.__setattr__(
-                'create_'+frmt,
-                lambda f=frmt, prog=self.prog:
-                    self.create(format=f, prog=prog))
-            f = self.__dict__['create_'+frmt]
-            f.__doc__ = (
-                "Refer to the docstring accompanying "
-                "the 'create' method for more information.")
+            def new_method(f=frmt, prog=self.prog):
+                """Refer to docstring of method `create`."""
+                return self.create(format=f, prog=prog)
+            name = 'create_{fmt}'.format(fmt=frmt)
+            self.__setattr__(name, new_method)
 
         for frmt in self.formats+['raw']:
-            self.__setattr__(
-                'write_'+frmt,
-                lambda path, f=frmt, prog=self.prog:
-                    self.write(path, format=f, prog=prog))
-
-            f = self.__dict__['write_'+frmt]
-            f.__doc__ = (
-                "Refer to the docstring accompanying the "
-                "'write' method for more information.")
-
-
+            def new_method(path, f=frmt, prog=self.prog):
+                """Refer to docstring of method `write.`"""
+                self.write(path, format=f, prog=prog)
+            name = 'write_{fmt}'.format(fmt=frmt)
+            self.__setattr__(name, new_method)
 
     def __getstate__(self):
 
