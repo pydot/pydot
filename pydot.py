@@ -1829,7 +1829,7 @@ class Dot(Graph):
         # explicitly inherit `$PATH`, on Windows too,
         # with `shell=False`
         env = dict()
-        env['PATH'] = os.environ['PATH']
+        env['PATH'] = os.environ.get('PATH', '')
         env['LD_LIBRARY_PATH'] = os.environ.get('LD_LIBRARY_PATH', '')
         cmdline = [prog, '-T' + format] + args + [tmp_name]
         try:
