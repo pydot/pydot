@@ -6,6 +6,7 @@
 # -test Common.set method
 from __future__ import division
 from __future__ import print_function
+import argparse
 from hashlib import sha256
 import io
 import os
@@ -20,11 +21,9 @@ import pydot
 import unittest
 
 
-DOT_BINARY_PATH         = 'dot'
-TEST_DIR                = './'
-REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'graphs')
-MY_REGRESSION_TESTS_DIR    = os.path.join(TEST_DIR, 'my_tests')
-
+DOT_BINARY_PATH = 'dot'
+TESTS_DIR_1 = 'my_tests'
+TESTS_DIR_2 = 'graphs'
 
 
 class TestGraphAPI(unittest.TestCase):
@@ -143,7 +142,7 @@ class TestGraphAPI(unittest.TestCase):
 
     def test_graph_with_shapefiles(self):
 
-        shapefile_dir = os.path.join(TEST_DIR,
+        shapefile_dir = os.path.join(test_dir,
                                      'from-past-to-future')
         # image files are omitted from sdist
         if not os.path.isdir(shapefile_dir):
@@ -204,13 +203,13 @@ class TestGraphAPI(unittest.TestCase):
         return sha
 
     def test_my_regression_tests(self):
-
-        self._render_and_compare_dot_files( MY_REGRESSION_TESTS_DIR )
+        path = os.path.join(test_dir, TESTS_DIR_1)
+        self._render_and_compare_dot_files(path)
 
 
     def test_graphviz_regression_tests(self):
-
-        self._render_and_compare_dot_files( REGRESSION_TESTS_DIR )
+        path = os.path.join(test_dir, TESTS_DIR_2)
+        self._render_and_compare_dot_files(path)
 
 
     def _render_and_compare_dot_files(self, directory):
@@ -349,7 +348,33 @@ class TestGraphAPI(unittest.TestCase):
         g.add_node(u)
         g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
 
+
+def check_path():
+    not_check = parse_args()
+    if not_check:
+        return
+    assert not os.path.isfile('setup.py'), (
+        'running out of source does not '
+        'test the installed `pydot`.')
+
+
+def parse_args():
+    """Return arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--no-check', action='store_true',
+        help=('do not require that no `setup.py` be present '
+              'in the current working directory.'))
+    args, unknown = parser.parse_known_args()
+    # avoid confusing `unittest`
+    sys.argv = [sys.argv[0]] + unknown
+    return args.no_check
+
+
 if __name__ == '__main__':
+    check_path()
+    test_dir = os.path.dirname(sys.argv[0])
+    print('The tests are using `pydot` from:  {pd}'.format(pd=pydot))
     if sys.version_info >= (2, 7):
         unittest.main(verbosity=2)
     else:
