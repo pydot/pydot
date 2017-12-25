@@ -1467,7 +1467,7 @@ class Graph(Common):
         obj_list = [(obj['sequence'], obj)
                     for obj in (edge_obj_dicts +
                                 node_obj_dicts + sgraph_obj_dicts) ]
-        obj_list.sort()
+        obj_list.sort(key=lambda x: x[0])
 
         for idx, obj in obj_list:
 
