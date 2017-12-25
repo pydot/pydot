@@ -10,7 +10,7 @@ import pydot
 long_description = '''
 A Python interface to GraphViz and the DOT language.
 
-This module includes an interface to GraphViz [1], with classes to represent
+This package includes an interface to GraphViz [1], with classes to represent
 graphs and dump them in the DOT language [2], and a parser from DOT.
 
 
