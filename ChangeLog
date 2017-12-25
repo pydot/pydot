@@ -1,6 +1,17 @@
 # `pydot` changelog
 
 
+## 1.2.4 (2017-12-25)
+
+- ENH: propagate `LD_LIBRARY_PATH` when calling GraphViz
+- API: raise `OSError` when a GraphViz executable is not found
+- API: add method `__str__` to classes `Node, Edge, Graph`
+- API: add arg `encoding` to `Dot` methods `create, write`
+- API: quote cluster names when necessary
+- API: give source and destination nodes as separate args to `Edge.__init__`
+- API: never ignore `src, dst`, overwrite if `points` defined in `obj_dict`
+
+
 ## 1.2.3 (2016-10-06)
 
 - support Python 2.6
