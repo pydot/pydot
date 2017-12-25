@@ -591,8 +591,7 @@ class Node(Common):
 
 
     def to_string(self):
-        """Returns a string representation of the node in dot language.
-        """
+        """Return string representation of node in DOT language."""
 
 
         # RMF: special case defaults for node, edge and graph properties.
@@ -765,8 +764,7 @@ class Edge(Common):
 
 
     def to_string(self):
-        """Returns a string representation of the edge in dot language.
-        """
+        """Return string representation of edge in DOT language."""
 
         src = self.parse_node_ref( self.get_source() )
         dst = self.parse_node_ref( self.get_destination() )
@@ -1410,9 +1408,10 @@ class Graph(Common):
 
 
     def to_string(self):
-        """Returns a string representation of the graph in dot language.
+        """Return string representation of graph in DOT language.
 
-        It will return the graph and all its subelements in string from.
+        @return: graph and subelements
+        @rtype: `str`
         """
 
 
