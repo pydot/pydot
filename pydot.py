@@ -1654,16 +1654,23 @@ class Dot(Graph):
         # the methods enabling the creation
         # of output in any of the supported formats.
         for frmt in self.formats:
-            def new_method(f=frmt, prog=self.prog):
+            def new_method(
+                    f=frmt, prog=self.prog,
+                    encoding=None):
                 """Refer to docstring of method `create`."""
-                return self.create(format=f, prog=prog)
+                return self.create(
+                    format=f, prog=prog, encoding=encoding)
             name = 'create_{fmt}'.format(fmt=frmt)
             self.__setattr__(name, new_method)
 
         for frmt in self.formats+['raw']:
-            def new_method(path, f=frmt, prog=self.prog):
+            def new_method(
+                    path, f=frmt, prog=self.prog,
+                    encoding=None):
                 """Refer to docstring of method `write.`"""
-                self.write(path, format=f, prog=prog)
+                self.write(
+                    path, format=f, prog=prog,
+                    encoding=encoding)
             name = 'write_{fmt}'.format(fmt=frmt)
             self.__setattr__(name, new_method)
 
@@ -1712,13 +1719,13 @@ class Dot(Graph):
         self.prog = prog
 
 
-    def write(self, path, prog=None, format='raw'):
+    def write(self, path, prog=None, format='raw', encoding=None):
         """Writes a graph to a file.
 
         Given a filename 'path' it will open/create and truncate
         such file and write on it a representation of the graph
-        defined by the dot object and in the format specified by
-        'format'.
+        defined by the dot object in the format specified by
+        'format' and using the encoding specified by `encoding` for text.
         The format 'raw' is used to dump the string representation
         of the Dot object, without further processing.
         The output can be processed by any of graphviz tools, defined
@@ -1732,28 +1739,33 @@ class Dot(Graph):
 
         which are automatically defined for all the supported formats.
         [write_ps(), write_gif(), write_dia(), ...]
+
+        The encoding is passed to `open` [1].
+
+        [1] https://docs.python.org/3/library/functions.html#open
         """
         if prog is None:
             prog = self.prog
         if format == 'raw':
             s = self.to_string()
-            mode = 'wt'
             if not PY3:
                 s = unicode(s)
+            with io.open(path, mode='wt', encoding=encoding) as f:
+                f.write(s)
         else:
-            s = self.create(prog, format)
-            mode = 'wb'
-        with io.open(path, mode=mode) as f:
-            f.write(s)
+            s = self.create(prog, format, encoding=encoding)
+            with io.open(path, mode='wb') as f:
+                f.write(s)
         return True
 
 
-    def create(self, prog=None, format='ps'):
+    def create(self, prog=None, format='ps', encoding=None):
         """Creates and returns a binary image for the graph.
 
-        create will write the graph to a temporary dot file and process
-        it with the program given by 'prog' (which defaults to 'twopi'),
-        reading the binary image output and return it as:
+        create will write the graph to a temporary dot file in the
+        encoding specified by `encoding` and process it with the
+        program given by 'prog' (which defaults to 'twopi'), reading
+        the binary image output and return it as:
 
         - `str` of bytes in Python 2
         - `bytes` in Python 3
@@ -1821,7 +1833,7 @@ class Dot(Graph):
         # temp file
         tmp_fd, tmp_name = tempfile.mkstemp()
         os.close(tmp_fd)
-        self.write(tmp_name)
+        self.write(tmp_name, encoding=encoding)
         tmp_dir = os.path.dirname(tmp_name)
         # For each of the image files...
         for img in self.shape_files:
