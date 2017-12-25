@@ -556,6 +556,8 @@ class Node(Common):
 
         self.create_attribute_methods(NODE_ATTRIBUTES)
 
+    def __str__(self):
+        return self.to_string()
 
 
     def set_name(self, node_name):
@@ -673,6 +675,9 @@ class Edge(Common):
         else:
             self.obj_dict = obj_dict
         self.create_attribute_methods(EDGE_ATTRIBUTES)
+
+    def __str__(self):
+        return self.to_string()
 
 
     def get_source(self):
@@ -886,6 +891,9 @@ class Graph(Common):
 
 
         self.create_attribute_methods(GRAPH_ATTRIBUTES)
+
+    def __str__(self):
+        return self.to_string()
 
 
     def get_graph_type(self):
