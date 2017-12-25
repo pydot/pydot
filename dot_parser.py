@@ -535,7 +535,11 @@ def graph_definition():
 
 
 def parse_dot_data(s):
-    """Parse DOT description in (unicode) string `s`."""
+    """Parse DOT description in (unicode) string `s`.
+
+    @return: Graphs that result from parsing.
+    @rtype: `list` of `pydot.Dot`
+    """
     global top_graphs
     top_graphs = list()
     try:

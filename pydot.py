@@ -210,25 +210,26 @@ def quote_if_necessary(s):
 
 
 def graph_from_dot_data(s):
-    """Load graphs from DOT description in (unicode) string `s`.
+    """Load graphs from DOT description in string `s`.
 
-    The data is assumed to be in DOT format. It will
-    be parsed and a Dot class will be returned,
-    representing the graph.
+    @param s: string in [DOT language](
+        https://en.wikipedia.org/wiki/DOT_(graph_description_language))
+
+    @return: Graphs that result from parsing.
+    @rtype: `list` of `pydot.Dot`
     """
     return dot_parser.parse_dot_data(s)
 
 
 def graph_from_dot_file(path, encoding=None):
-    """Load graphs as defined by a DOT file.
+    """Load graphs from DOT file at `path`.
 
-    The file is assumed to be in DOT format. It will
-    be loaded, parsed and a Dot class will be returned,
-    representing the graph.
-
-    @param path: to dot file
-    @param encoding: passed to `io.open`.
+    @param path: to DOT file
+    @param encoding: as passed to `io.open`.
         For example, `'utf-8'`.
+
+    @return: Graphs that result from parsing.
+    @rtype: `list` of `pydot.Dot`
     """
     with io.open(path, 'rt', encoding=encoding) as f:
         s = f.read()
