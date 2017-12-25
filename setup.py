@@ -8,22 +8,14 @@ import pydot
 
 
 long_description = '''
-Graphviz's dot language Python interface.
+A Python interface to GraphViz and the DOT language.
 
-This module provides with a full interface to
-create handle modify and process graphs in
-Graphviz's dot language.
+This module includes an interface to GraphViz [1], with classes to represent
+graphs and dump them in the DOT language [2], and a parser from DOT.
 
-References:
 
-* pydot Homepage: https://github.com/erocarrera/pydot
-* Graphviz:       http://www.graphviz.org/
-* DOT Language:   http://www.graphviz.org/doc/info/lang.html
-
-Copyright (c) 2005-2011 Ero Carrera <ero.carrera@gmail.com>
-
-Distributed under MIT license
-[http://opensource.org/licenses/mit-license.html].
+[1] http://www.graphviz.org
+[2] http://www.graphviz.org/doc/info/lang.html
 '''
 
 
