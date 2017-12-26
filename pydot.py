@@ -1309,25 +1309,15 @@ class Graph(Common):
 
         return False
 
-
-    def get_edge(self, src_or_list, dst=None):
-        """Retrieved an edge from the graph.
-
-        Given an edge's source and destination the corresponding
-        Edge instance(s) will be returned.
+    def get_edge(self, src, dst):
+        """Return edges with from node `src` to node `dst`.
 
         If one or more edges exist with that source and destination
-        a list of Edge instances is returned.
-        An empty list is returned otherwise.
+        return a `list` of `Edge` instances.
+        Otherwise, return an empty `list`.
         """
-
-        if isinstance( src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
-        else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
-
+        edge_points = (src, dst)
+        edge_points_reverse = tuple(reversed(edge_points))
         match = list()
 
         if edge_points in self.obj_dict['edges'] or (
