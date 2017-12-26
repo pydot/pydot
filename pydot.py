@@ -1256,24 +1256,25 @@ class Graph(Common):
         """
         edge_points = (src, dst)
         edge_points_reverse = tuple(reversed(edge_points))
-        match = list()
-
-        if edge_points in self.obj_dict['edges'] or (
-            self.get_top_graph_type() == 'graph' and
-            edge_points_reverse in self.obj_dict['edges']):
-
-            edges_obj_dict = self.obj_dict['edges'].get(
-                edge_points,
-                self.obj_dict['edges'].get( edge_points_reverse, None ))
-
-            for edge_obj_dict in edges_obj_dict:
-                match.append(
-                    Edge(edge_points[0],
-                         edge_points[1],
-                         obj_dict=edge_obj_dict))
-
-        return match
-
+        matches = list()
+        # collect edges
+        edges = self.obj_dict['edges']
+        is_directed = self.get_top_graph_type() != 'graph'
+        has_edge = edge_points in edges
+        has_reverse_edge = edge_points_reverse in edges
+        if has_edge:
+            edges_obj_dict = edges.get(edge_points, list())
+        if has_reverse_edge and not is_directed:
+            more = edges.get(edge_points_reverse, list())
+            edges_obj_dict.extend(more)
+        # output
+        if not edges_obj_dict:
+            return matches
+        for edge_obj_dict in edges_obj_dict:
+            a, b = edge_obj_dict['points']
+            e = Edge(a, b, obj_dict=edge_obj_dict)
+            matches.append(e)
+        return matches
 
     def get_edges(self):
         return self.get_edge_list()
