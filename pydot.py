@@ -15,8 +15,9 @@ try:
     import dot_parser
 except Exception as e:
     warnings.warn(
-        "Couldn't import dot_parser, "
-        "loading of dot files will not be possible.")
+        "`pydot` could not import `dot_parser`, "
+        "so `pydot` will be unable to parse DOT files. "
+        "The error was:  {e}".format(e=e))
 
 
 __author__ = 'Ero Carrera'
