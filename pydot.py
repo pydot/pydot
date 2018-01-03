@@ -13,7 +13,7 @@ import warnings
 
 try:
     import dot_parser
-except Exception as e:
+except ImportError as e:
     warnings.warn(
         "Couldn't import dot_parser, "
         "loading of dot files will not be possible.")
