@@ -551,5 +551,5 @@ def parse_dot_data(s):
         print(
             err.line +
             " "*(err.column-1) + "^" +
-            err)
+            str(err))
         return None
