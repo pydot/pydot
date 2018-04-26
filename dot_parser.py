@@ -471,7 +471,7 @@ def graph_definition():
 
         node_id = (ID + Optional(port))
         a_list = OneOrMore(ID + Optional(equals + righthand_id) +
-            Optional(comma.suppress())).setName("a_list")
+            Optional((semi | comma).suppress())).setName("a_list")
 
         attr_list = OneOrMore(lbrack.suppress() + Optional(a_list) +
             rbrack.suppress()).setName("attr_list")
