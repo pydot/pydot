@@ -1139,6 +1139,8 @@ class Graph(Common):
         An empty list is returned otherwise.
         """
 
+        name = quote_if_necessary(name)
+
         match = list()
 
         if name in self.obj_dict['nodes']:
@@ -1260,11 +1262,14 @@ class Graph(Common):
         """
 
         if isinstance( src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
+            src = quote_if_necessary(src_or_list[0])
+            dst = quote_if_necessary(src_or_list[1])
         else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
+            src = quote_if_necessary(src_or_list)
+            dst = quote_if_necessary(dst)
+
+        edge_points = tuple(src, dst)
+        edge_points_reverse = tuple(dst, src)
 
         match = list()
 
