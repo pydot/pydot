@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 import copy
 import io
+import errno
 import os
 import re
 import subprocess
@@ -1860,7 +1861,7 @@ class Dot(Graph):
                 shell=False,
                 stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         except OSError as e:
-            if e.errno == os.errno.ENOENT:
+            if e.errno == errno.ENOENT:
                 args = list(e.args)
                 args[1] = '"{prog}" not found in path.'.format(
                     prog=prog)
