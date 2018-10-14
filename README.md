@@ -11,7 +11,7 @@ About
   - is written in pure Python,
 
 and [`networkx`][3] can convert its graphs to `pydot`.
-Development occurs at [github][11] (under branch `dev`),
+Development occurs at [GitHub][11] (under branch `dev`),
 where you can report issues and contribute code.
 
 
