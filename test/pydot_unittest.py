@@ -295,15 +295,15 @@ class TestGraphAPI(unittest.TestCase):
 
         self._reset_graphs()
 
-        names = set([ 'node_%05d' % i for i in range(10**3) ])
+        names = { 'node_%05d' % i for i in range(10**3) }
 
         for name in names:
 
             self.graph_directed.add_node( pydot.Node(name, label=name) )
 
         self.assertEqual(
-            set([n.get_name()
-                 for n in self.graph_directed.get_nodes()]), names)
+            {n.get_name()
+                 for n in self.graph_directed.get_nodes()}, names)
 
 
     def test_executable_not_found_exception(self):
