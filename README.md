@@ -44,12 +44,12 @@ License
 
 Distributed under an [MIT license][10].
 
-[1]: http://www.graphviz.org
+[1]: https://www.graphviz.org
 [2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [3]: https://github.com/networkx/networkx
 [4]: https://pypi.python.org/pypi
 [5]: https://github.com/pypa/pip
-[6]: http://pyparsing.wikispaces.com/
+[6]: https://github.com/pyparsing/pyparsing
 [7]: https://en.wikipedia.org/wiki/Package_manager
 [8]: https://www.macports.org
 [9]: https://github.com/ellson/graphviz

@@ -1,25 +1,25 @@
 digraph G {
 
-  URL="http://www.graphviz.org/doc/info/output.html"
+  URL="https://www.graphviz.org/doc/info/output.html"
   label=output
-  lang [ URL="http://www.graphviz.org/doc/info/lang.html" ]
+  lang [ URL="https://www.graphviz.org/doc/info/lang.html" ]
    colors [
   style=filled
   fillcolor=lightblue
-  URL="http://www.graphviz.org/doc/info/output.html"
-label=<<table href="http://www.graphviz.org/doc/info/colors.html"><tr><td BGCOLOR="green">colors</td></tr></table>>];
+  URL="https://www.graphviz.org/doc/info/output.html"
+label=<<table href="https://www.graphviz.org/doc/info/colors.html"><tr><td BGCOLOR="green">colors</td></tr></table>>];
 
   subgraph cluster0 {
      style=filled
      fillcolor=yellow
-     URL="http://www.graphviz.org/doc/info/arrows.html"
+     URL="https://www.graphviz.org/doc/info/arrows.html"
      label=arrows
      command [ style=filled
         fillcolor=grey
-        URL="http://www.graphviz.org/doc/info/command.html" ]
+        URL="https://www.graphviz.org/doc/info/command.html" ]
      name [ URL="\G \N"]
   }
-  lang ->  command [ URL="http://www.graphviz.org/doc/info/shapes.html" 
+  lang ->  command [ URL="https://www.graphviz.org/doc/info/shapes.html"
   ]
   lang -> colors [ URL="\E" edgetooltip=self ]
   lang -> size [ URL="headurl" edgetooltip=headurl headlabel=size headULR=headsize]
