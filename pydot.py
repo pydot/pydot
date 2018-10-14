@@ -80,7 +80,7 @@ CLUSTER_ATTRIBUTES = { 'K', 'URL', 'bgcolor', 'color', 'colorscheme',
 
 
 #
-# Extented version of ASPN's Python Cookbook Recipe:
+# Extended version of ASPN's Python Cookbook Recipe:
 # Frozen dictionaries.
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/414283
 #
