@@ -375,7 +375,4 @@ if __name__ == '__main__':
     check_path()
     test_dir = os.path.dirname(sys.argv[0])
     print('The tests are using `pydot` from:  {pd}'.format(pd=pydot))
-    if sys.version_info >= (2, 7):
-        unittest.main(verbosity=2)
-    else:
-        unittest.main()
+    unittest.main(verbosity=2)
