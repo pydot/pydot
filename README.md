@@ -1,4 +1,5 @@
-[![Build Status][build_img]][travis]
+[![Build Status](https://www.travis-ci.com/pydot/pydot.svg?branch=master)](https://www.travis-ci.com/pydot/pydot)
+[![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
 
 
 About
@@ -55,5 +56,3 @@ Distributed under an [MIT license][10].
 [9]: https://github.com/ellson/graphviz
 [10]: https://github.com/pydot/pydot/blob/master/LICENSE
 [11]: https://github.com/pydot/pydot
-[build_img]: https://travis-ci.org/erocarrera/pydot.svg?branch=master
-[travis]: https://travis-ci.org/erocarrera/pydot
