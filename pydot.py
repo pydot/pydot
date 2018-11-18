@@ -20,7 +20,7 @@ except Exception as e:
 
 
 __author__ = 'Ero Carrera'
-__version__ = '1.2.5'
+__version__ = '1.3.0.dev0'
 __license__ = 'MIT'
 
 
