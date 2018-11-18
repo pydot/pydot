@@ -31,7 +31,7 @@ else:
     str_type = basestring
 
 
-GRAPH_ATTRIBUTES = set( ['Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
+GRAPH_ATTRIBUTES = { 'Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
     'center', 'charset', 'clusterrank', 'colorscheme', 'comment', 'compound',
     'concentrate', 'defaultdist', 'dim', 'dimen', 'diredgeconstraints',
     'dpi', 'epsilon', 'esep', 'fontcolor', 'fontname', 'fontnames',
@@ -46,10 +46,10 @@ GRAPH_ATTRIBUTES = set( ['Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
     'showboxes', 'size', 'smoothing', 'sortv', 'splines', 'start',
     'stylesheet', 'target', 'truecolor', 'viewport', 'voro_margin',
     # for subgraphs
-    'rank' ] )
+    'rank'  }
 
 
-EDGE_ATTRIBUTES = set( ['URL', 'arrowhead', 'arrowsize', 'arrowtail',
+EDGE_ATTRIBUTES = { 'URL', 'arrowhead', 'arrowsize', 'arrowtail',
     'color', 'colorscheme', 'comment', 'constraint', 'decorate', 'dir',
     'edgeURL', 'edgehref', 'edgetarget', 'edgetooltip', 'fontcolor',
     'fontname', 'fontsize', 'headURL', 'headclip', 'headhref', 'headlabel',
@@ -60,10 +60,10 @@ EDGE_ATTRIBUTES = set( ['URL', 'arrowhead', 'arrowsize', 'arrowtail',
     'nojustify', 'penwidth', 'pos', 'samehead', 'sametail', 'showboxes',
     'style', 'tailURL', 'tailclip', 'tailhref', 'taillabel', 'tailport',
     'tailtarget', 'tailtooltip', 'target', 'tooltip', 'weight',
-    'rank' ] )
+    'rank'  }
 
 
-NODE_ATTRIBUTES = set( ['URL', 'color', 'colorscheme', 'comment',
+NODE_ATTRIBUTES = { 'URL', 'color', 'colorscheme', 'comment',
     'distortion', 'fillcolor', 'fixedsize', 'fontcolor', 'fontname',
     'fontsize', 'group', 'height', 'id', 'image', 'imagescale', 'label',
     'labelloc', 'layer', 'margin', 'nojustify', 'orientation', 'penwidth',
@@ -71,13 +71,13 @@ NODE_ATTRIBUTES = set( ['URL', 'color', 'colorscheme', 'comment',
     'shape', 'shapefile', 'showboxes', 'sides', 'skew', 'sortv', 'style',
     'target', 'tooltip', 'vertices', 'width', 'z',
     # The following are attributes dot2tex
-    'texlbl',  'texmode' ] )
+    'texlbl',  'texmode'  }
 
 
-CLUSTER_ATTRIBUTES = set( ['K', 'URL', 'bgcolor', 'color', 'colorscheme',
+CLUSTER_ATTRIBUTES = { 'K', 'URL', 'bgcolor', 'color', 'colorscheme',
     'fillcolor', 'fontcolor', 'fontname', 'fontsize', 'label', 'labeljust',
     'labelloc', 'lheight', 'lp', 'lwidth', 'nojustify', 'pencolor',
-    'penwidth', 'peripheries', 'sortv', 'style', 'target', 'tooltip'] )
+    'penwidth', 'peripheries', 'sortv', 'style', 'target', 'tooltip' }
 
 
 #
@@ -1818,9 +1818,9 @@ class Dot(Graph):
           then you may want to give the absolute path to the
           executable (for example, to `dot.exe`) in `prog`.
         """
-        default_names = set([
+        default_names = {
             'dot', 'twopi', 'neato',
-            'circo', 'fdp', 'sfdp'])
+            'circo', 'fdp', 'sfdp'}
         if prog is None:
             prog = self.prog
         assert prog is not None
