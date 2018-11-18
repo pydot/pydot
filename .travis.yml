@@ -1,3 +1,4 @@
+if: tag IS present OR type = pull_request OR (branch = master AND type = push)   # we only CI the master, tags and PRs
 language: python
 
 python:
