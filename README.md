@@ -53,7 +53,7 @@ Distributed under an [MIT license][10].
 [7]: https://en.wikipedia.org/wiki/Package_manager
 [8]: https://www.macports.org
 [9]: https://github.com/ellson/graphviz
-[10]: https://github.com/erocarrera/pydot/blob/master/LICENSE
-[11]: https://github.com/erocarrera/pydot
+[10]: https://github.com/pydot/pydot/blob/master/LICENSE
+[11]: https://github.com/pydot/pydot
 [build_img]: https://travis-ci.org/erocarrera/pydot.svg?branch=master
 [travis]: https://travis-ci.org/erocarrera/pydot
