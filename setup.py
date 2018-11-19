@@ -27,7 +27,7 @@ setup(
     author_email='ero@dkbza.org',
     maintainer='Ioannis Filippidis',
     maintainer_email='jfilippidis@gmail.com',
-    url='https://github.com/erocarrera/pydot',
+    url='https://github.com/pydot/pydot',
     license='MIT',
     keywords='graphviz dot graphs visualization',
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
