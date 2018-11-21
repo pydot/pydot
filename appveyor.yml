@@ -1,0 +1,57 @@
+# Appveyor, continuous integration for Windows
+# Most of the config comes from:
+# * https://gitlab.com/betse/betse/raw/master/appveyor.yml
+
+version: '{branch}-{build}'
+
+shallow_clone: true
+
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
+
+branches:
+  only:
+  - master
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+environment:
+
+  matrix:
+    - JOB: "2.7 32-bit"
+      PYTHON_VERSION: 2.7
+      MINICONDA_DIRNAME: "C:\\Miniconda"
+
+    - JOB: "3.6 64-bit"
+      PYTHON_VERSION: 3.6
+      MINICONDA_DIRNAME: "C:\\Miniconda36-x64"
+
+    - JOB: "3.7 64-bit"
+      PYTHON_VERSION: 3.7
+      MINICONDA_DIRNAME: "C:\\Miniconda37-x64"
+
+init:
+  - "ECHO %PYTHON_VERSION$ %MINICONDA_DIRNAME%"
+
+install:
+  # Make sure that python and python-related scripts are run from miniconda-specific
+  # python installation
+  - cmd: set "PATH=%MINICONDA_DIRNAME%;%MINICONDA_DIRNAME%\\Scripts;%PATH%"
+  - cmd: conda config --set always_yes true
+  - cmd: conda info --all
+
+  # Create and configure an empty Anaconda environment specific to this Python version.
+  - cmd: conda create --quiet --name conda-env-%PYTHON_VERSION% python=%PYTHON_VERSION%
+  - cmd: activate conda-env-%PYTHON_VERSION%
+  - cmd: conda config --add channels anaconda
+  - cmd: conda install --quiet --file requirements-conda.txt
+  - cmd: python setup.py develop
+
+
+# Tell AppVeyor this is not .NET project
+build: off
+
+test_script:
+  - cd test
+  - python pydot_unittest.py
