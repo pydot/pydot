@@ -1,0 +1,3 @@
+graphviz >=2.38.0
+pyparsing >=2.0.1
+chardet

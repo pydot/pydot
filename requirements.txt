@@ -1,4 +1,2 @@
 # dev
 chardet
-coveralls
-nose
