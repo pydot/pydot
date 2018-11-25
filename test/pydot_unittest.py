@@ -21,7 +21,7 @@ import pydot
 import unittest
 
 
-DOT_BINARY_PATH = 'dot'
+TEST_PROGRAM = 'dot'
 TESTS_DIR_1 = 'my_tests'
 TESTS_DIR_2 = 'graphs'
 
@@ -141,19 +141,16 @@ class TestGraphAPI(unittest.TestCase):
 
 
     def test_graph_with_shapefiles(self):
-
-        shapefile_dir = os.path.join(test_dir,
-                                     'from-past-to-future')
+        shapefile_dir = os.path.join(test_dir, 'from-past-to-future')
         # image files are omitted from sdist
         if not os.path.isdir(shapefile_dir):
             warnings.warn('Skipping tests that involve images, '
                           'they can be found in the `git` repository.')
             return
-        dot_file = os.path.join(shapefile_dir,
-                                'from-past-to-future.dot')
+        dot_file = os.path.join(shapefile_dir, 'from-past-to-future.dot')
 
 
-        pngs = dot_files = [
+        pngs = [
             os.path.join(shapefile_dir, fname) for
             fname in os.listdir(shapefile_dir)
             if fname.endswith('.png')]
@@ -185,20 +182,22 @@ class TestGraphAPI(unittest.TestCase):
 
     def _render_with_graphviz(self, filename, encoding):
         with io.open(filename, 'rt', encoding=encoding) as stdin:
-            p = subprocess.Popen(
-                [DOT_BINARY_PATH, '-Tjpe'],
-                cwd=os.path.dirname(filename),
+            stdout_data, stderr_data, process = pydot.call_graphviz(
+                program=TEST_PROGRAM,
+                arguments=['-Tjpe', ],
+                working_dir=os.path.dirname(filename),
                 stdin=stdin,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-        stdout_data, stderr_data = p.communicate()
+            )
+
+        assert process.returncode == 0, stderr_data
+
         return sha256(stdout_data).hexdigest()
 
     def _render_with_pydot(self, filename, encoding):
         c = pydot.graph_from_dot_file(filename, encoding=encoding)
         sha = ''
         for g in c:
-            jpe_data = g.create(format='jpe', encoding=encoding)
+            jpe_data = g.create(prog=TEST_PROGRAM, format='jpe', encoding=encoding)
             sha += sha256(jpe_data).hexdigest()
         return sha
 
@@ -228,8 +227,8 @@ class TestGraphAPI(unittest.TestCase):
             os.sys.stdout.write('#')
             os.sys.stdout.flush()
             pydot_sha = self._render_with_pydot(fpath, encoding)
-            pydot_sha = self._render_with_graphviz(fpath, encoding)
-            assert pydot_sha == pydot_sha, (pydot_sha, pydot_sha)
+            graphviz_sha = self._render_with_graphviz(fpath, encoding)
+            assert pydot_sha == graphviz_sha, (pydot_sha, graphviz_sha)
 
     def test_numeric_node_id(self):
 
