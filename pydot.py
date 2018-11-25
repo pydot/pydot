@@ -80,6 +80,66 @@ CLUSTER_ATTRIBUTES = { 'K', 'URL', 'bgcolor', 'color', 'colorscheme',
     'penwidth', 'peripheries', 'sortv', 'style', 'target', 'tooltip' }
 
 
+DEFAULT_PROGRAMS = {
+    'dot',
+    'twopi',
+    'neato',
+    'circo',
+    'fdp',
+    'sfdp',
+}
+
+
+def is_windows():
+    # type: () -> bool
+    return os.name == 'nt'
+
+
+def is_anacoda():
+    # type: () -> bool
+    return os.path.exists(os.path.join(sys.prefix, 'conda-meta'))
+
+
+def get_executable_extension():
+    # type: () -> str
+    if is_windows():
+        return '.bat' if is_anacoda() else '.exe'
+    else:
+        return ''
+
+
+def call_graphviz(program, arguments, working_dir, **kwargs):
+    # explicitly inherit `$PATH`, on Windows too,
+    # with `shell=False`
+
+    if program in DEFAULT_PROGRAMS:
+        extension = get_executable_extension()
+        program += extension
+
+    if arguments is None:
+        arguments = []
+
+    env = {
+        'PATH': os.environ.get('PATH', ''),
+        'LD_LIBRARY_PATH': os.environ.get('LD_LIBRARY_PATH', ''),
+    }
+
+    program_with_args = [program, ] + arguments
+
+    process = subprocess.Popen(
+        program_with_args,
+        env=env,
+        cwd=working_dir,
+        shell=False,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        **kwargs
+    )
+    stdout_data, stderr_data = process.communicate()
+
+    return stdout_data, stderr_data, process
+
+
 #
 # Extended version of ASPN's Python Cookbook Recipe:
 # Frozen dictionaries.
@@ -1759,7 +1819,6 @@ class Dot(Graph):
                 f.write(s)
         return True
 
-
     def create(self, prog=None, format='ps', encoding=None):
         """Creates and returns a binary image for the graph.
 
@@ -1818,24 +1877,23 @@ class Dot(Graph):
           then you may want to give the absolute path to the
           executable (for example, to `dot.exe`) in `prog`.
         """
-        default_names = {
-            'dot', 'twopi', 'neato',
-            'circo', 'fdp', 'sfdp'}
+
         if prog is None:
             prog = self.prog
+
         assert prog is not None
+
         if isinstance(prog, (list, tuple)):
             prog, args = prog[0], prog[1:]
         else:
             args = []
-        if os.name == 'nt' and prog in default_names:
-            if not prog.endswith('.exe'):
-                prog += '.exe'
+
         # temp file
         tmp_fd, tmp_name = tempfile.mkstemp()
         os.close(tmp_fd)
         self.write(tmp_name, encoding=encoding)
         tmp_dir = os.path.dirname(tmp_name)
+
         # For each of the image files...
         for img in self.shape_files:
             # Get its data
@@ -1847,19 +1905,15 @@ class Dot(Graph):
             f = open(os.path.join(tmp_dir, os.path.basename(img)), 'wb')
             f.write(f_data)
             f.close()
-        # explicitly inherit `$PATH`, on Windows too,
-        # with `shell=False`
-        env = dict()
-        env['PATH'] = os.environ.get('PATH', '')
-        env['LD_LIBRARY_PATH'] = os.environ.get('LD_LIBRARY_PATH', '')
-        cmdline = [prog, '-T' + format] + args + [tmp_name]
+
+        arguments = ['-T{}'.format(format), ] + args + [tmp_name]
+
         try:
-            p = subprocess.Popen(
-                cmdline,
-                env=env,
-                cwd=tmp_dir,
-                shell=False,
-                stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            stdout_data, stderr_data, process = call_graphviz(
+                program=prog,
+                arguments=arguments,
+                working_dir=tmp_dir,
+            )
         except OSError as e:
             if e.errno == errno.ENOENT:
                 args = list(e.args)
@@ -1868,19 +1922,22 @@ class Dot(Graph):
                 raise OSError(*args)
             else:
                 raise
-        stdout_data, stderr_data = p.communicate()
+
         # clean file litter
         for img in self.shape_files:
             os.unlink(os.path.join(tmp_dir, os.path.basename(img)))
+
         os.unlink(tmp_name)
-        # print(stdout_data)
-        if p.returncode != 0:
+
+        if process.returncode != 0:
             print(
                 ('{cmdline} return code: {c}\n\n'
                  'stdout, stderr:\n {out}\n{err}\n').format(
                      cmdline=cmdline,
-                     c=p.returncode,
+                     c=process.returncode,
                      out=stdout_data,
                      err=stderr_data))
-        assert p.returncode == 0, p.returncode
+
+        assert process.returncode == 0, process.returncode
+
         return stdout_data
