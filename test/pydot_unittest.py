@@ -228,8 +228,8 @@ class TestGraphAPI(unittest.TestCase):
             os.sys.stdout.write('#')
             os.sys.stdout.flush()
             pydot_sha = self._render_with_pydot(fpath, encoding)
-            pydot_sha = self._render_with_graphviz(fpath, encoding)
-            assert pydot_sha == pydot_sha, (pydot_sha, pydot_sha)
+            graphviz_sha = self._render_with_graphviz(fpath, encoding)
+            assert pydot_sha == graphviz_sha, (pydot_sha, graphviz_sha)
 
     def test_numeric_node_id(self):
 
