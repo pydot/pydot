@@ -14,7 +14,7 @@ import re
 CURRENT_DIR = os.path.dirname(__file__)
 
 
-def get_long_description() -> str:
+def get_long_description():
     readme_path = os.path.join(CURRENT_DIR, "README.md")
     with codecs.open(readme_path, encoding="utf8") as ld_file:
         return ld_file.read()
@@ -23,7 +23,7 @@ def get_long_description() -> str:
 def get_version():
     pydot_py = os.path.join(CURRENT_DIR, 'pydot.py')
     _version_re = re.compile(r'__version__\s+=\s+(?P<version>.*)')
-    with open(pydot_py, 'r', encoding='utf8') as f:
+    with codecs.open(pydot_py, 'r', encoding='utf8') as f:
         match = _version_re.search(f.read())
         version = match.group('version') if match is not None else '"unknown"'
     return str(ast.literal_eval(version))
