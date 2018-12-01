@@ -4,19 +4,20 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+
+import codecs
+import os
+
 import pydot
 
 
-long_description = '''
-A Python interface to GraphViz and the DOT language.
-
-This package includes an interface to GraphViz [1], with classes to represent
-graphs and dump them in the DOT language [2], and a parser from DOT.
+CURRENT_DIR = os.path.dirname(__file__)
 
 
-[1] https://www.graphviz.org
-[2] https://www.graphviz.org/doc/info/lang.html
-'''
+def get_long_description() -> str:
+    readme_path = os.path.join(CURRENT_DIR, "README.md")
+    with codecs.open(readme_path, encoding="utf8") as ld_file:
+        return ld_file.read()
 
 
 setup(
@@ -47,7 +48,8 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Visualization',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    long_description=long_description,
+    long_description=get_long_description(),
+    long_description_content_type="text/markdown",
     py_modules=['pydot', 'dot_parser'],
     install_requires=['pyparsing>=2.1.4'],
     tests_require=['chardet'])
