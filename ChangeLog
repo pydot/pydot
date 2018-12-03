@@ -11,10 +11,7 @@
 ------------------
 
 - Installation of pydot in conda env on Windows directly supported
-
 - Fixed comparing of SHA hash in regression tests (which fail now)
-
-- Nothing changed yet.
 
 
 1.3.0 (2018-11-19)
