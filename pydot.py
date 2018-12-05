@@ -661,7 +661,7 @@ class Node(Common):
 
         node_attr = list()
 
-        for attr in self.obj_dict['attributes']:
+        for attr in sorted(self.obj_dict['attributes']):
             value = self.obj_dict['attributes'][attr]
             if value == '':
                 value = '""'
@@ -703,7 +703,7 @@ class Edge(Common):
     All the attributes defined in the Graphviz dot language should
     be supported.
 
- 	Attributes can be set through the dynamically generated methods:
+        Attributes can be set through the dynamically generated methods:
 
      set_[attribute name], i.e. set_label, set_fontname
 
@@ -856,7 +856,7 @@ class Edge(Common):
 
         edge_attr = list()
 
-        for attr in self.obj_dict['attributes']:
+        for attr in sorted(self.obj_dict['attributes']):
             value = self.obj_dict['attributes'][attr]
             if value == '':
                 value = '""'
@@ -1494,7 +1494,7 @@ class Graph(Common):
             name=self.obj_dict['name'])
         graph.append(s)
 
-        for attr in self.obj_dict['attributes']:
+        for attr in sorted(self.obj_dict['attributes']):
 
             if self.obj_dict['attributes'].get(attr, None) is not None:
 
