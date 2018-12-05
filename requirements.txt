@@ -1,2 +1,4 @@
 # dev
 chardet
+mock
+pytest

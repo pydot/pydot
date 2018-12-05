@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-"""Installation script."""
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
 import ast
 import codecs
 import os
 import re
+import sys
+
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -27,6 +25,25 @@ def get_version():
         match = _version_re.search(f.read())
         version = match.group('version') if match is not None else '"unknown"'
     return str(ast.literal_eval(version))
+
+
+class PyTest(TestCommand):
+    # Allows to pass options to pytest like this:
+    # python setup.py test -a "--durations=5"
+    user_options = [('pytest-args=', 'a', 'Arguments to pass to pytest')]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = ''
+
+    def run_tests(self):
+        import shlex
+
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+
+        errno = pytest.main(shlex.split(self.pytest_args))
+        sys.exit(errno)
 
 
 setup(
@@ -61,4 +78,6 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=['pydot', 'dot_parser'],
     install_requires=['pyparsing>=2.1.4'],
-    tests_require=['chardet'])
+    tests_require=['pytest', 'chardet', 'mock'],
+    cmdclass={'pytest': PyTest},
+)

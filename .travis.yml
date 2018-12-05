@@ -27,7 +27,7 @@ install:
 
 script:
   - cd test/
-  - python pydot_unittest.py
+  - pytest -vvv
 
 # after_success:
 #   - coveralls
