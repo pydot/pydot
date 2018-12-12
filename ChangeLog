@@ -1,10 +1,11 @@
 # `pydot` changelog
 
 
-1.4.1 (unreleased)
+1.4.1 (2018-12-12)
 ------------------
 
-- Nothing changed yet.
+- Make graph, edge, node attributes order deterministic
+- Fix string formatting after catching error (#201)
 
 
 1.4.0 (2018-12-01)
