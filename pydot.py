@@ -1930,13 +1930,17 @@ class Dot(Graph):
         os.unlink(tmp_name)
 
         if process.returncode != 0:
-            print(
-                ('{cmdline} return code: {c}\n\n'
-                 'stdout, stderr:\n {out}\n{err}\n').format(
-                     cmdline=cmdline,
-                     c=process.returncode,
-                     out=stdout_data,
-                     err=stderr_data))
+            message = (
+                '"{prog}" with args {arguments} returned code: {code}\n\n'
+                'stdout, stderr:\n {out}\n{err}\n'
+            ).format(
+                prog=prog,
+                arguments=arguments,
+                code=process.returncode,
+                out=stdout_data,
+                err=stderr_data,
+            )
+            print(message)
 
         assert process.returncode == 0, process.returncode
 
