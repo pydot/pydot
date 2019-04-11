@@ -122,6 +122,7 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
     env = {
         'PATH': os.environ.get('PATH', ''),
         'LD_LIBRARY_PATH': os.environ.get('LD_LIBRARY_PATH', ''),
+        'SYSTEMROOT': os.environ.get('SYSTEMROOT', ''),
     }
 
     program_with_args = [program, ] + arguments
