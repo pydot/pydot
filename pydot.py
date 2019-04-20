@@ -95,7 +95,7 @@ def is_windows():
     return os.name == 'nt'
 
 
-def is_anacoda():
+def is_anaconda():
     # type: () -> bool
     return os.path.exists(os.path.join(sys.prefix, 'conda-meta'))
 
@@ -103,7 +103,7 @@ def is_anacoda():
 def get_executable_extension():
     # type: () -> str
     if is_windows():
-        return '.bat' if is_anacoda() else '.exe'
+        return '.bat' if is_anaconda() else '.exe'
     else:
         return ''
 
@@ -245,7 +245,7 @@ def needs_quotes( s ):
 
 
 def quote_if_necessary(s):
-    """Enclode attribute value in quotes, if needed."""
+    """Enclose attribute value in quotes, if needed."""
     if isinstance(s, bool):
         if s is True:
             return 'True'
@@ -554,7 +554,7 @@ class Error(Exception):
 
 
 class InvocationException(Exception):
-    """Indicate ploblem while running any GraphViz executable.
+    """Indicate problem while running any GraphViz executable.
     """
     def __init__(self, value):
         self.value = value
