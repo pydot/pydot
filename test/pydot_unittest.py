@@ -194,11 +194,11 @@ class TestGraphAPI(unittest.TestCase):
 
     def _render_with_pydot(self, filename, encoding):
         c = pydot.graph_from_dot_file(filename, encoding=encoding)
-        sha = ''
+        jpe_data = bytearray()
         for g in c:
-            jpe_data = g.create(prog=TEST_PROGRAM, format='jpe', encoding=encoding)
-            sha += sha256(jpe_data).hexdigest()
-        return sha
+            jpe_data.extend(g.create(prog=TEST_PROGRAM, format='jpe',
+                                     encoding=encoding))
+        return sha256(jpe_data).hexdigest()
 
     def test_my_regression_tests(self):
         path = os.path.join(test_dir, TESTS_DIR_1)
