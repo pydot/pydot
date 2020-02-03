@@ -430,6 +430,14 @@ class Common(object):
         self.obj_dict = state
 
 
+    def __getitem__(self, name):
+        return self.__get_attribute__(name)
+
+
+    def __setitem__(self, name, value):
+        return self.set(name, value)
+
+
     def __get_attribute__(self, attr):
         """Look for default attributes for this node"""
 
