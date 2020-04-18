@@ -4,7 +4,7 @@
 1.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix: Prevent TypeError in handling of DOT parser error (#176)
 
 
 1.4.1 (2018-12-12)
