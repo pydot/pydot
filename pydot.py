@@ -593,6 +593,12 @@ class Node(Common):
 
             self.obj_dict = dict()
 
+            # It's only `style` attribute that maybe multi-valued.
+            #
+            style = attrs.get('style' )
+            if style and isinstance(style, (tuple, list)):
+                attrs[ "style" ] = ','.join(style)
+
             # Copy the attributes
             #
             self.obj_dict[ 'attributes' ] = dict( attrs )
@@ -726,7 +732,14 @@ class Edge(Common):
                   quote_if_necessary(dst))
         self.obj_dict['points'] = points
         if obj_dict is None:
+            # It's only `style` attribute that maybe multi-valued.
+            #
+            style = attrs.get('style' )
+            if style and isinstance(style, (tuple, list)):
+                attrs[ "style" ] = ','.join(style)
+
             # Copy the attributes
+            #
             self.obj_dict[ 'attributes' ] = dict( attrs )
             self.obj_dict[ 'type' ] = 'edge'
             self.obj_dict[ 'parent_graph' ] = None
