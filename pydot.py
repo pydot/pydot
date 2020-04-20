@@ -740,7 +740,7 @@ class Edge(Common):
 
             # Copy the attributes
             #
-            self.obj_dict[ 'attributes' ] = dict( attrs )
+            self.obj_dict[ 'attributes' ] = attrs
             self.obj_dict[ 'type' ] = 'edge'
             self.obj_dict[ 'parent_graph' ] = None
             self.obj_dict[ 'parent_edge_list' ] = None
