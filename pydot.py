@@ -97,7 +97,10 @@ def is_windows():
 
 def is_anaconda():
     # type: () -> bool
-    return os.path.exists(os.path.join(sys.prefix, 'conda-meta'))
+    # return os.path.exists(os.path.join(sys.prefix, 'conda-meta'))
+
+    import glob 
+    return glob.glob(os.path.join(sys.prefix, 'conda-meta\\graphviz*.json')) != []
 
 
 def get_executable_extension():
