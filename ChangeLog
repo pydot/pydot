@@ -1,10 +1,11 @@
 # `pydot` changelog
 
 
-1.4.2 (unreleased)
+x.x.x (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Drop support for Python 2 and Python <=3.4.
+- Declare support for Python 3.8.
 
 
 1.4.1 (2018-12-12)

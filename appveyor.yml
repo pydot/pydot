@@ -1,6 +1,8 @@
 # Appveyor, continuous integration for Windows
 # Most of the config comes from:
-# * https://gitlab.com/betse/betse/raw/master/appveyor.yml
+# * https://gitlab.com/betse/betse/raw/master/.appveyor.yml
+
+image: Visual Studio 2019
 
 version: '{branch}-{build}'
 
@@ -16,23 +18,25 @@ branches:
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
 
+matrix:
+  fast_finish: true
+
 environment:
 
+  # The main purpose is to catch Windows-specific issues, so just take
+  # the two extremes of the Python versions we support. Intermediate
+  # versions are tested under Linux by Travis CI already.
   matrix:
-    - JOB: "2.7 32-bit"
-      PYTHON_VERSION: 2.7
-      MINICONDA_DIRNAME: "C:\\Miniconda"
+    - JOB: "3.5 32-bit"
+      PYTHON_VERSION: 3.5
+      MINICONDA_DIRNAME: "C:\\Miniconda35"
 
-    - JOB: "3.6 64-bit"
-      PYTHON_VERSION: 3.6
-      MINICONDA_DIRNAME: "C:\\Miniconda36-x64"
-
-    - JOB: "3.7 64-bit"
-      PYTHON_VERSION: 3.7
-      MINICONDA_DIRNAME: "C:\\Miniconda37-x64"
+    - JOB: "3.8 64-bit"
+      PYTHON_VERSION: 3.8
+      MINICONDA_DIRNAME: "C:\\Miniconda38-x64"
 
 init:
-  - "ECHO %PYTHON_VERSION$ %MINICONDA_DIRNAME%"
+  - "ECHO %PYTHON_VERSION% %MINICONDA_DIRNAME%"
 
 install:
   # Make sure that python and python-related scripts are run from miniconda-specific
