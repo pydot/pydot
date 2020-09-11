@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import print_function
 import argparse
 from hashlib import sha256
+import importlib
 import io
 import os
 import pickle
@@ -345,6 +346,16 @@ class TestGraphAPI(unittest.TestCase):
         u = pydot.Node('a')
         g.add_node(u)
         g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
+
+    def test_logging_init(self):
+        with self.assertLogs('pydot', level='DEBUG') as cm:
+            importlib.reload(pydot.dot_parser)
+            importlib.reload(pydot)
+        self.assertEqual(cm.output, [
+            'DEBUG:pydot.dot_parser:pydot dot_parser module initializing',
+            'DEBUG:pydot.core:pydot core module initializing',
+            'DEBUG:pydot.core:pydot %s' % pydot.__version__,
+            ])
 
 
 def check_path():

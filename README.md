@@ -45,6 +45,41 @@ License
 
 Distributed under an [MIT license][10].
 
+
+Troubleshooting
+===============
+
+How to enable logging
+---------------------
+
+`pydot` uses Python's standard `logging` module and registers the
+following loggers:
+
+- `pydot.dot_parser`: Messages related to the parsing of DOT strings.
+- `pydot.core`: All other messages.
+
+Being a library, `pydot` does not add any handlers to its loggers, nor
+does it touch the root logger. The loggers are created with the default
+level `NOTSET`. Their implied parent logger `pydot` can be used to
+control their levels.
+
+To see the logs, assuming logging has not been configured already:
+
+    >>> import logging
+    >>> logging.basicConfig(level=logging.DEBUG)
+    >>> import pydot
+    DEBUG:pydot.dot_parser:pydot dot_parser module initializing
+    DEBUG:pydot.core:pydot core module initializing
+    DEBUG:pydot.core:pydot <version>
+
+**Warning**: When `DEBUG` level logging is enabled, `pydot` may log the
+data that it processes, such as graph contents or DOT strings. This can
+cause the log to become very large or contain sensitive information.
+
+For more options, check out the [Python logging documentation][12] and
+the [`logging_tree`][13] visualizer.
+
+
 [1]: https://www.graphviz.org
 [2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [3]: https://github.com/networkx/networkx
@@ -56,3 +91,5 @@ Distributed under an [MIT license][10].
 [9]: https://github.com/ellson/graphviz
 [10]: https://github.com/pydot/pydot/blob/master/LICENSE
 [11]: https://github.com/pydot/pydot
+[12]: https://docs.python.org/3/library/logging.html
+[13]: https://pypi.org/project/logging_tree/

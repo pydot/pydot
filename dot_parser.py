@@ -9,6 +9,7 @@ Fixes by: Ero Carrera <ero@dkbza.org>
 """
 from __future__ import division
 from __future__ import print_function
+import logging
 import sys
 
 from pyparsing import (
@@ -32,6 +33,10 @@ if PY3:
     str_type = str
 else:
     str_type = basestring
+
+
+_logger = logging.getLogger('pydot.dot_parser')
+_logger.debug('pydot dot_parser module initializing')
 
 
 class P_AttrList(object):

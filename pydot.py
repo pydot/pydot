@@ -4,6 +4,7 @@ from __future__ import print_function
 import copy
 import io
 import errno
+import logging
 import os
 import re
 import subprocess
@@ -29,6 +30,11 @@ if PY3:
     str_type = str
 else:
     str_type = basestring
+
+
+_logger = logging.getLogger('pydot.core')
+_logger.debug('pydot core module initializing')
+_logger.debug('pydot %s', __version__)
 
 
 GRAPH_ATTRIBUTES = { 'Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
