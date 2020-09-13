@@ -695,11 +695,11 @@ class Edge(Common):
 
     edge(src, dst, attribute=value, ...)
 
-    src: source node
-    dst: destination node
+    src: source node, subgraph or cluster
+    dst: destination node, subgraph or cluster
 
-    `src` and `dst` can be specified as a `Node` object,
-    or as the node's name string.
+    `src` and `dst` can be specified as a `Node`, `Subgraph` or
+    `Cluster` object, or as the name string of such a component.
 
     All the attributes defined in the Graphviz dot language should
     be supported.
@@ -719,9 +719,9 @@ class Edge(Common):
 
     def __init__(self, src='', dst='', obj_dict=None, **attrs):
         self.obj_dict = dict()
-        if isinstance(src, Node):
+        if isinstance(src, (Node, Subgraph, Cluster)):
             src = src.get_name()
-        if isinstance(dst, Node):
+        if isinstance(dst, (Node, Subgraph, Cluster)):
             dst = dst.get_name()
         points = (quote_if_necessary(src),
                   quote_if_necessary(dst))

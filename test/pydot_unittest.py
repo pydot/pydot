@@ -347,6 +347,35 @@ class TestGraphAPI(unittest.TestCase):
         g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
 
 
+    def test_edge_point_namestr(self):
+        self._reset_graphs()
+        self.graph_directed.add_edge(pydot.Edge('a', 'b'))
+        self.assertEqual(
+            self.graph_directed.get_edges()[0].to_string(), 'a -> b;')
+
+    def test_edge_point_object_node(self):
+        self._reset_graphs()
+        self.graph_directed.add_edge(pydot.Edge(pydot.Node('a'),
+            pydot.Node('b')))
+        self.assertEqual(
+            self.graph_directed.get_edges()[0].to_string(), 'a -> b;')
+
+    def test_edge_point_object_subgraph(self):
+        self._reset_graphs()
+        self.graph_directed.add_edge(pydot.Edge(pydot.Subgraph('a'),
+            pydot.Subgraph('b')))
+        self.assertEqual(
+            self.graph_directed.get_edges()[0].to_string(), 'a -> b;')
+
+    def test_edge_point_object_cluster(self):
+        self._reset_graphs()
+        self.graph_directed.add_edge(pydot.Edge(pydot.Cluster('a'),
+            pydot.Cluster('b')))
+        self.assertEqual(
+            self.graph_directed.get_edges()[0].to_string(),
+                'cluster_a -> cluster_b;')
+
+
 def check_path():
     not_check = parse_args()
     if not_check:
