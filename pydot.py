@@ -1943,6 +1943,12 @@ class Dot(Graph):
             )
             print(message)
 
-        assert process.returncode == 0, process.returncode
+        assert process.returncode == 0, (
+                '"{prog}" with args {arguments} returned code: {code}'.format(
+                    prog=prog,
+                    arguments=arguments,
+                    code=process.returncode,
+                )
+            )
 
         return stdout_data
