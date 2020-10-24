@@ -1727,7 +1727,7 @@ class Dot(Graph):
         # of output in any of the supported formats.
         for frmt in self.formats:
             def new_method(
-                    f=frmt, prog=self.prog,
+                    f=frmt, prog='dot',
                     encoding=None):
                 """Refer to docstring of method `create`."""
                 return self.create(
@@ -1737,7 +1737,7 @@ class Dot(Graph):
 
         for frmt in self.formats+['raw']:
             def new_method(
-                    path, f=frmt, prog=self.prog,
+                    path, f=frmt, prog='dot',
                     encoding=None):
                 """Refer to docstring of method `write.`"""
                 self.write(
