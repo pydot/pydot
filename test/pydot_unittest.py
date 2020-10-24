@@ -101,18 +101,38 @@ class TestGraphAPI(unittest.TestCase):
         self.assertEqual(g.get_subgraph_list()[0].get_name(),
                          s.get_name())
 
-
     def test_graph_pickling(self):
 
-
-        g = pydot.Graph()
+        g = pydot.Dot()
         s = pydot.Subgraph("foo")
         g.add_subgraph(s)
         g.add_edge( pydot.Edge('A','B') )
         g.add_edge( pydot.Edge('A','C') )
-        g.add_edge( pydot.Edge( ('D','E') ) )
+        g.add_edge( pydot.Edge('D','E') )
         g.add_node( pydot.Node( 'node!' ) )
-        pickle.dumps(g)
+        p = pickle.dumps(g)
+        g_new = pickle.loads(p)
+        self.assertEqual(g.create_png(prog=TEST_PROGRAM),
+                         g_new.create_png(prog=TEST_PROGRAM))
+        self.assertEqual(str(g), str(g_new))
+        self.assertEqual(dir(g), dir(g_new))
+        self.assertEqual(g.prog, g_new.prog)
+        self.assertEqual(g.shape_files, g_new.shape_files)
+        self.assertEqual(hasattr(g_new, 'get_bgcolor'), True)
+        self.assertIs(g.get_bgcolor.__func__, g_new.get_bgcolor.__func__)
+        self.assertEqual(hasattr(g_new, 'set_dpi'), True)
+        self.assertIs(g.set_dpi.__func__, g_new.set_dpi.__func__)
+        self.assertEqual(hasattr(g_new, 'create_dot'), True)
+        self.assertIs(g.create_dot.__func__, g_new.create_dot.__func__)
+        self.assertEqual(hasattr(g_new, 'write_png'), True)
+        self.assertIs(g.write_png.__func__, g_new.write_png.__func__)
+        self.assertEqual(hasattr(g_new, 'write_raw'), True)
+        self.assertIs(g.write_raw.__func__, g_new.write_raw.__func__)
+        pickle.loads(pickle.dumps(pydot.Graph()))
+        pickle.loads(pickle.dumps(pydot.Subgraph()))
+        pickle.loads(pickle.dumps(pydot.Cluster()))
+        pickle.loads(pickle.dumps(pydot.Edge()))
+        pickle.loads(pickle.dumps(pydot.Node()))
 
     def test_unicode_ids(self):
 

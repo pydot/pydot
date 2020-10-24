@@ -499,19 +499,6 @@ class Common(object):
     this one.
     """
 
-
-    def __getstate__(self):
-
-        dict = copy.copy(self.obj_dict)
-
-        return dict
-
-
-    def __setstate__(self, state):
-
-        self.obj_dict = state
-
-
     def __get_attribute__(self, attr):
         """Look for default attributes for this node"""
 
@@ -1766,17 +1753,6 @@ class Dot(Graph):
         self.shape_files = list()
 
         self.prog = 'dot'
-
-    def __getstate__(self):
-
-        dict = copy.copy(self.obj_dict)
-
-        return dict
-
-    def __setstate__(self, state):
-
-        self.obj_dict = state
-
 
     def set_shape_files(self, file_paths):
         """Add the paths of the required image files.
