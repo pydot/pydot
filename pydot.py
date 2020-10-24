@@ -534,14 +534,14 @@ class Common(object):
 
             # Generate all the Setter methods.
             #
-            self.__setattr__(
+            setattr(self,
                 'set_'+attr,
                 lambda x, a=attr :
                     self.obj_dict['attributes'].__setitem__(a, x) )
 
             # Generate all the Getter methods.
             #
-            self.__setattr__(
+            setattr(self,
                 'get_'+attr, lambda a=attr : self.__get_attribute__(a))
 
 
@@ -1733,7 +1733,7 @@ class Dot(Graph):
                 return self.create(
                     format=f, prog=prog, encoding=encoding)
             name = 'create_{fmt}'.format(fmt=frmt)
-            self.__setattr__(name, new_method)
+            setattr(self, name, new_method)
 
         for frmt in self.formats+['raw']:
             def new_method(
@@ -1744,7 +1744,7 @@ class Dot(Graph):
                     path, format=f, prog=prog,
                     encoding=encoding)
             name = 'write_{fmt}'.format(fmt=frmt)
-            self.__setattr__(name, new_method)
+            setattr(self, name, new_method)
 
     def __getstate__(self):
 
