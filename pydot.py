@@ -534,15 +534,15 @@ class Common(object):
 
             # Generate all the Setter methods.
             #
-            setattr(self,
-                'set_'+attr,
-                lambda x, a=attr :
-                    self.obj_dict['attributes'].__setitem__(a, x) )
+            def func(x, a=attr):
+                self.obj_dict['attributes'].__setitem__(a, x)
+            setattr(self, 'set_'+attr, func)
 
             # Generate all the Getter methods.
             #
-            setattr(self,
-                'get_'+attr, lambda a=attr : self.__get_attribute__(a))
+            def func(a=attr):  # pylint: disable=function-redefined
+                return self.__get_attribute__(a)
+            setattr(self, 'get_'+attr, func)
 
 
 
