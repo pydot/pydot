@@ -1,6 +1,9 @@
 if: tag IS present OR type = pull_request OR (branch = master AND type = push)   # we only CI the master, tags and PRs
 language: python
 
+arch:
+  - amd64
+  - ppc64le
 python:
   - "2.7"
   - "3.4"
@@ -13,6 +16,11 @@ matrix:
     - python: 3.7
       dist: xenial
       sudo: true
+
+    - python: 3.7
+      dist: xenial
+      sudo: true
+      arch: ppc64le
 
 addons:
   apt:
