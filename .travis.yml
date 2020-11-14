@@ -1,12 +1,25 @@
 if: tag IS present OR type = pull_request OR (branch = master AND type = push)   # we only CI the master, tags and PRs
 language: python
 
+# Main test jobs: The lowest and highest current Python versions.
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7"
+  - 3.6
+  - 3.9
+
+# List additional test configurations individually, instead of using
+# matrix expansion, to prevent an exponential growth of test jobs.
+matrix:
+  include:
+    # Python versions that are EOL, but we still support.
+    # PY2.7 here should bring out any PY3.5 incompatibilities as well.
+    - python: 2.7
+      arch: amd64
+    # pydot itself should be architecture-independent. Still, some
+    # limited testing on other architectures to catch corner cases.
+    - python: 2.7
+      arch: ppc64le
+    - python: 3.9
+      arch: ppc64le
 
 addons:
   apt:
