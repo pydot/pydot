@@ -138,6 +138,36 @@ class TestGraphAPI(unittest.TestCase):
         self.assertEqual( g2.get_edges()[0].get_source(), node1 )
         self.assertEqual( g2.get_edges()[0].get_destination(), node2 )
 
+    def test_graph_simplify(self):
+        # Fail example: pydot 1.0.2. GH pydot/pydot#92 OP patch 1.
+        g = pydot.Graph()
+        g.add_edge(pydot.Edge('a', 'b'))
+        g.add_edge(pydot.Edge('a', 'b'))
+        g.add_edge(pydot.Edge('b', 'a'))
+        g.add_edge(pydot.Edge('b', 'a'))
+        test_combinations = [
+            ('graph', False,
+             'graph G { a -- b; a -- b; b -- a; b -- a; }'),
+            ('graph', True,
+             'graph G { a -- b; }'),
+            ('digraph', False,
+             'digraph G { a -> b; a -> b; b -> a; b -> a; }'),
+            ('digraph', True,
+             'digraph G { a -> b; b -> a; }')]
+        expected_concat = observed_concat = ''
+        for (graph_type, simplify, expected) in test_combinations:
+            expected_concat += 'graph_type %s, simplify %s: %s\n' % (
+                               graph_type, simplify, expected)
+            g.set_type(graph_type)
+            g.set_simplify(simplify)
+            try:
+                observed = ' '.join(g.to_string().split())
+            except (NameError, TypeError) as e:
+                observed = '%s: %s' % (type(e).__name__, e)
+            observed_concat += 'graph_type %s, simplify %s: %s\n' % (
+                               graph_type, simplify, observed)
+        self.maxDiff = None
+        self.assertMultiLineEqual(expected_concat, observed_concat)
 
     def test_graph_with_shapefiles(self):
         shapefile_dir = os.path.join(test_dir, 'from-past-to-future')
