@@ -794,7 +794,12 @@ class Edge(Common):
 
         return False
 
-
+    if not PY3:
+        def __ne__(self, other):
+            result = self.__eq__(other)
+            if result is NotImplemented:
+                return NotImplemented
+            return not result
 
     def parse_node_ref(self, node_str):
 

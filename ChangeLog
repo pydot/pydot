@@ -4,6 +4,7 @@
 1.4.2 (unreleased)
 ------------------
 
+- Edge not-equal-comparison on Python 2 now same as on Python 3 (#248)
 - Fix: Prevent TypeError in handling of DOT parser error (#176)
 
 

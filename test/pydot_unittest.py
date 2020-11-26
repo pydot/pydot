@@ -346,6 +346,14 @@ class TestGraphAPI(unittest.TestCase):
         g.add_node(u)
         g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
 
+    def test_edge_equality_basics_3_same_points_not_not_equal(self):
+        # Fail example: pydot 1.4.1 on Python 2.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        self.assertFalse(e1 != e2)
 
     def test_edge_point_namestr(self):
         self._reset_graphs()
