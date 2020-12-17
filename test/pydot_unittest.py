@@ -413,6 +413,26 @@ class TestGraphAPI(unittest.TestCase):
             self.graph_directed.get_edges()[0].to_string(),
                 'cluster_a -> cluster_b;')
 
+    def test_graph_from_adjacency_matrix(self):
+        g = pydot.graph_from_adjacency_matrix(
+            [[0, 1, 0], [1, 0, 0], [0, 1, 1]], directed=True)
+        s = ' '.join(g.to_string().split())
+        self.assertEqual(s, 'digraph G { 1 -> 2; 2 -> 1; 3 -> 2; 3 -> 3; }')
+        g = pydot.graph_from_adjacency_matrix(
+            [[0, 1, 0], [1, 0, 0], [0, 0, 1]], directed=False)
+        s = ' '.join(g.to_string().split())
+        self.assertEqual(s, 'graph G { 1 -- 2; 3 -- 3; }')
+
+    def test_graph_from_incidence_matrix(self):
+        g = pydot.graph_from_incidence_matrix(
+            [[-1, 1, 0], [1, -1, 0], [0, 1, -1]], directed=True)
+        s = ' '.join(g.to_string().split())
+        self.assertEqual(s, 'digraph G { 1 -> 2; 2 -> 1; 3 -> 2; }')
+        g = pydot.graph_from_incidence_matrix(
+            [[1, 1, 0], [0, 1, 1]], directed=False)
+        s = ' '.join(g.to_string().split())
+        self.assertEqual(s, 'graph G { 1 -- 2; 2 -- 3; }')
+
 
 def check_path():
     not_check = parse_args()
