@@ -6,6 +6,8 @@
 
 - Edge not-equal-comparison on Python 2 now same as on Python 3 (#248)
 - Fix: Prevent TypeError in handling of DOT parser error (#176)
+- Fix: Prevent TypeError in `graph_from_adjacency_matrix()` and
+  `graph_from_incidence_matrix()` (#98)
 
 
 1.4.1 (2018-12-12)

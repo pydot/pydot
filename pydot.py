@@ -366,13 +366,12 @@ def graph_from_adjacency_matrix(matrix, node_prefix= u'', directed=False):
         for e in r:
             if e:
                 graph.add_edge(
-                    Edge( node_prefix + node_orig,
-                        node_prefix + node_dest) )
+                    Edge('%s%s' % (node_prefix, node_orig),
+                         '%s%s' % (node_prefix, node_dest)))
             node_dest += 1
         node_orig += 1
 
     return graph
-
 
 
 def graph_from_incidence_matrix(matrix, node_prefix='', directed=False):
@@ -403,8 +402,8 @@ def graph_from_incidence_matrix(matrix, node_prefix='', directed=False):
 
         if len(nodes) == 2:
             graph.add_edge(
-                Edge( node_prefix + abs(nodes[0]),
-                    node_prefix + nodes[1] ))
+                Edge('%s%s' % (node_prefix, abs(nodes[0])),
+                     '%s%s' % (node_prefix, nodes[1])))
 
     if not directed:
         graph.set_simplify(True)
