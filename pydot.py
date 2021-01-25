@@ -13,7 +13,7 @@ import warnings
 
 try:
     import dot_parser
-except Exception as e:
+except ImportError as e:
     warnings.warn(
         "`pydot` could not import `dot_parser`, "
         "so `pydot` will be unable to parse DOT files. "
@@ -996,7 +996,11 @@ class Graph(Common):
 
 
     def set_node_defaults(self, **attrs):
+        """Define default node attributes.
 
+        These attributes apply to only nodes created after
+        calling this method.
+        """
         self.add_node( Node('node', **attrs) )
 
 
@@ -1315,43 +1319,34 @@ class Graph(Common):
 
         return False
 
-
-    def get_edge(self, src_or_list, dst=None):
-        """Retrieved an edge from the graph.
-
-        Given an edge's source and destination the corresponding
-        Edge instance(s) will be returned.
+    def get_edge(self, src, dst):
+        """Return edges with from node `src` to node `dst`.
 
         If one or more edges exist with that source and destination
-        a list of Edge instances is returned.
-        An empty list is returned otherwise.
+        return a `list` of `Edge` instances.
+        Otherwise, return an empty `list`.
         """
-
-        if isinstance( src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
-        else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
-
-        match = list()
-
-        if edge_points in self.obj_dict['edges'] or (
-            self.get_top_graph_type() == 'graph' and
-            edge_points_reverse in self.obj_dict['edges']):
-
-            edges_obj_dict = self.obj_dict['edges'].get(
-                edge_points,
-                self.obj_dict['edges'].get( edge_points_reverse, None ))
-
-            for edge_obj_dict in edges_obj_dict:
-                match.append(
-                    Edge(edge_points[0],
-                         edge_points[1],
-                         obj_dict=edge_obj_dict))
-
-        return match
-
+        edge_points = (src, dst)
+        edge_points_reverse = tuple(reversed(edge_points))
+        matches = list()
+        # collect edges
+        edges = self.obj_dict['edges']
+        is_directed = self.get_top_graph_type() != 'graph'
+        has_edge = edge_points in edges
+        has_reverse_edge = edge_points_reverse in edges
+        if has_edge:
+            edges_obj_dict = edges.get(edge_points, list())
+        if has_reverse_edge and not is_directed:
+            more = edges.get(edge_points_reverse, list())
+            edges_obj_dict.extend(more)
+        # output
+        if not edges_obj_dict:
+            return matches
+        for edge_obj_dict in edges_obj_dict:
+            a, b = edge_obj_dict['points']
+            e = Edge(a, b, obj_dict=edge_obj_dict)
+            matches.append(e)
+        return matches
 
     def get_edges(self):
         return self.get_edge_list()
