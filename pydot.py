@@ -998,7 +998,7 @@ class Graph(Common):
     def set_node_defaults(self, **attrs):
         """Define default node attributes.
 
-        These attributes apply to only nodes created after
+        These attributes only apply to nodes added to the graph after
         calling this method.
         """
         self.add_node( Node('node', **attrs) )
