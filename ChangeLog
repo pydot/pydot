@@ -107,13 +107,305 @@ API:
 
 
 1.0.29 (2016-05-16)
-------------------
+-------------------
 
 - Maintenance release that keeps the same API
 - pin `pyparsing == 1.5.7`
 - update version number in source code
 - update `setup.py`
 
+
+1.0.28 (2012-01-03)
+-------------------
+
+- Fixed issue 52. Improved handling of BOM-less UTF-8 encoded files.
+- Fixed issue 55 regarding unicode handling.
+- Fixed issue 50 where an ending colon in a node name was understood
+  as a port separator. Colons as the last character of node names will
+  be left as-is.
+- Issue 59 (and duplicate issue 62): Program arguments are mishandled
+  in `Dot.create` - Patch merged.
+- Fixed issue 49, handling of quotes in unicode html-labels.
+- Fixed issue 60. Added an additional check in `__get_attribute__` to not
+  assume the parent graph is always retrievable.
+- Fixed issue 61. Graph names will be adequately quoted when necessary.
+
+
+1.0.25 (2011-04-10)
+-------------------
+
+- Improved the message raised by `TypeErrors`.
+- If arguments need to be specified for 'dot', 'neato' and rest of
+  graph layout engines they can now be passed to the `create()` and
+  `create_*()` family of functions. If a string is passed it's expected
+  to be simply the name of the program. If a list is passed it's
+  assumed to contain strings, the name of the layout engine as the
+  first element, followed by any optional arguments that will be later
+  appended to the command line.
+- Improved parsing of DOT files where a subgraph was given inline as
+  the source or destination of an edge.
+
+
+1.0.23 (around 2011-03-03)
+--------------------------
+
+- Fixed Issue 46 and modified the version number to include the
+  subversion revision number, hence the small jump from 1.0.4 to 1.0.23
+  ;-)
+
+
+1.0.4 (2010-12-31)
+------------------
+
+- Merged fixes by Nelson Elhage
+  - The "id_re_with_port" regex was too lax, and let through many
+    illegal strings just because they contained colons. Fix it to
+    require that both the ID and port component be independently safe.
+  - Even when the code detected that a string needed quoting, ", \n,
+    and \r were left alone inside the double quotes, which is illegal.
+    Replace them with appropriately escaped versions.
+- We also add a test that pydot is correctly able to quote Python's
+  "string.printable" string, which exercises both of the above cases.
+- Added testing script and test data
+- Fixed issue 42. Graphviz's executable "sfdp" has been included in the
+  list of executables to search for and will now be found if available.
+- Updated main docstring
+- Fixed setup.py script to not include the dot-underscore files in OSX
+  (the resource fork) when building the tar.gz for distribution
+
+
+1.0.3 (2010-11-02)
+------------------
+
+The release 1.0.3 of **pydot** is mainly a maintenance release. It
+badly needed some attention. Most of the open issues have been
+addressed.
+
+dot_parser.py:
+- Improved the parsing of attributes with no explicit value but
+  implicit defaults
+- Improved handling of subgraphs
+- Improved handling of whitespace within HTML node names/labels
+
+pydot.py:
+- Updated Graph, Cluster, Subgraph, Node and Edge attributes to reflect
+  the latest GraphViz version (2.26.3)
+- Improved the parsing of attributes with no explicit value but
+  implicit defaults
+- Improved handling of boolean attributes
+- Fixed issue 17, 12
+- Fixed issues 19, 29, 35, 37 finding the Graphviz binary in Windows
+- Added method del_node() to delete Nodes from the graph
+- Added method del_edges() to delete Edges from the graph
+- get_node() will now always return a list of nodes
+- get_edge() will now always return a list of edges
+- get_subgraph() will now always return a list of edges
+- Other minor improvements
+
+
+1.0.2 (2008-02-14)
+------------------
+
+The release 1.0.2 of **pydot** boasts the following:
+
+- The parser has been improved a lot. It passes all of GraphViz's
+  regression tests (which I consider quite an accomplishment seeing the
+  kind of crazy constructs on those )
+- Different charsets should now be dealt with properly.
+- The search of GraphViz's executables has been improved for all
+  platforms. On Windows, paths and registry keys are searched. On Unix
+  now it should exhibit the same behavior as the traditional shell path
+  search. (Thanks Andy Gimblett and many others)
+- Double-quoted paths in Windows are nor properly handled. The
+  os.path.exists() check fails if a valid path is enclosed within
+  quotes.
+- 'type' keyword has been changed everywhere to 'graph_type'
+- Better handling of Node/Edge/Graph defaults. Added methods:
+  set_graph_defaults, set_node_defaults, set_edge_defaults,
+  get_graph_defaults, get_node_defaults, get_edge_defaults
+- Now it's possible to use rank to lay out nodes at the same level
+
+      graph = pydot.Dot('graphname', graph_type='digraph')
+      subg = pydot.Subgraph('', rank='same')
+      subg.add_node(pydot.Node('a'))
+      graph.add_subgraph(subg)
+      subg.add_node(pydot.Node('b'))
+      subg.add_node(pydot.Node('c'))
+
+- Multiple main graphs in a file are now supported, will be returned as
+  a list of graph instances
+- Handling of shapefiles Dot().set_shape_files()
+- Added method "add_style()" to the Node class to easily append styles
+  to a node
+- Attribute lists updated to reflect the available ones in graphviz 2.16
+- Added error reporting when rendering graphs with GraphViz
+  executables. There was an often reported problem where the output
+  graphs would have 0 size. In most cases this was due to Graphviz
+  missing a library for a format that pydot assumed to be there. Now
+  the error given by the executable will be reported instead of being
+  silently ignored (Thanks Jarno)
+- Improved parsing of identifiers
+- Added non-GraphViz attributes needed by dot2tex
+- Jose Fonseca contributed a fix dealing with quoted strings the the
+  dot parsing module
+- setup.py updated so that it's possible to install pydot through
+  Setuptools' easy_install
+- Edge()'s can be created passing two Node objects as well as, the
+  previously supported, two strings with node names. Warning: when
+  passing two Node instances, the attributes won't be taken into
+  account. The edge will only read the Nodes' names to create an edge,
+  the Nodes must be separately added to the graph so all their
+  attributes are "remembered".
+- Substituted all str()'s for unicode()'s
+- It's possible now to manually specify the path to GraphViz's
+  executables in the case they can't be found automatically. The method
+  'set_graphviz_executables(paths)' will take a dictionary specifying
+  the location of the executables. Please refer to the documentation
+  for usage detailed information.
+- And too many bugfixes to list...
+
+**Performance:**
+
+The new pydot stores graphs and their objects using a hierarchy of
+nested dictionaries and lists. Graph, Node, Edge objects are mere
+proxies to the data and are created on demand. So that now it's
+possible to have a graph with a 1 million edges and there will not be a
+single Edge instance (only if requested, then they will be created on
+demand, mapping the data and providing with all the methods to act on
+the data in the global dictionary).
+
+Storing a graph with 1 million edges in pydot 1.0 has approximately the
+same memory requirements (~813MiB) as dealing with one with only 40.000
+edges in pydot 0.9 (~851MiB), the 40.000 edges graph needs ~35MiB in
+pydot 1.0 . Handling graphs should be much faster, as no linear
+searches are performed in pydot 1.0
+
+
+0.9.10 (2004-12-21) and earlier
+-------------------------------
+
+2004-12-21 09:12  carrer
+
+	* dot_parser.py, pydot.py: Updated docstrings
+
+2004-12-20 11:19  carrer
+
+	* dot_parser.py: Parsing of dot files greatly improved
+
+2004-12-20 11:17  carrer
+
+	* pydot.py: Added new attributes introduced in Graphviz 1.16.
+	  Added support to pickle graphs.  Parsing of dot files greatly
+	  improved.  Bumped version to 0.9.10.
+
+2004-12-14 07:48  carrer
+
+	* pydot.py: Improved the processing of the graph's default values
+
+2004-10-11 21:10  carrer
+
+	* README:
+	  Added list of required software to the README
+
+2004-10-11 21:09  carrer
+
+	* MANIFEST, setup.py:
+	  Added dot_parser module
+
+2004-10-11 21:06  carrer
+
+	* dot_parser.py, pydot.py:
+	  Thanks to a great contribution from Michael Krause, pydot is now
+	  able to load DOT files. The loader has been tested against
+	  plethora of test DOT files, and the results written to PS files,
+	  which ended up being identical to the ones obtained straight from
+	  running them through dot. Functions 'graph_from_dot_file' and
+	  'graph_from_dot_data' have been added. This feature requires the
+	  pyparsing module.
+
+	  Note that if using pyparsing <1.2 the tabs in labels are
+	  converted to whitespaces. 1.2 fixed that.
+
+	  Adrian Heilbut noticed that there was no way of telling pydot to
+	  create HTML labels. Starting from this version, if the label's
+	  first character is '<' and last is '>', the label will be treated
+	  as HTML.  If this is not the desired behaviour it suffices with
+	  adding a whitespace before the first '<' character or after the
+	  last '>'.
+
+	  Version bumped to 0.9.9
+
+2004-10-11 21:02  carrer
+
+	* pydot.py:
+	  Added check to add_node() avoid creating nodes with the same
+	  names.
+
+2004-10-11 20:59  carrer
+
+	* pydot.py:
+	  When adding an edge through add_edge() the correspoding Node
+	  objects were not being created. While the graph was correctly
+	  displayed it was not possible to modify the node attributes, as
+	  it did not exist. Thus now, everytime an edge is added, the
+	  corresponding nodes are created if they did not previously exist.
+
+2004-07-08 01:44  carrer
+
+	* pydot.py: Fixed bug reported by Hector Villafuerte.
+
+2004-07-08 00:11  carrer
+
+	* pydot.py: Fixed bug reported by Colin Gillespie regarding the
+	  problem creating clusters due to the 'simplify' attribute
+	  missing.
+
+2004-07-07 23:51  carrer
+
+	* pydot.py: Set default program with which to process the output
+	  and added some minor enhacement enabling to pass non-str objects
+	  as Node names, which will be converted to str by retrieving their
+	  string representation with str()
+
+2004-05-20 10:47  carrer
+
+	* pydot.py: Bumped version to 0.9.4
+
+2004-05-20 10:41  carrer
+
+	* pydot.py: Minor bugfix
+
+2004-05-03 23:45  carrer
+
+	* pydot.py: Merged fixes by Ramon Felciano: -Better handling of
+	  default 'node' and 'edge' definitions.  -Subgraph class now
+	  accepts the same parametes as Graph.
+
+2004-05-01 14:24  carrer
+
+	* README, setup.py: Changed license from GPL to MIT.
+
+2004-05-01 14:00  carrer
+
+	* pydot.py: Minor bugfix.  Added methods to retrieve an edge's
+	  source and destination.
+
+2004-05-01 13:49  carrer
+
+	* pydot.py: Minor bugfixes.  License has been changed from GPL to
+	  MIT.	The following features have been implemented, as suggested
+	  by Ramon Felciano:  -Ability to retrieve nodes/subgraphs (by
+	  name) and edges (by src+target) from a graph.   -Ability to get
+	  the graph's node/edge/subgraph lists.   -Ability to get the
+	  attributes from the objects, not only set them.
+
+2004-05-01 13:34  carrer
+
+	* LICENSE: Changed license from GPL to MIT.
+
+2004-04-28 21:52  carrer
+
+	* ChangeLog: [no log message]
 
 2004-04-28 21:50  carrer
 
