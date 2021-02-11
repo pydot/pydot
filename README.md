@@ -230,6 +230,17 @@ License
 
 Distributed under an [MIT license][10].
 
+
+Contacts
+========
+
+Maintainers:
+- Sebastian Kalinowski <sebastian@kalinowski.eu> (GitHub: @prmtl)
+- Peter Nowee <peter@peternowee.com> (GitHub: @peternowee)
+
+Original author: Ero Carrera <ero.carrera@gmail.com>
+
+
 [1]: https://www.graphviz.org
 [2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [3]: https://github.com/networkx/networkx
