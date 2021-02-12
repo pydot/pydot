@@ -38,6 +38,10 @@ setup(
     maintainer='Peter Nowee',
     maintainer_email='peter@peternowee.com',
     url='https://github.com/pydot/pydot',
+    project_urls={
+        "Changelog": "https://github.com/pydot/pydot/blob/master/ChangeLog",
+        "Bug Tracker": "https://github.com/pydot/pydot/issues",
+    },
     license='MIT',
     keywords='graphviz dot graphs visualization',
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
