@@ -1,13 +1,42 @@
 # `pydot` changelog
 
+Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
+(https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
+
 
 1.4.2 (unreleased)
 ------------------
 
-- Edge not-equal-comparison on Python 2 now same as on Python 3 (#248)
-- Fix: Prevent TypeError in handling of DOT parser error (#176)
-- Fix: Prevent TypeError in `graph_from_adjacency_matrix()` and
-  `graph_from_incidence_matrix()` (#98)
+Added:
+- Documentation: Basic usage examples in `README.md`. (#141)
+
+Changed:
+- More detailed error message in case of Graphviz errors. (#239)
+- More detailed warning message in case of failure to import the DOT
+  parser module. (#241)
+
+Deprecated:
+- A future pydot 2.0.0 will drop support for Python 2, 3.4 and
+  possibly other Python versions that are end-of-life at that time.
+  Pydot does not emit any deprecation warnings about this. Further
+  pydot 1.x.x releases are currently not foreseen, but if there are
+  any, should still support the mentioned Python versions. (#229)
+
+Fixed:
+- On Python 2, non-equality comparison (`!=`) between two separate, but
+  equal `Edge` instances will now correctly return `False`, as it
+  already did on Python 3. (#248)
+- Prevent `TypeError` in handling of DOT parser error. (#176)
+- Prevent `TypeError` in `graph_from_adjacency_matrix()` and
+  `graph_from_incidence_matrix()`. (#98)
+- Prevent `TypeError` when creating an edge with a `Subgraph` or
+  `Cluster` object (as opposed to name string) as an edge point. (#89)
+- Windows only: Fixed most failures to find Graphviz when a conda or
+  Anaconda installation exists, but Graphviz was installed manually or
+  through pip (`.bat`/`.exe` suffix problem). (#205)
+- Windows only: Fixed failure to run Graphviz related to side-by-side
+  assembly (SxS) by now propagating the `SYSTEMROOT` environment
+  variable. (#208)
 
 
 1.4.1 (2018-12-12)
