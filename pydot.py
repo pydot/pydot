@@ -412,25 +412,92 @@ def graph_from_incidence_matrix(matrix, node_prefix='', directed=False):
     return graph
 
 
+def add_function_to_class(cls, name, func):
+    """Bind a function object as a method to a class
+
+    Rename the provided function (both its __name__ and __qualname__)
+    and bind it as a method to the provided class so that it is treated
+    the same as methods defined in the class itself.
+
+    @param cls: class to bind the method to
+    @param name: intended name of the function as a string
+    @param func: function object to be bound
+    """
+    func.__name__ = name
+    if hasattr(func, '__qualname__'):
+        func.__qualname__ = '.'.join([cls.__name__, func.__name__])
+    setattr(cls, func.__name__, func)
+
+
+def create_attribute_methods(obj_attributes):
+    """Create function to add DOT attribute getters and setters to a class.
+
+    This function is a decorator factory that returns a function
+    create_attribute_methods_decorator that creates getter and setter
+    methods (get_'name' and set_'name') for the DOT attributes in
+    obj_attributes and binds them to the class it is called on. The
+    returned function can be used as a class decorator.
+
+    @param obj_attributes: set of DOT attribute name strings
+    """
+    def create_attribute_methods_decorator(cls):
+        """Add DOT attribute getters and setters to a class.
+
+        This function creates getter and setter methods (get_'name' and
+        set_'name') for a set of DOT attributes and binds these methods
+        to class cls. Refer to the call of create_attribute_methods()
+        to know for which specific set.
+
+        @param cls: class to which to bind the created methods
+        """
+        for attr in obj_attributes:
+
+            # Generate all the Setter methods.
+            #
+            def func(self, x, a=attr):
+                self.obj_dict['attributes'].__setitem__(a, x)
+            add_function_to_class(cls, 'set_{}'.format(attr), func)
+
+            # Generate all the Getter methods.
+            #
+            def func(self, a=attr):  # pylint: disable=function-redefined
+                return self.__get_attribute__(a)
+            add_function_to_class(cls, 'get_{}'.format(attr), func)
+
+        return cls
+
+    return create_attribute_methods_decorator
+
+
+def create_format_methods(cls):
+    """Decorator for class Dot to define its format output methods.
+
+    This decorator function automatically creates all the methods
+    enabling the creation of output in any of the supported formats.
+    """
+    for frmt in cls.formats:
+        def func(self, f=frmt, prog='dot', encoding=None):
+            """Refer to docstring of method `create`."""
+            return self.create(format=f, prog=prog, encoding=encoding)
+        add_function_to_class(cls, 'create_{fmt}'.format(fmt=frmt),
+                              func)
+
+    for frmt in cls.formats+['raw']:
+        def func(self, path, f=frmt, prog='dot', encoding=None):
+            """Refer to docstring of method `write.`"""
+            self.write(path, format=f, prog=prog, encoding=encoding)
+        add_function_to_class(cls, 'write_{fmt}'.format(fmt=frmt),
+                              func)
+
+    return cls
+
+
 class Common(object):
     """Common information to several classes.
 
     Should not be directly used, several classes are derived from
     this one.
     """
-
-
-    def __getstate__(self):
-
-        dict = copy.copy(self.obj_dict)
-
-        return dict
-
-
-    def __setstate__(self, state):
-
-        self.obj_dict = state
-
 
     def __get_attribute__(self, attr):
         """Look for default attributes for this node"""
@@ -527,25 +594,6 @@ class Common(object):
         return self.obj_dict['sequence']
 
 
-    def create_attribute_methods(self, obj_attributes):
-
-        #for attr in self.obj_dict['attributes']:
-        for attr in obj_attributes:
-
-            # Generate all the Setter methods.
-            #
-            self.__setattr__(
-                'set_'+attr,
-                lambda x, a=attr :
-                    self.obj_dict['attributes'].__setitem__(a, x) )
-
-            # Generate all the Getter methods.
-            #
-            self.__setattr__(
-                'get_'+attr, lambda a=attr : self.__get_attribute__(a))
-
-
-
 class Error(Exception):
     """General error handling class.
     """
@@ -564,7 +612,7 @@ class InvocationException(Exception):
         return self.value
 
 
-
+@create_attribute_methods(NODE_ATTRIBUTES)
 class Node(Common):
     """A graph node.
 
@@ -616,8 +664,6 @@ class Node(Common):
 
             self.obj_dict['name'] = quote_if_necessary(name)
             self.obj_dict['port'] = port
-
-        self.create_attribute_methods(NODE_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -688,7 +734,7 @@ class Node(Common):
         return node + ';'
 
 
-
+@create_attribute_methods(EDGE_ATTRIBUTES)
 class Edge(Common):
     """A graph edge.
 
@@ -736,7 +782,6 @@ class Edge(Common):
             self.obj_dict[ 'sequence' ] = None
         else:
             self.obj_dict = obj_dict
-        self.create_attribute_methods(EDGE_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -881,9 +926,7 @@ class Edge(Common):
         return ' '.join(edge) + ';'
 
 
-
-
-
+@create_attribute_methods(GRAPH_ATTRIBUTES)
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
 
@@ -920,7 +963,6 @@ class Graph(Common):
         graph_instance.obj_dict['attributes']['fontname']
     """
 
-
     def __init__(self, graph_name='G', obj_dict=None,
                  graph_type='digraph', strict=False,
                  suppress_disconnected=False, simplify=False, **attrs):
@@ -955,8 +997,6 @@ class Graph(Common):
 
             self.set_parent_graph(self)
 
-
-        self.create_attribute_methods(GRAPH_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -1638,8 +1678,7 @@ class Subgraph(Graph):
             self.obj_dict['type'] = 'subgraph'
 
 
-
-
+@create_attribute_methods(CLUSTER_ATTRIBUTES)
 class Cluster(Graph):
 
     """Class representing a cluster in Graphviz's dot language.
@@ -1673,7 +1712,6 @@ class Cluster(Graph):
         cluster_instance.obj_dict['attributes']['fontname']
     """
 
-
     def __init__(self, graph_name='subG',
                  obj_dict=None, suppress_disconnected=False,
                  simplify=False, **attrs):
@@ -1688,13 +1726,8 @@ class Cluster(Graph):
             self.obj_dict['type'] = 'subgraph'
             self.obj_dict['name'] = quote_if_necessary('cluster_'+graph_name)
 
-        self.create_attribute_methods(CLUSTER_ATTRIBUTES)
 
-
-
-
-
-
+@create_format_methods
 class Dot(Graph):
     """A container for handling a dot language file.
 
@@ -1703,59 +1736,23 @@ class Dot(Graph):
     the base class 'Graph'.
     """
 
-
+    formats = [
+        'canon', 'cmap', 'cmapx',
+        'cmapx_np', 'dia', 'dot',
+        'fig', 'gd', 'gd2', 'gif',
+        'hpgl', 'imap', 'imap_np', 'ismap',
+        'jpe', 'jpeg', 'jpg', 'mif',
+        'mp', 'pcl', 'pdf', 'pic', 'plain',
+        'plain-ext', 'png', 'ps', 'ps2',
+        'svg', 'svgz', 'vml', 'vmlz',
+        'vrml', 'vtx', 'wbmp', 'xdot', 'xlib']
 
     def __init__(self, *argsl, **argsd):
         Graph.__init__(self, *argsl, **argsd)
 
         self.shape_files = list()
-        self.formats = [
-            'canon', 'cmap', 'cmapx',
-            'cmapx_np', 'dia', 'dot',
-            'fig', 'gd', 'gd2', 'gif',
-            'hpgl', 'imap', 'imap_np', 'ismap',
-            'jpe', 'jpeg', 'jpg', 'mif',
-            'mp', 'pcl', 'pdf', 'pic', 'plain',
-            'plain-ext', 'png', 'ps', 'ps2',
-            'svg', 'svgz', 'vml', 'vmlz',
-            'vrml', 'vtx', 'wbmp', 'xdot', 'xlib']
 
         self.prog = 'dot'
-
-        # Automatically creates all
-        # the methods enabling the creation
-        # of output in any of the supported formats.
-        for frmt in self.formats:
-            def new_method(
-                    f=frmt, prog=self.prog,
-                    encoding=None):
-                """Refer to docstring of method `create`."""
-                return self.create(
-                    format=f, prog=prog, encoding=encoding)
-            name = 'create_{fmt}'.format(fmt=frmt)
-            self.__setattr__(name, new_method)
-
-        for frmt in self.formats+['raw']:
-            def new_method(
-                    path, f=frmt, prog=self.prog,
-                    encoding=None):
-                """Refer to docstring of method `write.`"""
-                self.write(
-                    path, format=f, prog=prog,
-                    encoding=encoding)
-            name = 'write_{fmt}'.format(fmt=frmt)
-            self.__setattr__(name, new_method)
-
-    def __getstate__(self):
-
-        dict = copy.copy(self.obj_dict)
-
-        return dict
-
-    def __setstate__(self, state):
-
-        self.obj_dict = state
-
 
     def set_shape_files(self, file_paths):
         """Add the paths of the required image files.

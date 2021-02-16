@@ -7,7 +7,32 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 2.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Object instantiation times are reduced by over 95%. Module import
+  time has slightly increased, but is only one-off and should be offset
+  by the gains after around 5 to 15 pydot objects. Object memory sizes
+  are reduced by over 85%. (#242)
+
+API:
+- Improved serialization support for tools like pickle. After pickling
+  and unpickling, the new object will better resemble the original:
+  - The entire instance's dictionary is now serialized, not only its
+    `obj_dict` attribute.
+  - Unpickled objects are no longer missing the convenience methods for
+    DOT attributes (`get_'name'()`, `set_'name'()`) and output formats
+    (`create_'format'()` and `write_'format'`). (They are not
+    serialized, but bound to the class now instead of to the instance.)
+  Note: Currently, serialized object representations created using
+  pydot 1.x are not compatible with pydot 2.x and vice versa. (#242)
+
+API (minor change or few affected):
+- `create_attribute_methods()`, which adds getter and setter methods
+  for DOT attributes to a class, is moved out of class `Common` and
+  works in two steps now: First pass it the set of attribute names and
+  it will return a second function that can be called on the class. The
+  two steps can be combined in a parameterized class decorator:
+  `@create_attribute_methods(my_dot_attribute_set)`. (#242)
+- `Dot.formats` changes from an instance attribute to a class
+  attribute. (#242)
 
 
 1.4.2 (2021-02-15)
