@@ -84,6 +84,25 @@ class TestGraphAPI(unittest.TestCase):
 
         self.assertEqual( 'decorate' in attrs, True )
 
+    def test_attribute_index_access(self):
+
+        d='digraph {\na -> b[label=hello];\n}'
+        graphs = pydot.graph_from_dot_data(d)
+        (g,) = graphs
+        edge, *_ = g.get_edges()
+
+        self.assertEqual( edge['label'], 'hello' )
+
+    def test_attribute_index_setter(self):
+
+        d='digraph {\na -> b[label=hello];\n}'
+        graphs = pydot.graph_from_dot_data(d)
+        (g,) = graphs
+        edge, *_ = g.get_edges()
+        self.assertEqual( edge['label'], 'hello' )
+        edge['label'] = 'world'
+        self.assertEqual( edge['label'], 'world' )
+
 
     def test_subgraphs(self):
 
