@@ -794,7 +794,7 @@ class Edge(Common):
         else:
             new_compass_pt = {}
             # Make sure the compass point is valid, if not, do not set it.
-            unexpected_keys = compass_pt.keys() - {'src', 'dst'}
+            unexpected_keys = set(compass_pt.keys()) - {'src', 'dst'}
             if unexpected_keys:
                 raise Error('Compass must contain key(s) "src" and/or "dst"')
             if 'src' in compass_pt:

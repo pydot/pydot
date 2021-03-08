@@ -444,7 +444,6 @@ class TestGraphAPI(unittest.TestCase):
         s = ' '.join(g.to_string().split())
         self.assertEqual(
             s, 'digraph G { a; "b:b:c" [fillcolor="red:yellow"]; a:e -> "b:b:c":e; a:w -> "b:b:c":w; }' )
-        breakpoint()
 
 
 def check_path():
