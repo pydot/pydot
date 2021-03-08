@@ -91,6 +91,20 @@ DEFAULT_PROGRAMS = {
 }
 
 
+COMPASS_POINTS = {
+    'n',
+    'ne',
+    'e',
+    'se',
+    's',
+    'sw',
+    'w',
+    'nw',
+    'c',
+    '_',
+}
+
+
 def is_windows():
     # type: () -> bool
     return os.name == 'nt'
@@ -234,17 +248,23 @@ def needs_quotes( s ):
     if chars and not id_re_dbl_quoted.match(s) and not id_re_html.match(s):
         return True
 
+    if not id_re_dbl_quoted.match(s) and ':' in s:
+        return True
+
     for test_re in [id_re_alpha_nums, id_re_num,
                     id_re_dbl_quoted, id_re_html,
                     id_re_alpha_nums_with_ports]:
         if test_re.match(s):
             return False
 
-    m = id_re_with_port.match(s)
-    if m:
-        return needs_quotes(m.group(1)) or needs_quotes(m.group(2))
-
     return True
+
+
+def name_check(s):
+    if s and isinstance(s, str) and ':' in s:
+        if not id_re_dbl_quoted.match(s):
+            return '"' + s + '"'
+    return s
 
 
 def quote_if_necessary(s):
@@ -270,7 +290,6 @@ def quote_if_necessary(s):
         return '"' + s + '"'
 
     return s
-
 
 
 def graph_from_dot_data(s):
@@ -578,7 +597,7 @@ class Node(Common):
     be supported.
     """
 
-    def __init__(self, name = '', obj_dict = None, **attrs):
+    def __init__(self, name = '', obj_dict = None, port = None, compass_pt = None, **attrs):
 
         #
         # Nodes will take attributes of
@@ -603,19 +622,15 @@ class Node(Common):
             self.obj_dict[ 'parent_node_list' ] = None
             self.obj_dict[ 'sequence' ] = None
 
-            # Remove the compass point
-            #
-            port = None
-            if isinstance(name, str_type) and not name.startswith('"'):
-                idx = name.find(':')
-                if idx > 0 and idx+1 < len(name):
-                    name, port = name[:idx], name[idx:]
-
             if isinstance(name, int):
                 name = str(name)
 
             self.obj_dict['name'] = quote_if_necessary(name)
-            self.obj_dict['port'] = port
+
+            if isinstance(port, int):
+                name = str(port)
+
+            self.obj_dict[ 'port' ] = quote_if_necessary(port)
 
         self.create_attribute_methods(NODE_ATTRIBUTES)
 
@@ -633,6 +648,12 @@ class Node(Common):
         """Get the node's name."""
 
         return self.obj_dict['name']
+
+
+    def set_port(self, port):
+        """Set the node's port."""
+
+        self.obj_dict['port'] = port
 
 
     def get_port(self):
@@ -718,7 +739,7 @@ class Edge(Common):
 
     """
 
-    def __init__(self, src='', dst='', obj_dict=None, **attrs):
+    def __init__(self, src='', dst='', obj_dict=None, compass_pt=None, **attrs):
         self.obj_dict = dict()
         if isinstance(src, (Node, Subgraph, Cluster)):
             src = src.get_name()
@@ -734,9 +755,14 @@ class Edge(Common):
             self.obj_dict[ 'parent_graph' ] = None
             self.obj_dict[ 'parent_edge_list' ] = None
             self.obj_dict[ 'sequence' ] = None
+            self.obj_dict[ 'compass_pt' ] = compass_pt
         else:
             self.obj_dict = obj_dict
         self.create_attribute_methods(EDGE_ATTRIBUTES)
+
+        if self.obj_dict['compass_pt']:
+            self.set_compass_pt(self.obj_dict['compass_pt'])
+
 
     def __str__(self):
         return self.to_string()
@@ -758,6 +784,30 @@ class Edge(Common):
 
          return hash( hash(self.get_source()) +
                      hash(self.get_destination()) )
+
+
+    def set_compass_pt(self, compass_pt):
+        """Set the node's compass point."""
+
+        if not isinstance(compass_pt, dict):
+            raise Error('Compass must be a dict')
+        else:
+            new_compass_pt = {}
+            # Make sure the compass point is valid, if not, do not set it.
+            unexpected_keys = compass_pt.keys() - {'src', 'dst'}
+            if unexpected_keys:
+                raise Error('Compass must contain key(s) "src" and/or "dst"')
+            if 'src' in compass_pt:
+                new_compass_pt['src'] = compass_pt['src']
+            if 'dst' in compass_pt:
+                new_compass_pt['dst'] = compass_pt['dst']
+        self.obj_dict['compass_pt'] = new_compass_pt
+
+
+    def get_compass_pt(self):
+        """Get the node's compass point."""
+
+        return self.obj_dict['compass_pt']
 
 
     def __eq__(self, edge):
@@ -836,12 +886,17 @@ class Edge(Common):
 
         src = self.parse_node_ref( self.get_source() )
         dst = self.parse_node_ref( self.get_destination() )
+        compass_pt = self.get_compass_pt()
 
         if isinstance(src, frozendict):
             edge = [ Subgraph(obj_dict=src).to_string() ]
         elif isinstance(src, int):
+            if compass_pt and 'src' in compass_pt:
+                src = str(src) + ':' + compass_pt['src']
             edge = [ str(src) ]
         else:
+            if compass_pt and 'src' in compass_pt:
+                src = src + ':' + compass_pt['src']
             edge = [ src ]
 
         if	(self.get_parent_graph() and
@@ -856,8 +911,12 @@ class Edge(Common):
         if isinstance(dst, frozendict):
             edge.append( Subgraph(obj_dict=dst).to_string() )
         elif isinstance(dst, int):
+            if compass_pt and 'dst' in compass_pt:
+                dst = str(dst) + ':' + compass_pt['dst']
             edge.append( str(dst) )
         else:
+            if compass_pt and 'dst' in compass_pt:
+                dst = dst + ':' + compass_pt['dst']
             edge.append( dst )
 
 

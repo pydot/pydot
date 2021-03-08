@@ -433,6 +433,19 @@ class TestGraphAPI(unittest.TestCase):
         s = ' '.join(g.to_string().split())
         self.assertEqual(s, 'graph G { 1 -- 2; 2 -- 3; }')
 
+    def test_graph_compass_pt(self):
+        node1 = pydot.Node('a')
+        node2 = pydot.Node('b:b:c', fillcolor='red:yellow')
+        g = pydot.Dot()
+        g.add_node(node1)
+        g.add_node(node2)
+        g.add_edge(pydot.Edge(node1, node2, compass_pt={'src': 'e', 'dst': 'e'} ))
+        g.add_edge(pydot.Edge(node1, 'b:b:c', compass_pt={'src': 'w', 'dst': 'w'} ))
+        s = ' '.join(g.to_string().split())
+        self.assertEqual(
+            s, 'digraph G { a; "b:b:c" [fillcolor="red:yellow"]; a:e -> "b:b:c":e; a:w -> "b:b:c":w; }' )
+        breakpoint()
+
 
 def check_path():
     not_check = parse_args()
