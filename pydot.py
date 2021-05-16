@@ -1722,6 +1722,11 @@ class Dot(Graph):
 
         self.prog = 'dot'
 
+        # For standard windows (i.e. not cygwin etc) add ".exe"
+        # to self.prog as windows execuatbles have the .exe extension.
+        if sys.platform.startswith('win32'):
+          self.prog += ".exe"
+
         # Automatically creates all
         # the methods enabling the creation
         # of output in any of the supported formats.
