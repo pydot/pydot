@@ -7,6 +7,10 @@
 from __future__ import division
 from __future__ import print_function
 import argparse
+try:
+    from collections.abc import Hashable  # PY3
+except ImportError:
+    from collections import Hashable  # PY2
 from hashlib import sha256
 import io
 import os
@@ -23,6 +27,324 @@ import unittest
 TEST_PROGRAM = 'dot'
 TESTS_DIR_1 = 'my_tests'
 TESTS_DIR_2 = 'graphs'
+
+
+class TestEdgeEquality(unittest.TestCase):
+    """Test equality of Edge objects
+
+    Tests for edge equality are based on our currently definition of
+    edge equality:
+
+    - Same end points
+    AND
+    - Considering directedness:
+      - If directed, same order of end points.
+      OR
+      - If undirected, ignoring the order of end points.
+    AND
+    - Disregarding all other attributes, including DOT attributes.
+
+    If we decide to change this definition, the relevant tests here
+    will need to be changed as well. See `TestEdgeHashing` docstring
+    for notes on splitting equality and hashing tests.
+
+    Some tests use `assertTrue`/`assertFalse`/`==`/`!=` instead of
+    `assertEqual`/`assertNotEqual` to ensure the use of `Edge.__eq__()`.
+
+    A "Fail example" comment pointing to a pydot version does not
+    necessarily mean it was fixed in the version immediately after that.
+    """
+
+    @unittest.expectedFailure
+    def test_edge_equality_availability_without_parent_graph(self):
+        # Fail example: pydot 1.4.1.
+        e1 = pydot.Edge('a', 'b')
+        # Asserting that this does not raise an exception.
+        e1 == e1
+
+    def test_edge_equality_basics_1_same_object_reflexivity(self):
+        # https://docs.python.org/3.9/reference/expressions.html#value-comparisons
+        # Fail example: Not seen yet.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        e2 = e1
+        self.assertEqual(id(e1), id(e2))
+        self.assertTrue(e1 == e2)
+
+    def test_edge_equality_basics_2_same_points_equal(self):
+        # Fail example: Not seen yet.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        for graph_type in ['graph', 'digraph']:
+            g.set_type(graph_type)
+            self.assertTrue(e1 == e2)
+
+    def test_edge_equality_basics_3_same_points_not_not_equal(self):
+        # Fail example: pydot 1.4.1 on Python 2.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        self.assertFalse(e1 != e2)
+
+    def test_edge_equality_basics_4_different_points(self):
+        # Fail example: Not seen yet.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('c', 'd')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        self.assertFalse(e1 == e2)
+
+    def test_edge_equality_basics_5_dot_attributes(self):
+        # Fail example: Not seen yet.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b', color="red")
+        e2 = pydot.Edge('a', 'b', color="blue")
+        g.add_edge(e1)
+        g.add_edge(e2)
+        self.assertTrue(e1 == e2)
+
+    def test_edge_equality_point_order_1_in_directed_graph(self):
+        # Fail example: Not seen yet.
+        graph_directed = pydot.Graph(graph_type='digraph')
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('b', 'a')
+        graph_directed.add_edge(e1)
+        graph_directed.add_edge(e2)
+        self.assertFalse(e1 == e2)
+
+    def test_edge_equality_point_order_2_in_undirected_graph(self):
+        # Fail example: Not seen yet.
+        graph_undirected = pydot.Graph(graph_type='graph')
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('b', 'a')
+        graph_undirected.add_edge(e1)
+        graph_undirected.add_edge(e2)
+        self.assertTrue(e1 == e2)
+
+    @unittest.expectedFailure
+    def test_edge_equality_symmetry_directedness_parent_graph(self):
+        # Fail example: pydot 1.4.1.
+        g_directed = pydot.Graph(graph_type='digraph')
+        g_undirected = pydot.Graph(graph_type='graph')
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('b', 'a')
+        g_directed.add_edge(e1)
+        g_undirected.add_edge(e2)
+        self.assertEqual((e1 == e2), (e2 == e1))
+
+    @unittest.expectedFailure
+    def test_edge_equality_with_other_class_string(self):
+        # Fail example: pydot 1.4.1.
+        graph_undirected = pydot.Graph(graph_type='graph')
+        e1 = pydot.Edge('a', 'b')
+        graph_undirected.add_edge(e1)
+        self.assertEqual(e1.__eq__('a -- b'), NotImplemented)
+        self.assertEqual(e1.__eq__('a -- b;'), NotImplemented)
+        self.assertEqual(e1.__ne__('x -- x'), NotImplemented)
+
+    @unittest.expectedFailure
+    def test_edge_equality_with_other_class_tuple(self):
+        # Fail example: pydot 1.4.1.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        self.assertEqual(e1.__eq__(('a', 'b')), NotImplemented)
+        self.assertEqual(e1.__ne__(('x', 'x')), NotImplemented)
+
+
+class TestEdgeHashing(unittest.TestCase):
+    """Test hashing of Edge objects
+
+    - e1==e2 True and hash(e1)==hash(e2) False: Requirement that
+      objects that compare equal must have equal hashes broken.
+    - e1==e2 False and hash(e1)==hash(e2) True: Hash collision,
+      no major problem, but not ideal for performance.
+
+    Note that hash collision tests can also fail due to chance, though
+    with a good hash function that chance should be very small.
+
+    For arbitrary parts of our definition of edge equality, try to
+    separate the tests for equality (`TestEdgeEquality`) from the tests
+    of the hash (`TestEdgeHashing`). Let the test of the hash just
+    return success in case the equality is not as expected. This way,
+    when our definition of edge equality changes over different
+    versions, we can just add new hash tests and leave the old hash
+    tests untouched for in case the definition changes back again
+    later.
+
+    A "Fail example" comment pointing to a pydot version does not
+    necessarily mean it was fixed in the version immediately after that.
+    """
+
+    def _hash_collision_msg(self, obj1, obj2, obj1_hash):
+        msg = 'Both %s and %s have hash: %s' % (obj1, obj2, obj1_hash)
+        return msg
+
+    def _object_not_in_set_msg(self, obj, s):
+        msg = ('Object %r (%s) said not to be in set %s with '
+               'elements %s' % (obj, obj, s, [str(e) for e in s]))
+        return msg
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_availability_without_parent_graph(self):
+        # Fail example: GH pydot/pydot#92 OP patch 2.
+        e1 = pydot.Edge('a', 'b')
+        # Asserting that this does not raise an exception.
+        hash(e1)
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    @unittest.expectedFailure
+    def test_edge_hash_collision_01_integers(self):
+        # Fail example: pydot 1.4.1. GH pydot/pydot#92 OP patch 2.
+        g = pydot.Graph()
+        e1 = pydot.Edge(1, 2)
+        e2 = pydot.Edge(0, 3)
+        g.add_edge(e1)
+        g.add_edge(e2)
+        for graph_type in ['graph', 'digraph']:
+            g.set_type(graph_type)
+            self.assertFalse(e1 == e2)
+            self.assertNotEqual(
+                hash(e1), hash(e2),
+                msg=self._hash_collision_msg(e1, e2, hash(e1)))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_collision_02_string_concat(self):
+        # Fail example: GH pydot/pydot#92 OP patch 2.
+        g = pydot.Graph()
+        e1 = pydot.Edge('aa', 'bb')
+        e2 = pydot.Edge('a', 'abb')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        for graph_type in ['graph', 'digraph']:
+            g.set_type(graph_type)
+            self.assertFalse(e1 == e2)
+            self.assertNotEqual(
+                hash(e1), hash(e2),
+                msg=self._hash_collision_msg(e1, e2, hash(e1)))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_collision_03_duplicate_points(self):
+        # Fail example: Hash of frozenset.
+        # Consider using tuple(sorted()) instead.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'a')
+        tup = ('a', )
+        g.add_edge(e1)
+        for graph_type in ['graph', 'digraph']:
+            g.set_type(graph_type)
+            self.assertNotEqual(
+                hash(e1), hash(tup),
+                msg=self._hash_collision_msg(e1, tup, hash(e1)))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    @unittest.expectedFailure
+    def test_edge_hash_collision_04_reverse_edge_directed_graph(self):
+        # Fail example: pydot 1.4.1.
+        graph_directed = pydot.Graph(graph_type='digraph')
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('b', 'a')
+        graph_directed.add_edge(e1)
+        graph_directed.add_edge(e2)
+        if e1 != e2:
+            self.assertNotEqual(
+                hash(e1), hash(e2),
+                msg=self._hash_collision_msg(e1, e2, hash(e1)))
+        else:
+            # In case a future version would let Edge.__eq__() consider
+            # edges as undirected, regardless of directed parent graph.
+            # Edge equality itself is tested in TestEdgeEquality.
+            pass
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    @unittest.expectedFailure
+    def test_edge_hash_immutability_1_points(self):
+        # Fail example: pydot 1.4.1.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        s = {e1}
+        self.assertTrue(e1 in s)
+        e1.obj_dict['points'] = ('c', 'd')
+        self.assertTrue(e1 in s,
+                        msg=self._object_not_in_set_msg(e1, s))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_immutability_2_graph_directedness(self):
+        # Fail example: GH pydot/pydot#92 OP patch 2.
+        g = pydot.Graph(graph_type='graph')
+        # e15 for if undirected edge hash sorts points ascending.
+        # e16 for if undirected edge hash sorts points descending.
+        e15 = pydot.Edge('b', 'a')
+        e16 = pydot.Edge('c', 'd')
+        g.add_edge(e15)
+        g.add_edge(e16)
+        s = {e15, e16}
+        self.assertTrue(e15 in s)
+        self.assertTrue(e16 in s)
+        g.set_type('digraph')
+        self.assertTrue(e15 in s,
+                        msg=self._object_not_in_set_msg(e15, s))
+        self.assertTrue(e16 in s,
+                        msg=self._object_not_in_set_msg(e16, s))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_match_if_equal_1_points_same(self):
+        # Fail example: GH pydot/pydot#92 OP patch 1 on Python 2.
+        g = pydot.Graph()
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('a', 'b')
+        g.add_edge(e1)
+        g.add_edge(e2)
+        for graph_type in ['graph', 'digraph']:
+            g.set_type(graph_type)
+            self.assertTrue(e1 == e2)
+            self.assertEqual(hash(e1), hash(e2),
+                             msg='%s == %s, but hashes differ: %s, %s' %
+                             (e1, e2, hash(e1), hash(e2)))
+
+    @unittest.skipIf(
+        not isinstance(pydot.Edge(), Hashable),
+        'Edge not hashable')
+    def test_edge_hash_match_if_equal_2_reverse_edge_undirected_graph(self):
+        # Fail example: GH pydot/pydot#92 OP patch 1 on Python 2.
+        graph_undirected = pydot.Graph(graph_type='graph')
+        e1 = pydot.Edge('a', 'b')
+        e2 = pydot.Edge('b', 'a')
+        graph_undirected.add_edge(e1)
+        graph_undirected.add_edge(e2)
+        if e1 == e2:
+            self.assertEqual(hash(e1), hash(e2),
+                             msg='%s == %s, but hashes differ: %s, %s' %
+                             (e1, e2, hash(e1), hash(e2)))
+        else:
+            # In case a future version would let Edge.__eq__() consider
+            # edges as directed, regardless of undirected parent graph.
+            # Edge equality itself is tested in TestEdgeEquality.
+            pass
 
 
 class TestGraphAPI(unittest.TestCase):
@@ -314,15 +636,6 @@ class TestGraphAPI(unittest.TestCase):
         u = pydot.Node('a')
         g.add_node(u)
         g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
-
-    def test_edge_equality_basics_3_same_points_not_not_equal(self):
-        # Fail example: pydot 1.4.1 on Python 2.
-        g = pydot.Graph()
-        e1 = pydot.Edge('a', 'b')
-        e2 = pydot.Edge('a', 'b')
-        g.add_edge(e1)
-        g.add_edge(e2)
-        self.assertFalse(e1 != e2)
 
     def test_edge_point_namestr(self):
         self._reset_graphs()
