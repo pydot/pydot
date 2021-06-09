@@ -63,9 +63,11 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Topic :: Scientific/Engineering :: Visualization',
-        'Topic :: Software Development :: Libraries :: Python Modules'],
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     py_modules=['pydot', 'dot_parser'],
     install_requires=['pyparsing>=2.1.4'],
-    tests_require=['chardet'])
+    tests_require=['chardet'],
+)

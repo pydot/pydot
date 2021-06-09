@@ -1,0 +1,4 @@
+[tool.black]
+line-length = 79
+skip-string-normalization = true  # To be removed in next commit.
+target-version = ['py27']
