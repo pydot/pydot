@@ -126,13 +126,13 @@ class TestGraphAPI(unittest.TestCase):
         g.add_edge(pydot.Edge('b', 'a'))
         test_combinations = [
             ('graph', False,
-             'graph G { a -- b; a -- b; b -- a; b -- a; }'),
+             'graph G { a -- b; a -- b; b -- a; b -- a; }',),
             ('graph', True,
-             'graph G { a -- b; }'),
+             'graph G { a -- b; }',),
             ('digraph', False,
-             'digraph G { a -> b; a -> b; b -> a; b -> a; }'),
+             'digraph G { a -> b; a -> b; b -> a; b -> a; }',),
             ('digraph', True,
-             'digraph G { a -> b; b -> a; }')]
+             'digraph G { a -> b; b -> a; }',)]
         expected_concat = observed_concat = ''
         for (graph_type, simplify, expected) in test_combinations:
             expected_concat += 'graph_type %s, simplify %s: %s\n' % (
@@ -190,7 +190,7 @@ class TestGraphAPI(unittest.TestCase):
         with io.open(filename, 'rt', encoding=encoding) as stdin:
             stdout_data, stderr_data, process = pydot.call_graphviz(
                 program=TEST_PROGRAM,
-                arguments=['-Tjpe', ],
+                arguments=['-Tjpe'],
                 working_dir=os.path.dirname(filename),
                 stdin=stdin,
             )
@@ -382,8 +382,8 @@ def check_path():
     if not_check:
         return
     assert not os.path.isfile('setup.py'), (
-        'running out of source does not '
-        'test the installed `pydot`.')
+        'running out of source does not test the installed `pydot`.'
+    )
 
 
 def parse_args():

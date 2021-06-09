@@ -32,6 +32,7 @@ else:
     str_type = basestring
 
 
+# fmt: off
 GRAPH_ATTRIBUTES = {
     'Damping', 'K', 'URL', 'aspect', 'bb', 'bgcolor',
     'center', 'charset', 'clusterrank', 'colorscheme', 'comment', 'compound',
@@ -87,6 +88,7 @@ CLUSTER_ATTRIBUTES = {
     'labelloc', 'lheight', 'lp', 'lwidth', 'nojustify', 'pencolor',
     'penwidth', 'peripheries', 'sortv', 'style', 'target', 'tooltip'
 }
+# fmt: on
 
 
 DEFAULT_PROGRAMS = {
@@ -136,7 +138,7 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
         'SYSTEMROOT': os.environ.get('SYSTEMROOT', ''),
     }
 
-    program_with_args = [program, ] + arguments
+    program_with_args = [program] + arguments
 
     process = subprocess.Popen(
         program_with_args,
@@ -273,7 +275,7 @@ def quote_if_necessary(s):
     if needs_quotes(s):
         replace = {'"': r'\"',
                    "\n": r'\n',
-                   "\r": r'\r'}
+                   "\r": r'\r',}
         for (a, b) in replace.items():
             s = s.replace(a, b)
 
@@ -678,7 +680,7 @@ class Edge(Common):
     All the attributes defined in the Graphviz dot language should
     be supported.
 
-        Attributes can be set through the dynamically generated methods:
+    Attributes can be set through the dynamically generated methods:
 
      set_[attribute name], i.e. set_label, set_fontname
 
@@ -739,8 +741,7 @@ class Edge(Common):
         """
 
         if not isinstance(edge, Edge):
-            raise Error('Can not compare and '
-                        'edge to a non-edge object.')
+            raise Error('Can not compare an edge to a non-edge object.')
 
         if self.get_parent_graph().get_top_graph_type() == 'graph':
 
@@ -1739,7 +1740,7 @@ class Dot(Graph):
             f.write(f_data)
             f.close()
 
-        arguments = ['-T{}'.format(format), ] + args + [tmp_name]
+        arguments = ['-T{}'.format(format)] + args + [tmp_name]
 
         try:
             stdout_data, stderr_data, process = call_graphviz(

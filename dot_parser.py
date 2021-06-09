@@ -311,7 +311,7 @@ def push_edge_stmt(str, loc, toks):
 
     if isinstance(toks[2][0], ParseResults):
 
-        n_next_list = [[n.get_name(), ] for n in toks[2][0]]
+        n_next_list = [[n.get_name()] for n in toks[2][0]]
         for n_next in [n for n in n_next_list]:
             n_next_port = do_node_ports(n_next)
             e.append(pydot.Edge(n_prev, n_next[0]+n_next_port, **attrs))
