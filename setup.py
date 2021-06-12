@@ -69,5 +69,11 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=["pydot", "dot_parser"],
     install_requires=["pyparsing>=2.1.4"],
+    extras_require={
+        "dev": [
+            "chardet",
+            "black==21.5b2; python_version > '3.5'",
+        ],
+    },
     tests_require=["chardet"],
 )
