@@ -34,8 +34,8 @@ from pyparsing import (
 
 import pydot
 
-__author__ = ['Michael Krause', 'Ero Carrera']
-__license__ = 'MIT'
+__author__ = ["Michael Krause", "Ero Carrera"]
+__license__ = "MIT"
 
 
 PY3 = sys.version_info >= (3, 0, 0)
@@ -52,7 +52,7 @@ class P_AttrList(object):
 
         while i < len(toks):
             attrname = toks[i]
-            if i + 2 < len(toks) and toks[i + 1] == '=':
+            if i + 2 < len(toks) and toks[i + 1] == "=":
                 attrvalue = toks[i + 2]
                 i += 3
             else:
@@ -95,15 +95,15 @@ def push_top_graph_stmt(str, loc, toks):
 
             element = element[0]
 
-        if element == 'strict':
-            attrs['strict'] = True
+        if element == "strict":
+            attrs["strict"] = True
 
-        elif element in ['graph', 'digraph']:
+        elif element in ["graph", "digraph"]:
 
             attrs = {}
 
             g = pydot.Dot(graph_type=element, **attrs)
-            attrs['type'] = element
+            attrs["type"] = element
 
             top_graphs.append(g)
 
@@ -112,10 +112,10 @@ def push_top_graph_stmt(str, loc, toks):
 
         elif isinstance(element, pydot.Subgraph):
 
-            g.obj_dict['attributes'].update(element.obj_dict['attributes'])
-            g.obj_dict['edges'].update(element.obj_dict['edges'])
-            g.obj_dict['nodes'].update(element.obj_dict['nodes'])
-            g.obj_dict['subgraphs'].update(element.obj_dict['subgraphs'])
+            g.obj_dict["attributes"].update(element.obj_dict["attributes"])
+            g.obj_dict["edges"].update(element.obj_dict["edges"])
+            g.obj_dict["nodes"].update(element.obj_dict["nodes"])
+            g.obj_dict["subgraphs"].update(element.obj_dict["subgraphs"])
 
             g.set_parent_graph(g)
 
@@ -127,7 +127,7 @@ def push_top_graph_stmt(str, loc, toks):
 
         else:
             raise ValueError(
-                'Unknown element statement: {s}'.format(s=element)
+                "Unknown element statement: {s}".format(s=element)
             )
 
     for g in top_graphs:
@@ -143,7 +143,7 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
     if parent_graph is None:
         parent_graph = g
 
-    for key_name in ('edges',):
+    for key_name in ("edges",):
 
         if isinstance(g, pydot.frozendict):
             item_dict = g
@@ -156,26 +156,26 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
         for key, objs in item_dict[key_name].items():
             for obj in objs:
                 if (
-                    'parent_graph' in obj
-                    and obj['parent_graph'].get_parent_graph() == g
+                    "parent_graph" in obj
+                    and obj["parent_graph"].get_parent_graph() == g
                 ):
-                    if obj['parent_graph'] is g:
+                    if obj["parent_graph"] is g:
                         pass
                     else:
-                        obj['parent_graph'].set_parent_graph(parent_graph)
+                        obj["parent_graph"].set_parent_graph(parent_graph)
 
-                if key_name == 'edges' and len(key) == 2:
-                    for idx, vertex in enumerate(obj['points']):
+                if key_name == "edges" and len(key) == 2:
+                    for idx, vertex in enumerate(obj["points"]):
                         if isinstance(
                             vertex,
                             (pydot.Graph, pydot.Subgraph, pydot.Cluster),
                         ):
                             vertex.set_parent_graph(parent_graph)
                         if isinstance(vertex, pydot.frozendict):
-                            if vertex['parent_graph'] is g:
+                            if vertex["parent_graph"] is g:
                                 pass
                             else:
-                                vertex['parent_graph'].set_parent_graph(
+                                vertex["parent_graph"].set_parent_graph(
                                     parent_graph
                                 )
 
@@ -223,56 +223,56 @@ def add_elements(
 
         elif isinstance(element, DefaultStatement):
 
-            if element.default_type == 'graph':
+            if element.default_type == "graph":
 
-                default_graph_attrs = pydot.Node('graph', **element.attrs)
+                default_graph_attrs = pydot.Node("graph", **element.attrs)
                 g.add_node(default_graph_attrs)
 
-            elif element.default_type == 'node':
+            elif element.default_type == "node":
 
-                default_node_attrs = pydot.Node('node', **element.attrs)
+                default_node_attrs = pydot.Node("node", **element.attrs)
                 g.add_node(default_node_attrs)
 
-            elif element.default_type == 'edge':
+            elif element.default_type == "edge":
 
-                default_edge_attrs = pydot.Node('edge', **element.attrs)
+                default_edge_attrs = pydot.Node("edge", **element.attrs)
                 g.add_node(default_edge_attrs)
                 defaults_edge.update(element.attrs)
 
             else:
                 raise ValueError(
-                    'Unknown DefaultStatement: {s}'.format(
+                    "Unknown DefaultStatement: {s}".format(
                         s=element.default_type
                     )
                 )
 
         elif isinstance(element, P_AttrList):
 
-            g.obj_dict['attributes'].update(element.attrs)
+            g.obj_dict["attributes"].update(element.attrs)
 
         else:
             raise ValueError(
-                'Unknown element statement: {s}'.format(s=element)
+                "Unknown element statement: {s}".format(s=element)
             )
 
 
 def push_graph_stmt(str, loc, toks):
-    g = pydot.Subgraph('')
+    g = pydot.Subgraph("")
     add_elements(g, toks)
     return g
 
 
 def push_subgraph_stmt(str, loc, toks):
-    g = pydot.Subgraph('')
+    g = pydot.Subgraph("")
     for e in toks:
         if len(e) == 3:
             e[2].set_name(e[1])
-            if e[0] == 'subgraph':
-                e[2].obj_dict['show_keyword'] = True
+            if e[0] == "subgraph":
+                e[2].obj_dict["show_keyword"] = True
             return e[2]
         else:
-            if e[0] == 'subgraph':
-                e[1].obj_dict['show_keyword'] = True
+            if e[0] == "subgraph":
+                e[1].obj_dict["show_keyword"] = True
             return e[1]
 
     return g
@@ -289,10 +289,10 @@ def push_default_stmt(str, loc, toks):
     else:
         attrs = {}
 
-    if default_type in ['graph', 'node', 'edge']:
+    if default_type in ["graph", "node", "edge"]:
         return DefaultStatement(default_type, attrs)
     else:
-        raise ValueError('Unknown default statement: {s}'.format(s=toks))
+        raise ValueError("Unknown default statement: {s}".format(s=toks))
 
 
 def push_attr_list(str, loc, toks):
@@ -304,16 +304,16 @@ def get_port(node):
     if len(node) > 1:
         if isinstance(node[1], ParseResults):
             if len(node[1][0]) == 2:
-                if node[1][0][0] == ':':
+                if node[1][0][0] == ":":
                     return node[1][0][1]
 
     return None
 
 
 def do_node_ports(node):
-    node_port = ''
+    node_port = ""
     if len(node) > 1:
-        node_port = ''.join([str(a) + str(b) for a, b in node[1]])
+        node_port = "".join([str(a) + str(b) for a, b in node[1]])
 
     return node_port
 
@@ -372,7 +372,7 @@ def push_edge_stmt(str, loc, toks):
             n_prev = n_next[0] + n_next_port
     else:
         raise Exception(
-            'Edge target {r} with type {s} unsupported.'.format(
+            "Edge target {r} with type {s} unsupported.".format(
                 r=toks[2][0], s=type(toks[2][0])
             )
         )
@@ -432,17 +432,17 @@ def graph_definition():
         identifier = Word(alphanums + "_.").setName("identifier")
 
         double_quoted_string = QuotedString(
-            '"', multiline=True, unquoteResults=False, escChar='\\'
+            '"', multiline=True, unquoteResults=False, escChar="\\"
         )
 
         noncomma = "".join([c for c in printables if c != ","])
-        alphastring_ = OneOrMore(CharsNotIn(noncomma + ' '))
+        alphastring_ = OneOrMore(CharsNotIn(noncomma + " "))
 
         def parse_html(s, loc, toks):
-            return '<%s>' % ''.join(toks[0])
+            return "<%s>" % "".join(toks[0])
 
-        opener = '<'
-        closer = '>'
+        opener = "<"
+        closer = ">"
         html_text = (
             nestedExpr(opener, closer, (CharsNotIn(opener + closer)))
             .setParseAction(parse_html)
@@ -504,7 +504,7 @@ def graph_definition():
         )
 
         edge_point << Group(subgraph | graph_stmt | node_id).setName(
-            'edge_point'
+            "edge_point"
         )
 
         node_stmt = (

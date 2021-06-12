@@ -50,7 +50,7 @@ start with. Here are 3 common options:
     ```python
     import pydot
 
-    graphs = pydot.graph_from_dot_file('example.dot')
+    graphs = pydot.graph_from_dot_file("example.dot")
     graph = graphs[0]
     ```
 
@@ -81,19 +81,19 @@ start with. Here are 3 common options:
     ```python
     import pydot
 
-    graph = pydot.Dot('my_graph', graph_type='graph', bgcolor='yellow')
+    graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="yellow")
 
     # Add nodes
-    my_node = pydot.Node('a', label='Foo')
+    my_node = pydot.Node("a", label="Foo")
     graph.add_node(my_node)
     # Or, without using an intermediate variable:
-    graph.add_node(pydot.Node('b', shape='circle'))
+    graph.add_node(pydot.Node("b", shape="circle"))
 
     # Add edges
-    my_edge = pydot.Edge('a', 'b', color='blue')
+    my_edge = pydot.Edge("a", "b", color="blue")
     graph.add_edge(my_edge)
     # Or, without using an intermediate variable:
-    graph.add_edge(pydot.Edge('b', 'c', color='blue'))
+    graph.add_edge(pydot.Edge("b", "c", color="blue"))
     ```
 
     Imagine using these basic building blocks from your Python program
@@ -124,14 +124,14 @@ You can now further manipulate your graph using pydot methods:
 - Add further nodes and edges:
 
   ```python
-  graph.add_edge(pydot.Edge('b', 'd', style='dotted'))
+  graph.add_edge(pydot.Edge("b", "d", style="dotted"))
   ```
 
 - Edit attributes of graph, nodes and edges:
 
   ```python
-  graph.set_bgcolor('lightyellow')
-  graph.get_node('b')[0].set_shape('box')
+  graph.set_bgcolor("lightyellow")
+  graph.get_node("b")[0].set_shape("box")
   ```
 
 Output
@@ -155,7 +155,7 @@ Here are 3 different output options:
       the `write_*` methods:
 
       ```python
-      graph.write_png('output.png')
+      graph.write_png("output.png")
       ```
 
 2. Retrieve the DOT string.
@@ -170,7 +170,7 @@ Here are 3 different output options:
       # As a string:
       output_raw_dot = graph.to_string()
       # Or, save it as a DOT-file:
-      graph.write_raw('output_raw.dot')
+      graph.write_raw("output_raw.dot")
       ```
 
     - The Graphviz DOT: You can use it to check how Graphviz lays out
@@ -181,7 +181,7 @@ Here are 3 different output options:
       # As a bytes literal:
       output_graphviz_dot = graph.create_dot()
       # Or, save it as a DOT-file:
-      graph.write_dot('output_graphviz.dot')
+      graph.write_dot("output_graphviz.dot")
       ```
 
 3. Convert to a NetworkX graph.

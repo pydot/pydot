@@ -20,9 +20,9 @@ import pydot
 import unittest
 
 
-TEST_PROGRAM = 'dot'
-TESTS_DIR_1 = 'my_tests'
-TESTS_DIR_2 = 'graphs'
+TEST_PROGRAM = "dot"
+TESTS_DIR_1 = "my_tests"
+TESTS_DIR_2 = "graphs"
 
 
 class TestGraphAPI(unittest.TestCase):
@@ -30,33 +30,33 @@ class TestGraphAPI(unittest.TestCase):
         self._reset_graphs()
 
     def _reset_graphs(self):
-        self.graph_directed = pydot.Graph('testgraph', graph_type='digraph')
+        self.graph_directed = pydot.Graph("testgraph", graph_type="digraph")
 
     def test_keep_graph_type(self):
-        g = pydot.Dot(graph_name='Test', graph_type='graph')
-        self.assertEqual(g.get_type(), 'graph')
-        g = pydot.Dot(graph_name='Test', graph_type='digraph')
-        self.assertEqual(g.get_type(), 'digraph')
+        g = pydot.Dot(graph_name="Test", graph_type="graph")
+        self.assertEqual(g.get_type(), "graph")
+        g = pydot.Dot(graph_name="Test", graph_type="digraph")
+        self.assertEqual(g.get_type(), "digraph")
 
     def test_add_style(self):
-        g = pydot.Dot(graph_name='Test', graph_type='graph')
-        node = pydot.Node('mynode')
-        node.add_style('abc')
-        self.assertEqual(node.get_style(), 'abc')
-        node.add_style('def')
-        self.assertEqual(node.get_style(), 'abc,def')
-        node.add_style('ghi')
-        self.assertEqual(node.get_style(), 'abc,def,ghi')
+        g = pydot.Dot(graph_name="Test", graph_type="graph")
+        node = pydot.Node("mynode")
+        node.add_style("abc")
+        self.assertEqual(node.get_style(), "abc")
+        node.add_style("def")
+        self.assertEqual(node.get_style(), "abc,def")
+        node.add_style("ghi")
+        self.assertEqual(node.get_style(), "abc,def,ghi")
 
     def test_create_simple_graph_with_node(self):
         g = pydot.Dot()
-        g.set_type('digraph')
-        node = pydot.Node('legend')
-        node.set("shape", 'box')
+        g.set_type("digraph")
+        node = pydot.Node("legend")
+        node.set("shape", "box")
         g.add_node(node)
-        node.set('label', 'mine')
+        node.set("label", "mine")
         s = g.to_string()
-        expected = 'digraph G {\nlegend [label=mine, shape=box];\n}\n'
+        expected = "digraph G {\nlegend [label=mine, shape=box];\n}\n"
         assert s == expected
 
     def test_attribute_with_implicit_value(self):
@@ -65,7 +65,7 @@ class TestGraphAPI(unittest.TestCase):
         (g,) = graphs
         attrs = g.get_edges()[0].get_attributes()
 
-        self.assertEqual('decorate' in attrs, True)
+        self.assertEqual("decorate" in attrs, True)
 
     def test_subgraphs(self):
         g = pydot.Graph()
@@ -83,10 +83,10 @@ class TestGraphAPI(unittest.TestCase):
         g = pydot.Graph()
         s = pydot.Subgraph("foo")
         g.add_subgraph(s)
-        g.add_edge(pydot.Edge('A', 'B'))
-        g.add_edge(pydot.Edge('A', 'C'))
-        g.add_edge(pydot.Edge(('D', 'E')))
-        g.add_node(pydot.Node('node!'))
+        g.add_edge(pydot.Edge("A", "B"))
+        g.add_edge(pydot.Edge("A", "C"))
+        g.add_edge(pydot.Edge(("D", "E")))
+        g.add_node(pydot.Node("node!"))
         pickle.dumps(g)
 
     def test_unicode_ids(self):
@@ -94,7 +94,7 @@ class TestGraphAPI(unittest.TestCase):
         node2 = '"îôø®çßΩ"'
 
         g = pydot.Dot()
-        g.set_charset('latin1')
+        g.set_charset("latin1")
         g.add_node(pydot.Node(node1))
         g.add_node(pydot.Node(node2))
         g.add_edge(pydot.Edge(node1, node2))
@@ -116,35 +116,35 @@ class TestGraphAPI(unittest.TestCase):
     def test_graph_simplify(self):
         # Fail example: pydot 1.0.2. GH pydot/pydot#92 OP patch 1.
         g = pydot.Graph()
-        g.add_edge(pydot.Edge('a', 'b'))
-        g.add_edge(pydot.Edge('a', 'b'))
-        g.add_edge(pydot.Edge('b', 'a'))
-        g.add_edge(pydot.Edge('b', 'a'))
+        g.add_edge(pydot.Edge("a", "b"))
+        g.add_edge(pydot.Edge("a", "b"))
+        g.add_edge(pydot.Edge("b", "a"))
+        g.add_edge(pydot.Edge("b", "a"))
         test_combinations = [
             (
-                'graph',
+                "graph",
                 False,
-                'graph G { a -- b; a -- b; b -- a; b -- a; }',
+                "graph G { a -- b; a -- b; b -- a; b -- a; }",
             ),
             (
-                'graph',
+                "graph",
                 True,
-                'graph G { a -- b; }',
+                "graph G { a -- b; }",
             ),
             (
-                'digraph',
+                "digraph",
                 False,
-                'digraph G { a -> b; a -> b; b -> a; b -> a; }',
+                "digraph G { a -> b; a -> b; b -> a; b -> a; }",
             ),
             (
-                'digraph',
+                "digraph",
                 True,
-                'digraph G { a -> b; b -> a; }',
+                "digraph G { a -> b; b -> a; }",
             ),
         ]
-        expected_concat = observed_concat = ''
+        expected_concat = observed_concat = ""
         for (graph_type, simplify, expected) in test_combinations:
-            expected_concat += 'graph_type %s, simplify %s: %s\n' % (
+            expected_concat += "graph_type %s, simplify %s: %s\n" % (
                 graph_type,
                 simplify,
                 expected,
@@ -152,10 +152,10 @@ class TestGraphAPI(unittest.TestCase):
             g.set_type(graph_type)
             g.set_simplify(simplify)
             try:
-                observed = ' '.join(g.to_string().split())
+                observed = " ".join(g.to_string().split())
             except (NameError, TypeError) as e:
-                observed = '%s: %s' % (type(e).__name__, e)
-            observed_concat += 'graph_type %s, simplify %s: %s\n' % (
+                observed = "%s: %s" % (type(e).__name__, e)
+            observed_concat += "graph_type %s, simplify %s: %s\n" % (
                 graph_type,
                 simplify,
                 observed,
@@ -164,23 +164,23 @@ class TestGraphAPI(unittest.TestCase):
         self.assertMultiLineEqual(expected_concat, observed_concat)
 
     def test_graph_with_shapefiles(self):
-        shapefile_dir = os.path.join(test_dir, 'from-past-to-future')
+        shapefile_dir = os.path.join(test_dir, "from-past-to-future")
         # image files are omitted from sdist
         if not os.path.isdir(shapefile_dir):
             warnings.warn(
-                'Skipping tests that involve images, '
-                'they can be found in the `git` repository.'
+                "Skipping tests that involve images, "
+                "they can be found in the `git` repository."
             )
             return
-        dot_file = os.path.join(shapefile_dir, 'from-past-to-future.dot')
+        dot_file = os.path.join(shapefile_dir, "from-past-to-future.dot")
 
         pngs = [
             os.path.join(shapefile_dir, fname)
             for fname in os.listdir(shapefile_dir)
-            if fname.endswith('.png')
+            if fname.endswith(".png")
         ]
 
-        f = open(dot_file, 'rt')
+        f = open(dot_file, "rt")
         graph_data = f.read()
         f.close()
 
@@ -188,27 +188,27 @@ class TestGraphAPI(unittest.TestCase):
         (g,) = graphs
         g.set_shape_files(pngs)
 
-        jpe_data = g.create(format='jpe')
+        jpe_data = g.create(format="jpe")
 
         hexdigest = sha256(jpe_data).hexdigest()
         hexdigest_original = self._render_with_graphviz(
-            dot_file, encoding='ascii'
+            dot_file, encoding="ascii"
         )
         self.assertEqual(hexdigest, hexdigest_original)
 
     def test_multiple_graphs(self):
-        graph_data = 'graph A { a->b };\ngraph B {c->d}'
+        graph_data = "graph A { a->b };\ngraph B {c->d}"
         graphs = pydot.graph_from_dot_data(graph_data)
         n = len(graphs)
         assert n == 2, n
         names = [g.get_name() for g in graphs]
-        assert names == ['A', 'B'], names
+        assert names == ["A", "B"], names
 
     def _render_with_graphviz(self, filename, encoding):
-        with io.open(filename, 'rt', encoding=encoding) as stdin:
+        with io.open(filename, "rt", encoding=encoding) as stdin:
             stdout_data, stderr_data, process = pydot.call_graphviz(
                 program=TEST_PROGRAM,
-                arguments=['-Tjpe'],
+                arguments=["-Tjpe"],
                 working_dir=os.path.dirname(filename),
                 stdin=stdin,
             )
@@ -221,7 +221,7 @@ class TestGraphAPI(unittest.TestCase):
         jpe_data = bytearray()
         for g in c:
             jpe_data.extend(
-                g.create(prog=TEST_PROGRAM, format='jpe', encoding=encoding)
+                g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
             )
         return sha256(jpe_data).hexdigest()
 
@@ -235,17 +235,17 @@ class TestGraphAPI(unittest.TestCase):
 
     def _render_and_compare_dot_files(self, directory):
         # files that confuse `chardet`
-        encodings = {'Latin1.dot': 'latin-1'}
+        encodings = {"Latin1.dot": "latin-1"}
         dot_files = [
-            fname for fname in os.listdir(directory) if fname.endswith('.dot')
+            fname for fname in os.listdir(directory) if fname.endswith(".dot")
         ]
         for fname in dot_files:
             fpath = os.path.join(directory, fname)
-            with open(fpath, 'rb') as f:
+            with open(fpath, "rb") as f:
                 s = f.read()
             estimate = chardet.detect(s)
-            encoding = encodings.get(fname, estimate['encoding'])
-            os.sys.stdout.write('#')
+            encoding = encodings.get(fname, estimate["encoding"])
+            os.sys.stdout.write("#")
             os.sys.stdout.flush()
             pydot_sha = self._render_with_pydot(fpath, encoding)
             graphviz_sha = self._render_with_graphviz(fpath, encoding)
@@ -254,7 +254,7 @@ class TestGraphAPI(unittest.TestCase):
     def test_numeric_node_id(self):
         self._reset_graphs()
         self.graph_directed.add_node(pydot.Node(1))
-        self.assertEqual(self.graph_directed.get_nodes()[0].get_name(), '1')
+        self.assertEqual(self.graph_directed.get_nodes()[0].get_name(), "1")
 
     def test_quoted_node_id(self):
         self._reset_graphs()
@@ -272,24 +272,24 @@ class TestGraphAPI(unittest.TestCase):
 
     def test_keyword_node_id(self):
         self._reset_graphs()
-        self.graph_directed.add_node(pydot.Node('node'))
-        self.assertEqual(self.graph_directed.get_nodes()[0].get_name(), 'node')
+        self.graph_directed.add_node(pydot.Node("node"))
+        self.assertEqual(self.graph_directed.get_nodes()[0].get_name(), "node")
 
     def test_keyword_node_id_to_string_no_attributes(self):
         self._reset_graphs()
-        self.graph_directed.add_node(pydot.Node('node'))
-        self.assertEqual(self.graph_directed.get_nodes()[0].to_string(), '')
+        self.graph_directed.add_node(pydot.Node("node"))
+        self.assertEqual(self.graph_directed.get_nodes()[0].to_string(), "")
 
     def test_keyword_node_id_to_string_with_attributes(self):
         self._reset_graphs()
-        self.graph_directed.add_node(pydot.Node('node', shape='box'))
+        self.graph_directed.add_node(pydot.Node("node", shape="box"))
         self.assertEqual(
-            self.graph_directed.get_nodes()[0].to_string(), 'node [shape=box];'
+            self.graph_directed.get_nodes()[0].to_string(), "node [shape=box];"
         )
 
     def test_names_of_a_thousand_nodes(self):
         self._reset_graphs()
-        names = {'node_%05d' % i for i in range(10 ** 3)}
+        names = {"node_%05d" % i for i in range(10 ** 3)}
         for name in names:
             self.graph_directed.add_node(pydot.Node(name, label=name))
 
@@ -298,103 +298,103 @@ class TestGraphAPI(unittest.TestCase):
         )
 
     def test_executable_not_found_exception(self):
-        graph = pydot.Dot('graphname', graph_type='digraph')
-        self.assertRaises(Exception, graph.create, prog='dothehe')
+        graph = pydot.Dot("graphname", graph_type="digraph")
+        self.assertRaises(Exception, graph.create, prog="dothehe")
 
     def test_graph_add_node_argument_type(self):
         self._reset_graphs()
         self.assertRaises(TypeError, self.graph_directed.add_node, 1)
-        self.assertRaises(TypeError, self.graph_directed.add_node, 'a')
+        self.assertRaises(TypeError, self.graph_directed.add_node, "a")
 
     def test_graph_add_edge_argument_type(self):
         self._reset_graphs()
         self.assertRaises(TypeError, self.graph_directed.add_edge, 1)
-        self.assertRaises(TypeError, self.graph_directed.add_edge, 'a')
+        self.assertRaises(TypeError, self.graph_directed.add_edge, "a")
 
     def test_graph_add_subgraph_argument_type(self):
         self._reset_graphs()
         self.assertRaises(TypeError, self.graph_directed.add_subgraph, 1)
-        self.assertRaises(TypeError, self.graph_directed.add_subgraph, 'a')
+        self.assertRaises(TypeError, self.graph_directed.add_subgraph, "a")
 
     def test_quoting(self):
         g = pydot.Dot()
         g.add_node(pydot.Node("test", label=string.printable))
-        data = g.create(format='jpe')
+        data = g.create(format="jpe")
         self.assertEqual(len(data) > 0, True)
 
     def test_dot_args(self):
         g = pydot.Dot()
-        u = pydot.Node('a')
+        u = pydot.Node("a")
         g.add_node(u)
-        g.write_svg('test.svg', prog=['twopi', '-Goverlap=scale'])
+        g.write_svg("test.svg", prog=["twopi", "-Goverlap=scale"])
 
     def test_edge_equality_basics_3_same_points_not_not_equal(self):
         # Fail example: pydot 1.4.1 on Python 2.
         g = pydot.Graph()
-        e1 = pydot.Edge('a', 'b')
-        e2 = pydot.Edge('a', 'b')
+        e1 = pydot.Edge("a", "b")
+        e2 = pydot.Edge("a", "b")
         g.add_edge(e1)
         g.add_edge(e2)
         self.assertFalse(e1 != e2)
 
     def test_edge_point_namestr(self):
         self._reset_graphs()
-        self.graph_directed.add_edge(pydot.Edge('a', 'b'))
+        self.graph_directed.add_edge(pydot.Edge("a", "b"))
         self.assertEqual(
-            self.graph_directed.get_edges()[0].to_string(), 'a -> b;'
+            self.graph_directed.get_edges()[0].to_string(), "a -> b;"
         )
 
     def test_edge_point_object_node(self):
         self._reset_graphs()
         self.graph_directed.add_edge(
-            pydot.Edge(pydot.Node('a'), pydot.Node('b'))
+            pydot.Edge(pydot.Node("a"), pydot.Node("b"))
         )
         self.assertEqual(
-            self.graph_directed.get_edges()[0].to_string(), 'a -> b;'
+            self.graph_directed.get_edges()[0].to_string(), "a -> b;"
         )
 
     def test_edge_point_object_subgraph(self):
         self._reset_graphs()
         self.graph_directed.add_edge(
-            pydot.Edge(pydot.Subgraph('a'), pydot.Subgraph('b'))
+            pydot.Edge(pydot.Subgraph("a"), pydot.Subgraph("b"))
         )
         self.assertEqual(
-            self.graph_directed.get_edges()[0].to_string(), 'a -> b;'
+            self.graph_directed.get_edges()[0].to_string(), "a -> b;"
         )
 
     def test_edge_point_object_cluster(self):
         self._reset_graphs()
         self.graph_directed.add_edge(
-            pydot.Edge(pydot.Cluster('a'), pydot.Cluster('b'))
+            pydot.Edge(pydot.Cluster("a"), pydot.Cluster("b"))
         )
         self.assertEqual(
             self.graph_directed.get_edges()[0].to_string(),
-            'cluster_a -> cluster_b;',
+            "cluster_a -> cluster_b;",
         )
 
     def test_graph_from_adjacency_matrix(self):
         g = pydot.graph_from_adjacency_matrix(
             [[0, 1, 0], [1, 0, 0], [0, 1, 1]], directed=True
         )
-        s = ' '.join(g.to_string().split())
-        self.assertEqual(s, 'digraph G { 1 -> 2; 2 -> 1; 3 -> 2; 3 -> 3; }')
+        s = " ".join(g.to_string().split())
+        self.assertEqual(s, "digraph G { 1 -> 2; 2 -> 1; 3 -> 2; 3 -> 3; }")
         g = pydot.graph_from_adjacency_matrix(
             [[0, 1, 0], [1, 0, 0], [0, 0, 1]], directed=False
         )
-        s = ' '.join(g.to_string().split())
-        self.assertEqual(s, 'graph G { 1 -- 2; 3 -- 3; }')
+        s = " ".join(g.to_string().split())
+        self.assertEqual(s, "graph G { 1 -- 2; 3 -- 3; }")
 
     def test_graph_from_incidence_matrix(self):
         g = pydot.graph_from_incidence_matrix(
             [[-1, 1, 0], [1, -1, 0], [0, 1, -1]], directed=True
         )
-        s = ' '.join(g.to_string().split())
-        self.assertEqual(s, 'digraph G { 1 -> 2; 2 -> 1; 3 -> 2; }')
+        s = " ".join(g.to_string().split())
+        self.assertEqual(s, "digraph G { 1 -> 2; 2 -> 1; 3 -> 2; }")
         g = pydot.graph_from_incidence_matrix(
             [[1, 1, 0], [0, 1, 1]], directed=False
         )
-        s = ' '.join(g.to_string().split())
-        self.assertEqual(s, 'graph G { 1 -- 2; 2 -- 3; }')
+        s = " ".join(g.to_string().split())
+        self.assertEqual(s, "graph G { 1 -- 2; 2 -- 3; }")
 
 
 def check_path():
@@ -402,19 +402,19 @@ def check_path():
     if not_check:
         return
     assert not os.path.isfile(
-        'setup.py'
-    ), 'running out of source does not test the installed `pydot`.'
+        "setup.py"
+    ), "running out of source does not test the installed `pydot`."
 
 
 def parse_args():
     """Return arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--no-check',
-        action='store_true',
+        "--no-check",
+        action="store_true",
         help=(
-            'do not require that no `setup.py` be present '
-            'in the current working directory.'
+            "do not require that no `setup.py` be present "
+            "in the current working directory."
         ),
     )
     args, unknown = parser.parse_known_args()
@@ -423,8 +423,8 @@ def parse_args():
     return args.no_check
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     check_path()
     test_dir = os.path.dirname(sys.argv[0])
-    print('The tests are using `pydot` from:  {pd}'.format(pd=pydot))
+    print("The tests are using `pydot` from:  {pd}".format(pd=pydot))
     unittest.main(verbosity=2)
