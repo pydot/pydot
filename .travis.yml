@@ -20,6 +20,18 @@ matrix:
       arch: ppc64le
     - python: 3.9
       arch: ppc64le
+    # Additional job to run linters that only need to run once.
+    - name: black
+      language: python
+      python: 3.6
+      arch: amd64
+      addons:
+        apt:
+          packages: []
+      install:
+        - pip install -e .[dev]
+      script:
+        - black --check --diff .
 
 addons:
   apt:
@@ -35,6 +47,3 @@ install:
 script:
   - cd test/
   - python pydot_unittest.py
-
-# after_success:
-#   - coveralls
