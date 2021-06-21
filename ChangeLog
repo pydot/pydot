@@ -7,7 +7,12 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 2.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Removed:
+- Drop support for Python 2 and Python 3.4. (#229)
+  **USER FEEDBACK REQUESTED**
+  We are considering if pydot 2.0 should drop support for Python 3.5
+  and 3.6 as well. If this would affect you, please leave a comment in
+  https://github.com/pydot/pydot/issues/268.
 
 
 1.4.2 (2021-02-15)
