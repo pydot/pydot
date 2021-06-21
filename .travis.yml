@@ -11,12 +11,11 @@ python:
 matrix:
   include:
     # Python versions that are EOL, but we still support.
-    # PY2.7 here should bring out any PY3.5 incompatibilities as well.
-    - python: 2.7
+    - python: 3.5
       arch: amd64
     # pydot itself should be architecture-independent. Still, some
     # limited testing on other architectures to catch corner cases.
-    - python: 2.7
+    - python: 3.5
       arch: ppc64le
     - python: 3.9
       arch: ppc64le
