@@ -140,7 +140,7 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
         shell=False,
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        **kwargs
+        **kwargs,
     )
     stdout_data, stderr_data = process.communicate()
 
@@ -1491,7 +1491,7 @@ class Subgraph(Graph):
             obj_dict=obj_dict,
             suppress_disconnected=suppress_disconnected,
             simplify=simplify,
-            **attrs
+            **attrs,
         )
 
         if obj_dict is None:
@@ -1545,7 +1545,7 @@ class Cluster(Graph):
             obj_dict=obj_dict,
             suppress_disconnected=suppress_disconnected,
             simplify=simplify,
-            **attrs
+            **attrs,
         )
 
         if obj_dict is None:
