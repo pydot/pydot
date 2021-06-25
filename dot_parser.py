@@ -81,7 +81,7 @@ class DefaultStatement(P_AttrList):
 top_graphs = list()
 
 
-def push_top_graph_stmt(str, loc, toks):
+def push_top_graph_stmt(s, loc, toks):
     attrs = {}
     g = None
 
@@ -256,13 +256,13 @@ def add_elements(
             )
 
 
-def push_graph_stmt(str, loc, toks):
+def push_graph_stmt(s, loc, toks):
     g = pydot.Subgraph("")
     add_elements(g, toks)
     return g
 
 
-def push_subgraph_stmt(str, loc, toks):
+def push_subgraph_stmt(s, loc, toks):
     g = pydot.Subgraph("")
     for e in toks:
         if len(e) == 3:
@@ -278,7 +278,7 @@ def push_subgraph_stmt(str, loc, toks):
     return g
 
 
-def push_default_stmt(str, loc, toks):
+def push_default_stmt(s, loc, toks):
     # The pydot class instances should be marked as
     # default statements to be inherited by actual
     # graphs, nodes and edges.
@@ -295,7 +295,7 @@ def push_default_stmt(str, loc, toks):
         raise ValueError("Unknown default statement: {s}".format(s=toks))
 
 
-def push_attr_list(str, loc, toks):
+def push_attr_list(s, loc, toks):
     p = P_AttrList(toks)
     return p
 
@@ -318,7 +318,7 @@ def do_node_ports(node):
     return node_port
 
 
-def push_edge_stmt(str, loc, toks):
+def push_edge_stmt(s, loc, toks):
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:

@@ -7,6 +7,18 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 2.0.0 (unreleased)
 ------------------
 
+Changed:
+- API (minor): Renamed the first parameter of the parser functions
+  listed below from `str` to `s`. These functions primarily exist for
+  internal use and would normally be called using positional arguments,
+  so few users should be affected. (#229)
+      push_top_graph_stmt(s, loc, toks)
+      push_graph_stmt(s, loc, toks)
+      push_subgraph_stmt(s, loc, toks)
+      push_default_stmt(s, loc, toks)
+      push_attr_list(s, loc, toks)
+      push_edge_stmt(s, loc, toks)
+
 Removed:
 - Drop support for Python 2 and Python 3.4. (#229)
   **USER FEEDBACK REQUESTED**
