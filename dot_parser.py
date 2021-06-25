@@ -7,10 +7,6 @@ into a class representation defined by `pydot`.
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
-from __future__ import division
-from __future__ import print_function
-import sys
-
 from pyparsing import (
     nestedExpr,
     Literal,
@@ -36,13 +32,6 @@ import pydot
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
-
-
-PY3 = sys.version_info >= (3, 0, 0)
-if PY3:
-    str_type = str
-else:
-    str_type = basestring
 
 
 class P_AttrList(object):
@@ -90,7 +79,7 @@ def push_top_graph_stmt(s, loc, toks):
         if (
             isinstance(element, (ParseResults, tuple, list))
             and len(element) == 1
-            and isinstance(element[0], str_type)
+            and isinstance(element[0], str)
         ):
 
             element = element[0]
@@ -107,7 +96,7 @@ def push_top_graph_stmt(s, loc, toks):
 
             top_graphs.append(g)
 
-        elif isinstance(element, str_type):
+        elif isinstance(element, str):
             g.set_name(element)
 
         elif isinstance(element, pydot.Subgraph):
@@ -357,12 +346,12 @@ def push_edge_stmt(s, loc, toks):
         e.append(pydot.Edge(n_prev, name_port, **attrs))
 
     # if the target of this edge is the name of a node
-    elif isinstance(toks[2][0], str_type):
+    elif isinstance(toks[2][0], str):
 
         for n_next in [n for n in tuple(toks)[2::2]]:
 
             if isinstance(n_next, P_AttrList) or not isinstance(
-                n_next[0], str_type
+                n_next[0], str
             ):
                 continue
 

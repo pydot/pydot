@@ -1,6 +1,4 @@
 """An interface to GraphViz."""
-from __future__ import division
-from __future__ import print_function
 import copy
 import io
 import errno
@@ -24,13 +22,6 @@ except Exception as e:
 __author__ = "Ero Carrera"
 __version__ = "2.0.0.dev0"
 __license__ = "MIT"
-
-
-PY3 = sys.version_info >= (3, 0, 0)
-if PY3:
-    str_type = str
-else:
-    str_type = basestring
 
 
 # fmt: off
@@ -273,7 +264,7 @@ def quote_if_necessary(s):
             return "True"
         return "False"
 
-    if not isinstance(s, str_type):
+    if not isinstance(s, str):
         return s
 
     if not s:
@@ -317,8 +308,6 @@ def graph_from_dot_file(path, encoding=None):
     """
     with io.open(path, "rt", encoding=encoding) as f:
         s = f.read()
-    if not PY3:
-        s = unicode(s)
     graphs = graph_from_dot_data(s)
     return graphs
 
@@ -358,7 +347,7 @@ def graph_from_edges(edge_list, node_prefix="", directed=False):
     return graph
 
 
-def graph_from_adjacency_matrix(matrix, node_prefix=u"", directed=False):
+def graph_from_adjacency_matrix(matrix, node_prefix="", directed=False):
     """Creates a basic graph out of an adjacency matrix.
 
     The matrix has to be a list of rows of values
@@ -607,7 +596,7 @@ class Node(Common):
             # Remove the compass point
             #
             port = None
-            if isinstance(name, str_type) and not name.startswith('"'):
+            if isinstance(name, str) and not name.startswith('"'):
                 idx = name.find(":")
                 if idx > 0 and idx + 1 < len(name):
                     name, port = name[:idx], name[idx:]
@@ -774,14 +763,6 @@ class Edge(Common):
                 return True
 
         return False
-
-    if not PY3:
-
-        def __ne__(self, other):
-            result = self.__eq__(other)
-            if result is NotImplemented:
-                return NotImplemented
-            return not result
 
     def parse_node_ref(self, node_str):
         if not isinstance(node_str, str):
@@ -1673,7 +1654,7 @@ class Dot(Graph):
         the same temporary location where the
         graph is going to be rendered.
         """
-        if isinstance(file_paths, str_type):
+        if isinstance(file_paths, str):
             self.shape_files.append(file_paths)
 
         if isinstance(file_paths, (list, tuple)):
@@ -1716,8 +1697,6 @@ class Dot(Graph):
             prog = self.prog
         if format == "raw":
             s = self.to_string()
-            if not PY3:
-                s = unicode(s)
             with io.open(path, mode="wt", encoding=encoding) as f:
                 f.write(s)
         else:
@@ -1732,10 +1711,7 @@ class Dot(Graph):
         create will write the graph to a temporary dot file in the
         encoding specified by `encoding` and process it with the
         program given by 'prog' (which defaults to 'twopi'), reading
-        the binary image output and return it as:
-
-        - `str` of bytes in Python 2
-        - `bytes` in Python 3
+        the binary image output and return it as `bytes`.
 
         There's also the preferred possibility of using:
 
