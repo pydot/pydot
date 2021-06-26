@@ -8,6 +8,43 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 ------------------
 
 Changed:
+- Reorganized package/module structure. (#230)
+  The `pydot` package is installed as a directory now instead of as
+  two modules:
+
+      Before (pydot 0.x, 1.x)    After (pydot 2.x)
+
+      site-packages/             site-packages/
+      |-- pydot.py               `-- pydot/
+      `-- dot_parser.py              |-- __init__.py
+                                     |-- core.py
+                                     |-- dot_parser.py
+                                     `--    ...
+
+  This is mostly an internal change that should go unnoticed by most
+  users, especially those upgrading through `pip` or a software
+  distribution. `import pydot` should work as it did before.
+  Special cases:
+  - `import dot_parser` no longer works. Change it to
+    `from pydot import dot_parser` or see if you can use the wrappers
+    `pydot.graph_from_dot_data()` or `pydot.graph_from_dot_file()`.
+
+    **USER FEEDBACK REQUESTED**
+    We assume pydot users do not often directly `import dot_parser`.
+    If you do, please report your reasons, so that we can consider
+    making it available again before the final release of pydot 2.0:
+    https://github.com/pydot/pydot/issues/230
+
+  - If you use pydot from a (cloned) pydot source tree:
+    - The pydot source modules moved from the top directory to
+      subdirectory `src/pydot/`.
+    - When using a `PYTHONPATH` environment variable: Append `/src`,
+      e.g. `PYTHONPATH=~/Development/pydot/src`. If you need to switch
+      between pydot 1.x and pydot 2.x, add both, e.g.
+      `PYTHONPATH=~/Development/pydot/src:~/Development/pydot`
+    - When using an editable install (development mode): Re-run
+      `pip install -e .` from the top directory of the source tree to
+      update the links.
 - API (minor): Renamed the first parameter of the parser functions
   listed below from `str` to `s`. These functions primarily exist for
   internal use and would normally be called using positional arguments,

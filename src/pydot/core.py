@@ -10,18 +10,13 @@ import tempfile
 import warnings
 
 try:
-    import dot_parser
+    from pydot import dot_parser
 except Exception as e:
     warnings.warn(
         "`pydot` could not import `dot_parser`, "
         "so `pydot` will be unable to parse DOT files. "
         "The error was:  {e}".format(e=e)
     )
-
-
-__author__ = "Ero Carrera"
-__version__ = "2.0.0.dev0"
-__license__ = "MIT"
 
 
 # fmt: off

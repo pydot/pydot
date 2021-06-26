@@ -394,6 +394,9 @@ class TestGraphAPI(unittest.TestCase):
         s = " ".join(g.to_string().split())
         self.assertEqual(s, "graph G { 1 -- 2; 2 -- 3; }")
 
+    def test_version(self):
+        self.assertIsInstance(pydot.__version__, str)
+
 
 def check_path():
     not_check = parse_args()

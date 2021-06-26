@@ -21,7 +21,7 @@ def get_long_description():
 
 
 def get_version():
-    pydot_py = os.path.join(CURRENT_DIR, "pydot.py")
+    pydot_py = os.path.join(CURRENT_DIR, "src", "pydot", "__init__.py")
     _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
     with codecs.open(pydot_py, "r", encoding="utf8") as f:
         match = _version_re.search(f.read())
@@ -32,6 +32,8 @@ def get_version():
 setup(
     name="pydot",
     version=get_version(),
+    package_dir={"": "src"},
+    packages=["pydot"],
     description="Python interface to Graphviz's Dot",
     author="Ero Carrera",
     author_email="ero.carrera@gmail.com",
@@ -64,7 +66,6 @@ setup(
     ],
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    py_modules=["pydot", "dot_parser"],
     install_requires=["pyparsing>=2.1.4"],
     extras_require={
         "dev": [
