@@ -45,6 +45,13 @@ Changed:
     - When using an editable install (development mode): Re-run
       `pip install -e .` from the top directory of the source tree to
       update the links.
+  - For users of the test suite:
+    - The test suite no longer refuses to run from the top of the
+      source tree.
+    - This makes the test suite option `--no-check` redundant. It has
+      no effect except for printing a deprecation warning. It will be
+      removed in a future major release (pydot 3 or higher), then
+      leading to an error.
 - API (minor): Renamed the first parameter of the parser functions
   listed below from `str` to `s`. These functions primarily exist for
   internal use and would normally be called using positional arguments,
@@ -55,6 +62,10 @@ Changed:
       push_default_stmt(s, loc, toks)
       push_attr_list(s, loc, toks)
       push_edge_stmt(s, loc, toks)
+
+Deprecated:
+- Test suite option `--no-check`. See "Reorganized package/module
+  structure" above.
 
 Removed:
 - Drop support for Python 2 and Python 3.4. (#229)

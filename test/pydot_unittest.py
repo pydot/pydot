@@ -398,34 +398,23 @@ class TestGraphAPI(unittest.TestCase):
         self.assertIsInstance(pydot.__version__, str)
 
 
-def check_path():
-    not_check = parse_args()
-    if not_check:
-        return
-    assert not os.path.isfile(
-        "setup.py"
-    ), "running out of source does not test the installed `pydot`."
-
-
 def parse_args():
-    """Return arguments."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--no-check",
-        action="store_true",
-        help=(
-            "do not require that no `setup.py` be present "
-            "in the current working directory."
-        ),
-    )
+    """Parse arguments. Deprecated since pydot 2.0."""
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--no-check", action="store_true")
     args, unknown = parser.parse_known_args()
+    if args.no_check:
+        print(
+            "WARNING: The --no-check option became redundant with pydot 2.0 "
+            "and will be removed in a future major release of pydot.\n",
+            file=sys.stderr,
+        )
     # avoid confusing `unittest`
     sys.argv = [sys.argv[0]] + unknown
-    return args.no_check
 
 
 if __name__ == "__main__":
-    check_path()
+    parse_args()
     test_dir = os.path.dirname(sys.argv[0])
     print("The tests are using `pydot` from:  {pd}".format(pd=pydot))
     unittest.main(verbosity=2)
