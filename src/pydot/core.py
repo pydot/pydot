@@ -9,6 +9,8 @@ import sys
 import tempfile
 import warnings
 
+import pydot
+
 try:
     from pydot import dot_parser
 except Exception as e:
@@ -532,26 +534,6 @@ class Common(object):
             )
 
 
-class Error(Exception):
-    """General error handling class."""
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return self.value
-
-
-class InvocationException(Exception):
-    """Indicate problem while running any GraphViz executable."""
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return self.value
-
-
 class Node(Common):
     """A graph node.
 
@@ -734,7 +716,7 @@ class Edge(Common):
         """
 
         if not isinstance(edge, Edge):
-            raise Error("Can not compare an edge to a non-edge object.")
+            raise pydot.Error("Can not compare an edge to a non-edge object.")
 
         if self.get_parent_graph().get_top_graph_type() == "graph":
 
@@ -891,7 +873,7 @@ class Graph(Common):
             self.obj_dict["attributes"] = dict(attrs)
 
             if graph_type not in ["graph", "digraph"]:
-                raise Error(
+                raise pydot.Error(
                     (
                         'Invalid type "{t}". '
                         "Accepted graph types are: "

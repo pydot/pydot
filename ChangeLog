@@ -19,7 +19,7 @@ Changed:
       `-- dot_parser.py              |-- __init__.py
                                      |-- core.py
                                      |-- dot_parser.py
-                                     `--    ...
+                                     `-- exceptions.py
 
   This is mostly an internal change that should go unnoticed by most
   users, especially those upgrading through `pip` or a software
@@ -52,6 +52,14 @@ Changed:
       no effect except for printing a deprecation warning. It will be
       removed in a future major release (pydot 3 or higher), then
       leading to an error.
+- Reorganized exception hierarchy: (#230)
+  - New base class `PydotException`, derived from Python's `Exception`.
+  - Pydot's `Error` exception class is now derived from `PydotException`
+    instead of from Python's built-in `Exception` directly. Existing
+    handlers should not be affected.
+  - Exception class `InvocationException` was removed. It has not been
+    raised by pydot since 2016 (v1.2.0).
+
 - API (minor): Renamed the first parameter of the parser functions
   listed below from `str` to `s`. These functions primarily exist for
   internal use and would normally be called using positional arguments,
