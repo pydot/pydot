@@ -399,15 +399,18 @@ class TestGraphAPI(unittest.TestCase):
         self.assertIsInstance(pydot.__version__, str)
 
     def test_logging_init(self):
-        with self.assertLogs('pydot', level='DEBUG') as cm:
+        with self.assertLogs("pydot", level="DEBUG") as cm:
             importlib.reload(pydot.dot_parser)
             importlib.reload(pydot.core)
             importlib.reload(pydot)
-        self.assertEqual(cm.output, [
-            'DEBUG:pydot.dot_parser:pydot dot_parser module initializing',
-            'DEBUG:pydot.core:pydot core module initializing',
-            'DEBUG:pydot.core:pydot %s' % pydot.__version__,
-            ])
+        self.assertEqual(
+            cm.output,
+            [
+                "DEBUG:pydot.dot_parser:pydot dot_parser module initializing",
+                "DEBUG:pydot.core:pydot core module initializing",
+                "DEBUG:pydot.core:pydot %s" % pydot.__version__,
+            ],
+        )
 
 
 def parse_args():

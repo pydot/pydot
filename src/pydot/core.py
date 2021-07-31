@@ -22,9 +22,9 @@ except Exception as e:
     )
 
 
-_logger = logging.getLogger('pydot.core')
-_logger.debug('pydot core module initializing')
-_logger.debug('pydot %s', pydot.__version__)
+_logger = logging.getLogger("pydot.core")
+_logger.debug("pydot core module initializing")
+_logger.debug("pydot %s", pydot.__version__)
 
 
 # fmt: off

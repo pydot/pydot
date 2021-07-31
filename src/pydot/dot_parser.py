@@ -36,8 +36,8 @@ __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
 
 
-_logger = logging.getLogger('pydot.dot_parser')
-_logger.debug('pydot dot_parser module initializing')
+_logger = logging.getLogger("pydot.dot_parser")
+_logger.debug("pydot dot_parser module initializing")
 
 
 class P_AttrList(object):
