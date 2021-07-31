@@ -2,6 +2,7 @@
 import copy
 import io
 import errno
+import logging
 import os
 import re
 import subprocess
@@ -19,6 +20,11 @@ except Exception as e:
         "so `pydot` will be unable to parse DOT files. "
         "The error was:  {e}".format(e=e)
     )
+
+
+_logger = logging.getLogger('pydot.core')
+_logger.debug('pydot core module initializing')
+_logger.debug('pydot %s', pydot.__version__)
 
 
 # fmt: off
