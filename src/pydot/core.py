@@ -12,6 +12,11 @@ import warnings
 
 import pydot
 
+
+_logger = logging.getLogger(__name__)
+_logger.debug("pydot core module initializing")
+
+
 try:
     from pydot import dot_parser
 except Exception as e:
@@ -20,11 +25,6 @@ except Exception as e:
         "so `pydot` will be unable to parse DOT files. "
         "The error was:  {e}".format(e=e)
     )
-
-
-_logger = logging.getLogger(__name__)
-_logger.debug("pydot core module initializing")
-_logger.debug("pydot %s", pydot.__version__)
 
 
 # fmt: off

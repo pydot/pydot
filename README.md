@@ -251,6 +251,7 @@ How to enable logging
 `pydot` uses Python's standard `logging` module and registers the
 following loggers:
 
+- `pydot`: Parent logger. Emits a few messages during startup.
 - `pydot.dot_parser`: Messages related to the parsing of DOT strings.
 - `pydot.core`: All other messages.
 
@@ -264,9 +265,10 @@ To see the logs, assuming logging has not been configured already:
     >>> import logging
     >>> logging.basicConfig(level=logging.DEBUG)
     >>> import pydot
-    DEBUG:pydot.dot_parser:pydot dot_parser module initializing
+    DEBUG:pydot:pydot initializing
+    DEBUG:pydot:pydot <version>
     DEBUG:pydot.core:pydot core module initializing
-    DEBUG:pydot.core:pydot <version>
+    DEBUG:pydot.dot_parser:pydot dot_parser module initializing
 
 **Warning**: When `DEBUG` level logging is enabled, `pydot` may log the
 data that it processes, such as graph contents or DOT strings. This can
