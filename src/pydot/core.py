@@ -22,7 +22,7 @@ except Exception as e:
     )
 
 
-_logger = logging.getLogger("pydot.core")
+_logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
 _logger.debug("pydot %s", pydot.__version__)
 
