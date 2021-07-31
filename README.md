@@ -226,22 +226,6 @@ Dependencies
   or from [its source][9].
 
 
-License
-=======
-
-Distributed under an [MIT license][10].
-
-
-Contacts
-========
-
-Maintainers:
-- Sebastian Kalinowski <sebastian@kalinowski.eu> (GitHub: @prmtl)
-- Peter Nowee <peter@peternowee.com> (GitHub: @peternowee)
-
-Original author: Ero Carrera <ero.carrera@gmail.com>
-
-
 Troubleshooting
 ===============
 
@@ -276,6 +260,22 @@ cause the log to become very large or contain sensitive information.
 
 For more options, check out the [Python logging documentation][14] and
 the [`logging_tree`][15] visualizer.
+
+
+License
+=======
+
+Distributed under an [MIT license][10].
+
+
+Contacts
+========
+
+Maintainers:
+- Sebastian Kalinowski <sebastian@kalinowski.eu> (GitHub: @prmtl)
+- Peter Nowee <peter@peternowee.com> (GitHub: @peternowee)
+
+Original author: Ero Carrera <ero.carrera@gmail.com>
 
 
 [1]: https://www.graphviz.org
