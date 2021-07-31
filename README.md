@@ -232,19 +232,8 @@ Troubleshooting
 How to enable logging
 ---------------------
 
-`pydot` uses Python's standard `logging` module and registers the
-following loggers:
-
-- `pydot`: Parent logger. Emits a few messages during startup.
-- `pydot.dot_parser`: Messages related to the parsing of DOT strings.
-- `pydot.core`: All other messages.
-
-Being a library, `pydot` does not add any handlers to its loggers, nor
-does it touch the root logger. The loggers are created with the default
-level `NOTSET`. Their implied parent logger `pydot` can be used to
-control their levels.
-
-To see the logs, assuming logging has not been configured already:
+`pydot` uses Python's standard `logging` module. To see the logs,
+assuming logging has not been configured already:
 
     >>> import logging
     >>> logging.basicConfig(level=logging.DEBUG)
@@ -258,8 +247,19 @@ To see the logs, assuming logging has not been configured already:
 data that it processes, such as graph contents or DOT strings. This can
 cause the log to become very large or contain sensitive information.
 
-For more options, check out the [Python logging documentation][14] and
-the [`logging_tree`][15] visualizer.
+Advanced logging configuration
+------------------------------
+
+- For more options, check out the [Python logging documentation][14]
+  and the [`logging_tree`][15] visualizer.
+- Being a library, `pydot` does not add any handlers to its loggers,
+  nor does it touch the root logger. The loggers are created with the
+  default level `NOTSET`. Their implied parent logger `pydot` can be
+  used to control their levels.
+- `pydot` registers the following loggers:
+  - `pydot`: Parent logger. Emits a few messages during startup.
+  - `pydot.dot_parser`: Messages related to the parsing of DOT strings.
+  - `pydot.core`: All other messages.
 
 
 License
