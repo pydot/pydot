@@ -8,7 +8,8 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 ------------------
 
 Added:
-- Add standard Python logging, using the logger name `pydot`.
+- Add standard Python logging, using the logger name `pydot`. For
+  details, see the new section on Troubleshooting in README.md.
 
 Changed:
 - Reorganized package/module structure. (#230)

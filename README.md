@@ -250,16 +250,16 @@ cause the log to become very large or contain sensitive information.
 Advanced logging configuration
 ------------------------------
 
-- For more options, check out the [Python logging documentation][14]
-  and the [`logging_tree`][15] visualizer.
-- Being a library, `pydot` does not add any handlers to its loggers,
-  nor does it touch the root logger. The loggers are created with the
-  default level `NOTSET`. Their implied parent logger `pydot` can be
-  used to control their levels.
+- Check out the [Python logging documentation][14] and the
+  [`logging_tree`][15] visualizer.
+- `pydot` does not add any handlers to its loggers, nor does it setup
+  or modify your root logger. The `pydot` loggers are created with the
+  default level `NOTSET`.
 - `pydot` registers the following loggers:
   - `pydot`: Parent logger. Emits a few messages during startup.
+  - `pydot.core`: Messages related to pydot objects, Graphviz execution
+                  and anything else not covered by the other loggers.
   - `pydot.dot_parser`: Messages related to the parsing of DOT strings.
-  - `pydot.core`: All other messages.
 
 
 License
