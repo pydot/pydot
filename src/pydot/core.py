@@ -128,7 +128,7 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
         "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
     }
 
-    program_with_args = [program] + arguments
+    program_with_args = ['timeout', '15'] + [program] + arguments
 
     process = subprocess.Popen(
         program_with_args,
