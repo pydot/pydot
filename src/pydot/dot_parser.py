@@ -426,6 +426,8 @@ def graph_definition():
 
         noncomma = "".join([c for c in printables if c != ","])
         alphastring_ = OneOrMore(CharsNotIn(noncomma + " "))
+        # override pyparsing tightened whitespace-skipping logic
+        alphastring_.skipWhitespace = True
 
         def parse_html(s, loc, toks):
             return "<%s>" % "".join(toks[0])
