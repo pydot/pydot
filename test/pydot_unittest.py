@@ -37,7 +37,6 @@ class TestGraphAPI(unittest.TestCase):
         self.assertEqual(g.get_type(), "digraph")
 
     def test_add_style(self):
-        g = pydot.Dot(graph_name="Test", graph_type="graph")
         node = pydot.Node("mynode")
         node.add_style("abc")
         self.assertEqual(node.get_style(), "abc")
