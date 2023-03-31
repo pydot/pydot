@@ -66,7 +66,7 @@ setup(
     ],
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    install_requires=["pyparsing>=2.1.4"],
+    install_requires=["pyparsing>=3.0.9"],
     extras_require={
         "dev": [
             "chardet",
