@@ -8,24 +8,24 @@ Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 from pyparsing import (
-    nestedExpr,
-    Literal,
     CaselessLiteral,
-    Word,
-    OneOrMore,
+    CharsNotIn,
+    Combine,
     Forward,
     Group,
+    Literal,
+    OneOrMore,
     Optional,
-    Combine,
-    restOfLine,
-    cStyleComment,
-    nums,
-    alphanums,
-    printables,
     ParseException,
     ParseResults,
-    CharsNotIn,
     QuotedString,
+    Word,
+    cStyleComment,
+    nestedExpr,
+    nums,
+    printables,
+    pyparsing_unicode,
+    restOfLine
 )
 
 import pydot
@@ -401,10 +401,6 @@ def graph_definition():
         rparen = Literal(")")
         equals = Literal("=")
         comma = Literal(",")
-        dot = Literal(".")
-        slash = Literal("/")
-        bslash = Literal("\\")
-        star = Literal("*")
         semi = Literal(";")
         at = Literal("@")
         minus = Literal("-")
@@ -418,14 +414,13 @@ def graph_definition():
         edge_ = CaselessLiteral("edge")
 
         # token definitions
-        identifier = Word(alphanums + "_.").setName("identifier")
+        identifier = Word(
+            pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
+        ).setName("identifier")
 
         double_quoted_string = QuotedString(
             '"', multiline=True, unquoteResults=False, escChar="\\"
         )
-
-        noncomma = "".join([c for c in printables if c != ","])
-        alphastring_ = OneOrMore(CharsNotIn(noncomma + " "))
 
         def parse_html(s, loc, toks):
             return "<%s>" % "".join(toks[0])
@@ -439,7 +434,7 @@ def graph_definition():
         )
 
         ID = (
-            identifier | html_text | double_quoted_string | alphastring_
+            identifier | html_text | double_quoted_string
         ).setName("ID")
 
         float_number = Combine(
