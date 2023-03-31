@@ -21,9 +21,7 @@ from pyparsing import (
     QuotedString,
     Word,
     cStyleComment,
-    nestedExpr,
     nums,
-    printables,
     pyparsing_unicode,
     restOfLine
 )
@@ -425,13 +423,10 @@ def graph_definition():
         def parse_html(s, loc, toks):
             return "<%s>" % "".join(toks[0])
 
-        opener = "<"
-        closer = ">"
-        html_text = (
-            nestedExpr(opener, closer, (CharsNotIn(opener + closer)))
-            .setParseAction(parse_html)
-            .leaveWhitespace()
-        )
+        html_text = Forward()
+        inner_html = OneOrMore(CharsNotIn('<>') | html_text)
+        html_text << '<' + inner_html + '>'
+        html_text.setParseAction(lambda arr: "".join(arr))
 
         ID = (
             identifier | html_text | double_quoted_string
