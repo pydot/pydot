@@ -420,9 +420,6 @@ def graph_definition():
             '"', multiline=True, unquoteResults=False, escChar="\\"
         )
 
-        def parse_html(s, loc, toks):
-            return "<%s>" % "".join(toks[0])
-
         html_text = Forward()
         inner_html = OneOrMore(CharsNotIn('<>') | html_text)
         html_text << '<' + inner_html + '>'
