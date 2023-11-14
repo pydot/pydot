@@ -756,6 +756,8 @@ class Node(Common):
         node = quote_id_if_necessary(
             self.obj_dict["name"], unquoted_keywords=("graph", "node", "edge")
         )
+        if node is None:
+            node = "<unnamed>"
 
         # No point in having default nodes that don't set any attributes...
         if (
