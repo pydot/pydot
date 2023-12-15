@@ -73,5 +73,4 @@ setup(
             "black==21.5b2; python_version > '3.5'",
         ],
     },
-    tests_require=["chardet"],
 )
