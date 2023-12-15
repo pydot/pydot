@@ -415,6 +415,6 @@ def parse_args():
 
 if __name__ == "__main__":
     parse_args()
-    test_dir = os.path.dirname(sys.argv[0])
+    test_dir = os.path.dirname(os.path.abspath(__file__))
     print("The tests are using `pydot` from:  {pd}".format(pd=pydot))
     unittest.main(verbosity=2)
