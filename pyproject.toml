@@ -1,3 +1,60 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = 'pydot'
+description = "Python interface to Graphviz's Dot"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">= 3.7"
+dependencies = [
+  'pyparsing>=2.1.4,<3'
+]
+authors = [
+  {name = "Ero Carrera", email = "ero.carrera@gmail.com"},
+  {name = "Peter Nowee", email = "peter@peternowee.com"},
+]
+maintainers = [
+  {name = "Peter Nowee", email = "peter@peternowee.com"},
+]
+keywords = ["graphviz", "dot", "graphs", "visualization"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.5",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Scientific/Engineering :: Visualization",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = [
+  'version',
+]
+
+[project.urls]
+Homepage = "https://github.com/pydot/pydot"
+Changelog = "https://github.com/pydot/pydot/blob/master/ChangeLog"
+"Bug Tracker" = "https://github.com/pydot/pydot/issues"
+
+[project.optional-dependencies]
+dev = [
+  'chardet',
+  'black',
+]
+tests = [
+  'chardet',
+  'black',
+  'tox',
+]
+release = ['zest.releaser[recommended]']
+
 [tool.black]
 line-length = 79
 target-version = ['py37']
