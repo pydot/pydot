@@ -5,6 +5,7 @@
 # -test del_node, del_edge methods
 # -test Common.set method
 import argparse
+import datetime
 from hashlib import sha256
 import io
 import os
@@ -140,7 +141,7 @@ class TestGraphAPI(unittest.TestCase):
             ),
         ]
         expected_concat = observed_concat = ""
-        for (graph_type, simplify, expected) in test_combinations:
+        for graph_type, simplify, expected in test_combinations:
             expected_concat += "graph_type %s, simplify %s: %s\n" % (
                 graph_type,
                 simplify,
@@ -188,10 +189,15 @@ class TestGraphAPI(unittest.TestCase):
         jpe_data = g.create(format="jpe")
 
         hexdigest = sha256(jpe_data).hexdigest()
-        hexdigest_original = self._render_with_graphviz(
+        _, hexdigest_original = self._render_with_graphviz(
             dot_file, encoding="ascii"
         )
-        self.assertEqual(hexdigest, hexdigest_original)
+        if hexdigest != hexdigest_original:
+            raise AssertionError(
+                "from-past-to-future.dot: "
+                f"{hexdigest} != {hexdigest_original} "
+                "(found pydot vs graphviz difference)"
+            )
 
     def test_multiple_graphs(self):
         graph_data = "graph A { a->b };\ngraph B {c->d}"
@@ -211,7 +217,7 @@ class TestGraphAPI(unittest.TestCase):
             )
 
         assert process.returncode == 0, stderr_data
-        return sha256(stdout_data).hexdigest()
+        return stdout_data, sha256(stdout_data).hexdigest()
 
     def _render_with_pydot(self, filename, encoding):
         c = pydot.graph_from_dot_file(filename, encoding=encoding)
@@ -220,7 +226,7 @@ class TestGraphAPI(unittest.TestCase):
             jpe_data.extend(
                 g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
             )
-        return sha256(jpe_data).hexdigest()
+        return jpe_data, sha256(jpe_data).hexdigest()
 
     def test_my_regression_tests(self):
         path = os.path.join(test_dir, TESTS_DIR_1)
@@ -244,9 +250,26 @@ class TestGraphAPI(unittest.TestCase):
             encoding = encodings.get(fname, estimate["encoding"])
             os.sys.stdout.write("#")
             os.sys.stdout.flush()
-            pydot_sha = self._render_with_pydot(fpath, encoding)
-            graphviz_sha = self._render_with_graphviz(fpath, encoding)
-            assert pydot_sha == graphviz_sha, (pydot_sha, graphviz_sha)
+            pydot_bytes, pydot_sha = self._render_with_pydot(
+                fpath,
+                encoding,
+            )
+            graphviz_bytes, graphviz_sha = self._render_with_graphviz(
+                fpath,
+                encoding,
+            )
+            if pydot_sha != graphviz_sha:
+                # In case of error, save both images locally for inspection
+                now = datetime.datetime.now().strftime("%H_%M_%S")
+                with open(f"err_{fname}_pydot_{now}.jpeg", "wb") as f:
+                    f.write(pydot_bytes)
+                with open(f"err_{fname}_graphviz_{now}.jpeg", "wb") as f:
+                    f.write(graphviz_bytes)
+                pydot_bytes
+                raise AssertionError(
+                    f"{fname}: {pydot_sha} != {graphviz_sha} "
+                    "(found pydot vs graphviz difference)"
+                )
 
     def test_numeric_node_id(self):
         self._reset_graphs()
@@ -286,7 +309,7 @@ class TestGraphAPI(unittest.TestCase):
 
     def test_names_of_a_thousand_nodes(self):
         self._reset_graphs()
-        names = {"node_%05d" % i for i in range(10 ** 3)}
+        names = {"node_%05d" % i for i in range(10**3)}
         for name in names:
             self.graph_directed.add_node(pydot.Node(name, label=name))
 
