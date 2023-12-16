@@ -23,7 +23,7 @@ from pyparsing import (
     cStyleComment,
     nums,
     pyparsing_unicode,
-    restOfLine
+    restOfLine,
 )
 
 import pydot
@@ -400,13 +400,11 @@ def graph_definition():
         )
 
         html_text = Forward()
-        inner_html = OneOrMore(CharsNotIn('<>') | html_text)
-        html_text << '<' + inner_html + '>'
+        inner_html = OneOrMore(CharsNotIn("<>") | html_text)
+        html_text << "<" + inner_html + ">"
         html_text.setParseAction(lambda arr: "".join(arr))
 
-        ID = (
-            identifier | html_text | double_quoted_string
-        ).setName("ID")
+        ID = (identifier | html_text | double_quoted_string).setName("ID")
 
         float_number = Combine(
             Optional(minus) + OneOrMore(Word(nums + "."))
