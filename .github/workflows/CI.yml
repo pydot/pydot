@@ -36,6 +36,7 @@ jobs:
           cache: "pip"
       - name: "Install dependencies"
         run: |
+          sudo apt install graphviz
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install tox tox-gh
       - name: "Setup tests"
