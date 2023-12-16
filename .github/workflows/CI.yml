@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+
+concurrency:
+  group: CI-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: "Test with Python ${{ matrix.python-version }}"
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.11"
+          - "3.10"
+          - "3.9"
+          - "3.8"
+          - "3.7"
+
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - uses: "actions/setup-python@v5"
+        with:
+          python-version: "${{ matrix.python-version }}"
+          cache: "pip"
+      - name: "Install dependencies"
+        run: |
+          sudo apt install graphviz
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install tox tox-gh
+      - name: "Setup tests"
+        run: tox -vv --notest
+      - name: "Run tests"
+        run: tox --skip-pkg-install

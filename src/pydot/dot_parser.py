@@ -73,20 +73,17 @@ def push_top_graph_stmt(s, loc, toks):
     g = None
 
     for element in toks:
-
         if (
             isinstance(element, (ParseResults, tuple, list))
             and len(element) == 1
             and isinstance(element[0], str)
         ):
-
             element = element[0]
 
         if element == "strict":
             attrs["strict"] = True
 
         elif element in ["graph", "digraph"]:
-
             attrs = {}
 
             g = pydot.Dot(graph_type=element, **attrs)
@@ -98,7 +95,6 @@ def push_top_graph_stmt(s, loc, toks):
             g.set_name(element)
 
         elif isinstance(element, pydot.Subgraph):
-
             g.obj_dict["attributes"].update(element.obj_dict["attributes"])
             g.obj_dict["edges"].update(element.obj_dict["edges"])
             g.obj_dict["nodes"].update(element.obj_dict["nodes"])
@@ -131,7 +127,6 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
         parent_graph = g
 
     for key_name in ("edges",):
-
         if isinstance(g, pydot.frozendict):
             item_dict = g
         else:
@@ -185,43 +180,34 @@ def add_elements(
         defaults_edge = {}
 
     for elm_idx, element in enumerate(toks):
-
         if isinstance(element, (pydot.Subgraph, pydot.Cluster)):
-
             add_defaults(element, defaults_graph)
             g.add_subgraph(element)
 
         elif isinstance(element, pydot.Node):
-
             add_defaults(element, defaults_node)
             g.add_node(element)
 
         elif isinstance(element, pydot.Edge):
-
             add_defaults(element, defaults_edge)
             g.add_edge(element)
 
         elif isinstance(element, ParseResults):
-
             for e in element:
                 add_elements(
                     g, [e], defaults_graph, defaults_node, defaults_edge
                 )
 
         elif isinstance(element, DefaultStatement):
-
             if element.default_type == "graph":
-
                 default_graph_attrs = pydot.Node("graph", **element.attrs)
                 g.add_node(default_graph_attrs)
 
             elif element.default_type == "node":
-
                 default_node_attrs = pydot.Node("node", **element.attrs)
                 g.add_node(default_node_attrs)
 
             elif element.default_type == "edge":
-
                 default_edge_attrs = pydot.Node("edge", **element.attrs)
                 g.add_node(default_edge_attrs)
                 defaults_edge.update(element.attrs)
@@ -234,7 +220,6 @@ def add_elements(
                 )
 
         elif isinstance(element, P_AttrList):
-
             g.obj_dict["attributes"].update(element.attrs)
 
         else:
@@ -314,26 +299,22 @@ def push_edge_stmt(s, loc, toks):
     e = []
 
     if isinstance(toks[0][0], pydot.Graph):
-
         n_prev = pydot.frozendict(toks[0][0].obj_dict)
     else:
         n_prev = toks[0][0] + do_node_ports(toks[0])
 
     if isinstance(toks[2][0], ParseResults):
-
         n_next_list = [[n.get_name()] for n in toks[2][0]]
         for n_next in [n for n in n_next_list]:
             n_next_port = do_node_ports(n_next)
             e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
     elif isinstance(toks[2][0], pydot.Graph):
-
         e.append(
             pydot.Edge(n_prev, pydot.frozendict(toks[2][0].obj_dict), **attrs)
         )
 
     elif isinstance(toks[2][0], pydot.Node):
-
         node = toks[2][0]
 
         if node.get_port() is not None:
@@ -345,9 +326,7 @@ def push_edge_stmt(s, loc, toks):
 
     # if the target of this edge is the name of a node
     elif isinstance(toks[2][0], str):
-
         for n_next in [n for n in tuple(toks)[2::2]]:
-
             if isinstance(n_next, P_AttrList) or not isinstance(
                 n_next[0], str
             ):
