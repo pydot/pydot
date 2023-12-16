@@ -8,24 +8,22 @@ Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 from pyparsing import (
-    nestedExpr,
-    Literal,
     CaselessLiteral,
-    Word,
-    OneOrMore,
+    CharsNotIn,
+    Combine,
     Forward,
     Group,
+    Literal,
+    OneOrMore,
     Optional,
-    Combine,
-    restOfLine,
-    cStyleComment,
-    nums,
-    alphanums,
-    printables,
     ParseException,
     ParseResults,
-    CharsNotIn,
     QuotedString,
+    Word,
+    cStyleComment,
+    nums,
+    pyparsing_unicode,
+    restOfLine,
 )
 
 import pydot
@@ -380,10 +378,6 @@ def graph_definition():
         rparen = Literal(")")
         equals = Literal("=")
         comma = Literal(",")
-        dot = Literal(".")
-        slash = Literal("/")
-        bslash = Literal("\\")
-        star = Literal("*")
         semi = Literal(";")
         at = Literal("@")
         minus = Literal("-")
@@ -397,29 +391,20 @@ def graph_definition():
         edge_ = CaselessLiteral("edge")
 
         # token definitions
-        identifier = Word(alphanums + "_.").setName("identifier")
+        identifier = Word(
+            pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
+        ).setName("identifier")
 
         double_quoted_string = QuotedString(
             '"', multiline=True, unquoteResults=False, escChar="\\"
         )
 
-        noncomma = "".join([c for c in printables if c != ","])
-        alphastring_ = OneOrMore(CharsNotIn(noncomma + " "))
+        html_text = Forward()
+        inner_html = OneOrMore(CharsNotIn("<>") | html_text)
+        html_text << "<" + inner_html + ">"
+        html_text.setParseAction(lambda arr: "".join(arr))
 
-        def parse_html(s, loc, toks):
-            return "<%s>" % "".join(toks[0])
-
-        opener = "<"
-        closer = ">"
-        html_text = (
-            nestedExpr(opener, closer, (CharsNotIn(opener + closer)))
-            .setParseAction(parse_html)
-            .leaveWhitespace()
-        )
-
-        ID = (
-            identifier | html_text | double_quoted_string | alphastring_
-        ).setName("ID")
+        ID = (identifier | html_text | double_quoted_string).setName("ID")
 
         float_number = Combine(
             Optional(minus) + OneOrMore(Word(nums + "."))

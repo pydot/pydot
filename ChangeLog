@@ -8,6 +8,11 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 ------------------
 
 Changed:
+- Broken parsing caused by `pyparsing` updates fixed. (#296)
+  With this, the pydot project rises from the dead.
+- (Internal) CI revived by @ferdnyc. (#302)
+  Modernized and clarified the development process.
+  Testing is done against multiple Python versions.
 - Reorganized package/module structure. (#230)
   The `pydot` package is installed as a directory now instead of as
   two modules:
@@ -76,11 +81,12 @@ Deprecated:
   structure" above.
 
 Removed:
-- Drop support for Python 2 and Python 3.4. (#229)
+- Drop support for Python 2 and Python < 3.7. (#229, #302, #296).
   **USER FEEDBACK REQUESTED**
-  We are considering if pydot 2.0 should drop support for Python 3.5
+  ~~We are considering if pydot 2.0 should drop support for Python 3.5
   and 3.6 as well. If this would affect you, please leave a comment in
-  https://github.com/pydot/pydot/issues/268.
+  https://github.com/pydot/pydot/issues/268.~~
+  EDIT: This was decided to be done, with a lot of time passed since this entry.
 
 
 1.4.2 (2021-02-15)
