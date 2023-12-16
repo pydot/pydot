@@ -273,7 +273,7 @@ def quote_if_necessary(s):
             "\n": r"\n",
             "\r": r"\r",
         }
-        for (a, b) in replace.items():
+        for a, b in replace.items():
             s = s.replace(a, b)
 
         return '"' + s + '"'
@@ -327,7 +327,6 @@ def graph_from_edges(edge_list, node_prefix="", directed=False):
         graph = Dot(graph_type="graph")
 
     for edge in edge_list:
-
         if isinstance(edge[0], str):
             src = node_prefix + edge[0]
         else:
@@ -555,11 +554,9 @@ class Node(Common):
         # as if they were Node definitions
         #
         if obj_dict is not None:
-
             self.obj_dict = obj_dict
 
         else:
-
             self.obj_dict = dict()
 
             # Copy the attributes
@@ -719,7 +716,6 @@ class Edge(Common):
             raise pydot.Error("Can not compare an edge to a non-edge object.")
 
         if self.get_parent_graph().get_top_graph_type() == "graph":
-
             # If the graph is undirected, the edge has neither
             # source nor destination.
             #
@@ -746,7 +742,6 @@ class Edge(Common):
             return node_str
 
         if node_str.startswith('"') and node_str.endswith('"'):
-
             return node_str
 
         node_port_idx = node_str.rfind(":")
@@ -861,13 +856,12 @@ class Graph(Common):
         strict=False,
         suppress_disconnected=False,
         simplify=False,
-        **attrs
+        **attrs,
     ):
         if obj_dict is not None:
             self.obj_dict = obj_dict
 
         else:
-
             self.obj_dict = dict()
 
             self.obj_dict["attributes"] = dict(attrs)
@@ -1068,7 +1062,6 @@ class Graph(Common):
             name = name.get_name()
 
         if name in self.obj_dict["nodes"]:
-
             if index is not None and index < len(self.obj_dict["nodes"][name]):
                 del self.obj_dict["nodes"][name][index]
                 return True
@@ -1091,7 +1084,6 @@ class Graph(Common):
         match = list()
 
         if name in self.obj_dict["nodes"]:
-
             match.extend(
                 [
                     Node(obj_dict=obj_dict)
@@ -1252,7 +1244,6 @@ class Graph(Common):
             )
 
         if sgraph.get_name() in self.obj_dict["subgraphs"]:
-
             sgraph_list = self.obj_dict["subgraphs"][sgraph.get_name()]
             sgraph_list.append(sgraph.obj_dict)
 
@@ -1275,7 +1266,6 @@ class Graph(Common):
         match = list()
 
         if name in self.obj_dict["subgraphs"]:
-
             sgraphs_obj_dict = self.obj_dict["subgraphs"].get(name)
 
             for obj_dict_list in sgraphs_obj_dict:
@@ -1329,9 +1319,7 @@ class Graph(Common):
         graph = list()
 
         if self.obj_dict.get("strict", None) is not None:
-
             if self == self.get_parent_graph() and self.obj_dict["strict"]:
-
                 graph.append("strict ")
 
         graph_type = self.obj_dict["type"]
@@ -1345,9 +1333,7 @@ class Graph(Common):
         graph.append(s)
 
         for attr in sorted(self.obj_dict["attributes"]):
-
             if self.obj_dict["attributes"].get(attr, None) is not None:
-
                 val = self.obj_dict["attributes"].get(attr)
                 if val == "":
                     val = '""'
@@ -1387,12 +1373,10 @@ class Graph(Common):
         obj_list.sort(key=lambda x: x[0])
 
         for idx, obj in obj_list:
-
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
 
                 if self.obj_dict.get("suppress_disconnected", False):
-
                     if (
                         node.get_name() not in edge_src_set
                         and node.get_name() not in edge_dst_set
@@ -1460,7 +1444,7 @@ class Subgraph(Graph):
         obj_dict=None,
         suppress_disconnected=False,
         simplify=False,
-        **attrs
+        **attrs,
     ):
         Graph.__init__(
             self,
@@ -1472,7 +1456,6 @@ class Subgraph(Graph):
         )
 
         if obj_dict is None:
-
             self.obj_dict["type"] = "subgraph"
 
 
@@ -1514,7 +1497,7 @@ class Cluster(Graph):
         obj_dict=None,
         suppress_disconnected=False,
         simplify=False,
-        **attrs
+        **attrs,
     ):
         Graph.__init__(
             self,
@@ -1526,7 +1509,6 @@ class Cluster(Graph):
         )
 
         if obj_dict is None:
-
             self.obj_dict["type"] = "subgraph"
             self.obj_dict["name"] = quote_if_necessary("cluster_" + graph_name)
 
