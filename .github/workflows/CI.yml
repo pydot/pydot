@@ -3,8 +3,16 @@ name: CI
 on:
   push:
     branches: ["master"]
+    paths-ignore:
+      - "**/README.md"
+      - "LICENSE"
+      - "ChangeLog"
   pull_request:
     branches: ["*"]
+    paths-ignore:
+      - "**/README.md"
+      - "LICENSE"
+      - "ChangeLog"
   workflow_dispatch:
 
 concurrency:
