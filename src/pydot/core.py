@@ -760,7 +760,7 @@ class Edge(Common):
 
         if node_port_idx > 0:
             a = node_str[:node_port_idx]
-            b = node_str[node_port_idx + 1:]
+            b = node_str[node_port_idx + 1 :]
 
             node = quote_if_necessary(a)
             node += ":" + quote_if_necessary(b)
