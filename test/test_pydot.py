@@ -13,12 +13,16 @@ import os
 import pickle
 import string
 import sys
-import warnings
 
 import chardet
 from parameterized import parameterized
 import pydot
 import unittest
+
+if sys.version_info >= (3, 8):
+    from functools import cached_property
+else:
+    from ._functools import cached_property
 
 
 TEST_PROGRAM = "dot"
@@ -38,7 +42,7 @@ class RenderResult:
         """Get the raw image data for the result."""
         return self._data
 
-    @functools.cached_property
+    @cached_property
     def checksum(self):
         """Get the sha256 checksum for the result."""
         return sha256(self.data).hexdigest()
@@ -81,8 +85,14 @@ def _load_test_cases(casedir):
     path = os.path.join(_test_root, casedir)
     dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
 
+    def _case_name(fname: str) -> str:
+        """No str.removesuffix() until Python 3.9."""
+        if sys.version_info < (3, 9):
+            return fname
+        return fname.removesuffix(".dot")
+
     return [
-        (dot_file.removesuffix(".dot"), dot_file, path)
+        (_case_name(dot_file), dot_file, path)
         for dot_file in dot_files
     ]
 
