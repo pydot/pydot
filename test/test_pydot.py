@@ -31,6 +31,7 @@ TESTS_DIR_2 = "graphs"
 
 _test_root = os.path.dirname(os.path.abspath(__file__))
 
+
 class RenderResult:
     """Results object returned by Renderer methods."""
 
@@ -50,6 +51,7 @@ class RenderResult:
 
 class Renderer:
     """Call pydot renderers for data files."""
+
     @classmethod
     def graphviz(cls, filename, encoding):
         with io.open(filename, "rt", encoding=encoding) as stdin:
@@ -91,10 +93,7 @@ def _load_test_cases(casedir):
             return fname
         return fname.removesuffix(".dot")
 
-    return [
-        (_case_name(dot_file), dot_file, path)
-        for dot_file in dot_files
-    ]
+    return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
 
 
 class PydotTestCase(unittest.TestCase):
@@ -399,8 +398,8 @@ class TestShapeFiles(PydotTestCase):
     # image files are omitted from sdist
     @unittest.skipUnless(
         os.path.isdir(shapefile_dir),
-        "Skipping tests that involve images," +
-        " they can be found in the git repository"
+        "Skipping tests that involve images,"
+        + " they can be found in the git repository",
     )
     def test_graph_with_shapefiles(self):
         dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
@@ -423,9 +422,7 @@ class TestShapeFiles(PydotTestCase):
         g.set_shape_files(pngs)
 
         rendered = RenderResult(g.create(format="jpe"))
-        original = Renderer.graphviz(
-            dot_file, encoding="ascii"
-        )
+        original = Renderer.graphviz(dot_file, encoding="ascii")
         if rendered.checksum != original.checksum:
             raise AssertionError(
                 "from-past-to-future.dot: "
@@ -466,16 +463,16 @@ class RenderedTestCase(PydotTestCase):
 
 class TestMyRegressions(RenderedTestCase):
     """Perform regression tests in my_tests dir."""
-    @parameterized.expand(
-            functools.partial(_load_test_cases, TESTS_DIR_1))
+
+    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_1))
     def test_regression(self, _, fname, path):
         self._render_and_compare_dot_file(path, fname)
 
 
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
-    @parameterized.expand(
-            functools.partial(_load_test_cases, TESTS_DIR_2))
+
+    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
     def test_regression(self, _, fname, path):
         self._render_and_compare_dot_file(path, fname)
 
