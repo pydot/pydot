@@ -7,6 +7,7 @@
 import argparse
 import datetime
 from hashlib import sha256
+import functools
 import io
 import os
 import pickle
@@ -22,6 +23,50 @@ import unittest
 TEST_PROGRAM = "dot"
 TESTS_DIR_1 = "my_tests"
 TESTS_DIR_2 = "graphs"
+
+
+class RenderResult:
+    """Results object returned by Renderer methods."""
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def data(self):
+        """Get the raw image data for the result."""
+        return self._data
+
+    @functools.cached_property
+    def checksum(self):
+        """Get the sha256 checksum for the result."""
+        return sha256(self.data).hexdigest()
+
+
+class Renderer:
+    """Call pydot renderers for data files."""
+    @classmethod
+    def graphviz(cls, filename, encoding):
+        with io.open(filename, "rt", encoding=encoding) as stdin:
+            stdout_data, stderr_data, process = pydot.call_graphviz(
+                program=TEST_PROGRAM,
+                arguments=["-Tjpe"],
+                working_dir=os.path.dirname(filename),
+                stdin=stdin,
+            )
+        assert process.returncode == 0, stderr_data
+        return RenderResult(stdout_data)
+
+    @classmethod
+    def pydot(cls, filename, encoding):
+        c = pydot.graph_from_dot_file(filename, encoding=encoding)
+        if not c:
+            raise RuntimeError("No data returned from pydot!")
+        jpe_data = bytearray()
+        for g in c:
+            jpe_data.extend(
+                g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
+            )
+        return RenderResult(jpe_data)
 
 
 class TestGraphAPI(unittest.TestCase):
@@ -183,19 +228,21 @@ class TestGraphAPI(unittest.TestCase):
         f.close()
 
         graphs = pydot.graph_from_dot_data(graph_data)
-        (g,) = graphs
+        self.assertIsNotNone(graphs)
+
+        if not isinstance(graphs, list):
+            return
+        g = graphs.pop()
         g.set_shape_files(pngs)
 
-        jpe_data = g.create(format="jpe")
-
-        hexdigest = sha256(jpe_data).hexdigest()
-        _, hexdigest_original = self._render_with_graphviz(
+        rendered = RenderResult(g.create(format="jpe"))
+        original = Renderer.graphviz(
             dot_file, encoding="ascii"
         )
-        if hexdigest != hexdigest_original:
+        if rendered.checksum != original.checksum:
             raise AssertionError(
                 "from-past-to-future.dot: "
-                f"{hexdigest} != {hexdigest_original} "
+                f"{rendered.checksum} != {original.checksum} "
                 "(found pydot vs graphviz difference)"
             )
 
@@ -206,27 +253,6 @@ class TestGraphAPI(unittest.TestCase):
         assert n == 2, n
         names = [g.get_name() for g in graphs]
         assert names == ["A", "B"], names
-
-    def _render_with_graphviz(self, filename, encoding):
-        with io.open(filename, "rt", encoding=encoding) as stdin:
-            stdout_data, stderr_data, process = pydot.call_graphviz(
-                program=TEST_PROGRAM,
-                arguments=["-Tjpe"],
-                working_dir=os.path.dirname(filename),
-                stdin=stdin,
-            )
-
-        assert process.returncode == 0, stderr_data
-        return stdout_data, sha256(stdout_data).hexdigest()
-
-    def _render_with_pydot(self, filename, encoding):
-        c = pydot.graph_from_dot_file(filename, encoding=encoding)
-        jpe_data = bytearray()
-        for g in c:
-            jpe_data.extend(
-                g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
-            )
-        return jpe_data, sha256(jpe_data).hexdigest()
 
     def test_my_regression_tests(self):
         path = os.path.join(test_dir, TESTS_DIR_1)
@@ -250,24 +276,23 @@ class TestGraphAPI(unittest.TestCase):
             encoding = encodings.get(fname, estimate["encoding"])
             os.sys.stdout.write("#")
             os.sys.stdout.flush()
-            pydot_bytes, pydot_sha = self._render_with_pydot(
+            pydot = Renderer.pydot(
                 fpath,
                 encoding,
             )
-            graphviz_bytes, graphviz_sha = self._render_with_graphviz(
+            graphviz = Renderer.graphviz(
                 fpath,
                 encoding,
             )
-            if pydot_sha != graphviz_sha:
+            if pydot.checksum != graphviz.checksum:
                 # In case of error, save both images locally for inspection
                 now = datetime.datetime.now().strftime("%H_%M_%S")
                 with open(f"err_{fname}_pydot_{now}.jpeg", "wb") as f:
-                    f.write(pydot_bytes)
+                    f.write(pydot.data)
                 with open(f"err_{fname}_graphviz_{now}.jpeg", "wb") as f:
-                    f.write(graphviz_bytes)
-                pydot_bytes
+                    f.write(graphviz.data)
                 raise AssertionError(
-                    f"{fname}: {pydot_sha} != {graphviz_sha} "
+                    f"{fname}: {pydot.checksum} != {graphviz.checksum} "
                     "(found pydot vs graphviz difference)"
                 )
 
