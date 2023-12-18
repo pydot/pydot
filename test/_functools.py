@@ -11,8 +11,6 @@
 
 __all__ = ['cached_property']
 
-from types import GenericAlias
-
 ################################################################################
 ### cached_property() - property result cached as instance attribute
 ################################################################################
@@ -60,5 +58,3 @@ class cached_property:
                 )
                 raise TypeError(msg) from None
         return val
-
-    __class_getitem__ = classmethod(GenericAlias)
