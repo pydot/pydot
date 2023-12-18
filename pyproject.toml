@@ -47,11 +47,14 @@ Changelog = "https://github.com/pydot/pydot/blob/master/ChangeLog"
 dev = [
   'chardet',
   'black',
+  'parameterized',
 ]
 tests = [
   'chardet',
   'black',
   'tox',
+  'parameterized',
+  'unittest-parallel',
 ]
 release = ['zest.releaser[recommended]']
 
