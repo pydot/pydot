@@ -9,13 +9,14 @@
 #   Copyright (C) 2006-2013 Python Software Foundation.
 # See C source code for _functools credits/copyright
 
-__all__ = ['cached_property']
+__all__ = ["cached_property"]
 
 ################################################################################
 ### cached_property() - property result cached as instance attribute
 ################################################################################
 
 _NOT_FOUND = object()
+
 
 class cached_property:
     def __init__(self, func):
@@ -37,10 +38,13 @@ class cached_property:
             return self
         if self.attrname is None:
             raise TypeError(
-                "Cannot use cached_property instance without calling __set_name__ on it.")
+                "Cannot use cached_property instance without calling __set_name__ on it."
+            )
         try:
             cache = instance.__dict__
-        except AttributeError:  # not all objects have __dict__ (e.g. class defines slots)
+        except (
+            AttributeError
+        ):  # not all objects have __dict__ (e.g. class defines slots)
             msg = (
                 f"No '__dict__' attribute on {type(instance).__name__!r} "
                 f"instance to cache {self.attrname!r} property."
