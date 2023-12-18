@@ -226,46 +226,6 @@ class TestGraphAPI(PydotTestCase):
         self.maxDiff = None
         self.assertMultiLineEqual(expected_concat, observed_concat)
 
-    def test_graph_with_shapefiles(self):
-        shapefile_dir = os.path.join(_test_dir, "from-past-to-future")
-        # image files are omitted from sdist
-        if not os.path.isdir(shapefile_dir):
-            warnings.warn(
-                "Skipping tests that involve images, "
-                "they can be found in the `git` repository."
-            )
-            return
-        dot_file = os.path.join(shapefile_dir, "from-past-to-future.dot")
-
-        pngs = [
-            os.path.join(shapefile_dir, fname)
-            for fname in os.listdir(shapefile_dir)
-            if fname.endswith(".png")
-        ]
-
-        f = open(dot_file, "rt")
-        graph_data = f.read()
-        f.close()
-
-        graphs = pydot.graph_from_dot_data(graph_data)
-        self.assertIsNotNone(graphs)
-
-        if not isinstance(graphs, list):
-            return
-        g = graphs.pop()
-        g.set_shape_files(pngs)
-
-        rendered = RenderResult(g.create(format="jpe"))
-        original = Renderer.graphviz(
-            dot_file, encoding="ascii"
-        )
-        if rendered.checksum != original.checksum:
-            raise AssertionError(
-                "from-past-to-future.dot: "
-                f"{rendered.checksum} != {original.checksum} "
-                "(found pydot vs graphviz difference)"
-            )
-
     def test_multiple_graphs(self):
         graph_data = "graph A { a->b };\ngraph B {c->d}"
         graphs = pydot.graph_from_dot_data(graph_data)
@@ -273,7 +233,6 @@ class TestGraphAPI(PydotTestCase):
         assert n == 2, n
         names = [g.get_name() for g in graphs]
         assert names == ["A", "B"], names
-
 
     def test_numeric_node_id(self):
         self._reset_graphs()
@@ -422,6 +381,47 @@ class TestGraphAPI(PydotTestCase):
 
     def test_version(self):
         self.assertIsInstance(pydot.__version__, str)
+
+
+class TestShapeFiles(PydotTestCase):
+    shapefile_dir = os.path.join(_test_root, "from-past-to-future")
+
+    # image files are omitted from sdist
+    @unittest.skipUnless(
+        os.path.isdir(shapefile_dir),
+        "Skipping tests that involve images," +
+        " they can be found in the git repository"
+    )
+    def test_graph_with_shapefiles(self):
+        dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
+
+        pngs = [
+            os.path.join(self.shapefile_dir, fname)
+            for fname in os.listdir(self.shapefile_dir)
+            if fname.endswith(".png")
+        ]
+
+        with open(dot_file, "rt") as f:
+            graph_data = f.read()
+
+        graphs = pydot.graph_from_dot_data(graph_data)
+        self.assertIsNotNone(graphs)
+
+        if not isinstance(graphs, list):
+            return
+        g = graphs.pop()
+        g.set_shape_files(pngs)
+
+        rendered = RenderResult(g.create(format="jpe"))
+        original = Renderer.graphviz(
+            dot_file, encoding="ascii"
+        )
+        if rendered.checksum != original.checksum:
+            raise AssertionError(
+                "from-past-to-future.dot: "
+                f"{rendered.checksum} != {original.checksum} "
+                "(found pydot vs graphviz difference)"
+            )
 
 
 class RenderedTestCase(PydotTestCase):
