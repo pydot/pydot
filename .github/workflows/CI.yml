@@ -21,11 +21,16 @@ concurrency:
 
 jobs:
   tests:
-    name: "Test with Python ${{ matrix.python-version }}"
-    runs-on: "ubuntu-latest"
+    name: "${{ matrix.system.os }}, Py${{ matrix.python-version }}"
+    runs-on: "${{ matrix.system.os }}-latest"
+    continue-on-error: ${{ matrix.system.can-fail }}
 
     strategy:
       matrix:
+        system:
+          - {os: ubuntu, can-fail: false}
+          - {os: windows, can-fail: true}
+          - {os: macos, can-fail: false}
         python-version:
           - "3.12"
           - "3.11"
@@ -42,12 +47,21 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           cache: "pip"
-      - name: "Install dependencies"
+      - name: "Install graphviz (Linux)"
+        if: runner.os == 'linux'
+        run: sudo apt install graphviz
+      - name: "Install graphviz (Windows)"
+        if: runner.os == 'windows'
+        run: choco install graphviz
+      - name: "Install graphviz (macOS)"
+        if: runner.os == 'macos'
+        run: brew install graphviz
+      - name: "Install Python dependencies"
         run: |
-          sudo apt install graphviz
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install tox tox-gh
       - name: "Setup tests"
         run: tox -vv --notest
       - name: "Run tests"
         run: tox --skip-pkg-install
+
