@@ -2,6 +2,7 @@
 import copy
 import io
 import errno
+import logging
 import os
 import re
 import subprocess
@@ -10,6 +11,11 @@ import tempfile
 import warnings
 
 import pydot
+
+
+_logger = logging.getLogger(__name__)
+_logger.debug("pydot core module initializing")
+
 
 try:
     from pydot import dot_parser
