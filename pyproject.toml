@@ -8,7 +8,7 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">= 3.7"
 dependencies = [
-  'pyparsing>=3'
+  'pyparsing>=3.0.9'
 ]
 authors = [
   {name = "Ero Carrera", email = "ero.carrera@gmail.com"},
