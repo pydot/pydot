@@ -1,4 +1,5 @@
 """An interface to GraphViz."""
+
 import copy
 import io
 import errno
