@@ -7,6 +7,7 @@ into a class representation defined by `pydot`.
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
+
 from pyparsing import (
     CaselessLiteral,
     CharsNotIn,
