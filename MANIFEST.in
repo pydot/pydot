@@ -1,7 +1,10 @@
 include README.md
 include LICENSE
 include ChangeLog
-include requirements.txt
-include test/*_unittest.py
-include test/graphs/*.dot
-include test/my_tests/*.dot
+include *.txt
+prune .github
+exclude .git*
+graft test
+prune test/from-past-to-future
+global-exclude test.svg
+
