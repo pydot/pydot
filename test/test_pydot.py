@@ -7,30 +7,104 @@
 import argparse
 import datetime
 from hashlib import sha256
+import functools
 import io
 import os
 import pickle
 import string
 import sys
-import warnings
 
 import chardet
+from parameterized import parameterized
 import pydot
 import unittest
+
+if sys.version_info >= (3, 8):
+    from functools import cached_property
+else:
+    from ._functools import cached_property
 
 
 TEST_PROGRAM = "dot"
 TESTS_DIR_1 = "my_tests"
 TESTS_DIR_2 = "graphs"
 
+_test_root = os.path.dirname(os.path.abspath(__file__))
 
-class TestGraphAPI(unittest.TestCase):
+
+class RenderResult:
+    """Results object returned by Renderer methods."""
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def data(self):
+        """Get the raw image data for the result."""
+        return self._data
+
+    @cached_property
+    def checksum(self):
+        """Get the sha256 checksum for the result."""
+        return sha256(self.data).hexdigest()
+
+
+class Renderer:
+    """Call pydot renderers for data files."""
+
+    @classmethod
+    def graphviz(cls, filename, encoding):
+        with io.open(filename, "rt", encoding=encoding) as stdin:
+            stdout_data, stderr_data, process = pydot.call_graphviz(
+                program=TEST_PROGRAM,
+                arguments=["-Tjpe"],
+                working_dir=os.path.dirname(filename),
+                stdin=stdin,
+            )
+        assert process.returncode == 0, stderr_data
+        return RenderResult(stdout_data)
+
+    @classmethod
+    def pydot(cls, filename, encoding):
+        c = pydot.graph_from_dot_file(filename, encoding=encoding)
+        if not c:
+            raise RuntimeError("No data returned from pydot!")
+        jpe_data = bytearray()
+        for g in c:
+            jpe_data.extend(
+                g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
+            )
+        return RenderResult(jpe_data)
+
+
+def _load_test_cases(casedir):
+    """Return a list of testcase files,
+
+    Returns a list of tuples of the form:
+        ("case_file_name", "case_file_name.dot", "path/to/directory")
+    """
+    global _test_root
+    path = os.path.join(_test_root, casedir)
+    dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
+
+    def _case_name(fname: str) -> str:
+        """No str.removesuffix() until Python 3.9."""
+        if sys.version_info < (3, 9):
+            return fname
+        return fname.removesuffix(".dot")
+
+    return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
+
+
+class PydotTestCase(unittest.TestCase):
     def setUp(self):
         self._reset_graphs()
 
     def _reset_graphs(self):
         self.graph_directed = pydot.Graph("testgraph", graph_type="digraph")
 
+
+class TestGraphAPI(PydotTestCase):
     def test_keep_graph_type(self):
         g = pydot.Dot(graph_name="Test", graph_type="graph")
         self.assertEqual(g.get_type(), "graph")
@@ -161,44 +235,6 @@ class TestGraphAPI(unittest.TestCase):
         self.maxDiff = None
         self.assertMultiLineEqual(expected_concat, observed_concat)
 
-    def test_graph_with_shapefiles(self):
-        shapefile_dir = os.path.join(test_dir, "from-past-to-future")
-        # image files are omitted from sdist
-        if not os.path.isdir(shapefile_dir):
-            warnings.warn(
-                "Skipping tests that involve images, "
-                "they can be found in the `git` repository."
-            )
-            return
-        dot_file = os.path.join(shapefile_dir, "from-past-to-future.dot")
-
-        pngs = [
-            os.path.join(shapefile_dir, fname)
-            for fname in os.listdir(shapefile_dir)
-            if fname.endswith(".png")
-        ]
-
-        f = open(dot_file, "rt")
-        graph_data = f.read()
-        f.close()
-
-        graphs = pydot.graph_from_dot_data(graph_data)
-        (g,) = graphs
-        g.set_shape_files(pngs)
-
-        jpe_data = g.create(format="jpe")
-
-        hexdigest = sha256(jpe_data).hexdigest()
-        _, hexdigest_original = self._render_with_graphviz(
-            dot_file, encoding="ascii"
-        )
-        if hexdigest != hexdigest_original:
-            raise AssertionError(
-                "from-past-to-future.dot: "
-                f"{hexdigest} != {hexdigest_original} "
-                "(found pydot vs graphviz difference)"
-            )
-
     def test_multiple_graphs(self):
         graph_data = "graph A { a->b };\ngraph B {c->d}"
         graphs = pydot.graph_from_dot_data(graph_data)
@@ -206,70 +242,6 @@ class TestGraphAPI(unittest.TestCase):
         assert n == 2, n
         names = [g.get_name() for g in graphs]
         assert names == ["A", "B"], names
-
-    def _render_with_graphviz(self, filename, encoding):
-        with io.open(filename, "rt", encoding=encoding) as stdin:
-            stdout_data, stderr_data, process = pydot.call_graphviz(
-                program=TEST_PROGRAM,
-                arguments=["-Tjpe"],
-                working_dir=os.path.dirname(filename),
-                stdin=stdin,
-            )
-
-        assert process.returncode == 0, stderr_data
-        return stdout_data, sha256(stdout_data).hexdigest()
-
-    def _render_with_pydot(self, filename, encoding):
-        c = pydot.graph_from_dot_file(filename, encoding=encoding)
-        jpe_data = bytearray()
-        for g in c:
-            jpe_data.extend(
-                g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
-            )
-        return jpe_data, sha256(jpe_data).hexdigest()
-
-    def test_my_regression_tests(self):
-        path = os.path.join(test_dir, TESTS_DIR_1)
-        self._render_and_compare_dot_files(path)
-
-    def test_graphviz_regression_tests(self):
-        path = os.path.join(test_dir, TESTS_DIR_2)
-        self._render_and_compare_dot_files(path)
-
-    def _render_and_compare_dot_files(self, directory):
-        # files that confuse `chardet`
-        encodings = {"Latin1.dot": "latin-1"}
-        dot_files = [
-            fname for fname in os.listdir(directory) if fname.endswith(".dot")
-        ]
-        for fname in dot_files:
-            fpath = os.path.join(directory, fname)
-            with open(fpath, "rb") as f:
-                s = f.read()
-            estimate = chardet.detect(s)
-            encoding = encodings.get(fname, estimate["encoding"])
-            os.sys.stdout.write("#")
-            os.sys.stdout.flush()
-            pydot_bytes, pydot_sha = self._render_with_pydot(
-                fpath,
-                encoding,
-            )
-            graphviz_bytes, graphviz_sha = self._render_with_graphviz(
-                fpath,
-                encoding,
-            )
-            if pydot_sha != graphviz_sha:
-                # In case of error, save both images locally for inspection
-                now = datetime.datetime.now().strftime("%H_%M_%S")
-                with open(f"err_{fname}_pydot_{now}.jpeg", "wb") as f:
-                    f.write(pydot_bytes)
-                with open(f"err_{fname}_graphviz_{now}.jpeg", "wb") as f:
-                    f.write(graphviz_bytes)
-                pydot_bytes
-                raise AssertionError(
-                    f"{fname}: {pydot_sha} != {graphviz_sha} "
-                    "(found pydot vs graphviz difference)"
-                )
 
     def test_numeric_node_id(self):
         self._reset_graphs()
@@ -420,6 +392,91 @@ class TestGraphAPI(unittest.TestCase):
         self.assertIsInstance(pydot.__version__, str)
 
 
+class TestShapeFiles(PydotTestCase):
+    shapefile_dir = os.path.join(_test_root, "from-past-to-future")
+
+    # image files are omitted from sdist
+    @unittest.skipUnless(
+        os.path.isdir(shapefile_dir),
+        "Skipping tests that involve images,"
+        + " they can be found in the git repository",
+    )
+    def test_graph_with_shapefiles(self):
+        dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
+
+        pngs = [
+            os.path.join(self.shapefile_dir, fname)
+            for fname in os.listdir(self.shapefile_dir)
+            if fname.endswith(".png")
+        ]
+
+        with open(dot_file, "rt") as f:
+            graph_data = f.read()
+
+        graphs = pydot.graph_from_dot_data(graph_data)
+        self.assertIsNotNone(graphs)
+
+        if not isinstance(graphs, list):
+            return
+        g = graphs.pop()
+        g.set_shape_files(pngs)
+
+        rendered = RenderResult(g.create(format="jpe"))
+        original = Renderer.graphviz(dot_file, encoding="ascii")
+        if rendered.checksum != original.checksum:
+            raise AssertionError(
+                "from-past-to-future.dot: "
+                f"{rendered.checksum} != {original.checksum} "
+                "(found pydot vs graphviz difference)"
+            )
+
+
+class RenderedTestCase(PydotTestCase):
+    def _render_and_compare_dot_file(self, fdir, fname):
+        # files that confuse `chardet`
+        encodings = {"Latin1.dot": "latin-1"}
+        fpath = os.path.join(fdir, fname)
+        with open(fpath, "rb") as f:
+            s = f.read()
+        estimate = chardet.detect(s)
+        encoding = encodings.get(fname, estimate["encoding"])
+        pydot = Renderer.pydot(
+            fpath,
+            encoding,
+        )
+        graphviz = Renderer.graphviz(
+            fpath,
+            encoding,
+        )
+        if pydot.checksum != graphviz.checksum:
+            # In case of error, save both images locally for inspection
+            now = datetime.datetime.now().strftime("%H_%M_%S")
+            with open(f"err_{fname}_pydot_{now}.jpeg", "wb") as f:
+                f.write(pydot.data)
+            with open(f"err_{fname}_graphviz_{now}.jpeg", "wb") as f:
+                f.write(graphviz.data)
+            raise AssertionError(
+                f"{fname}: {pydot.checksum} != {graphviz.checksum} "
+                "(found pydot vs graphviz difference)"
+            )
+
+
+class TestMyRegressions(RenderedTestCase):
+    """Perform regression tests in my_tests dir."""
+
+    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_1))
+    def test_regression(self, _, fname, path):
+        self._render_and_compare_dot_file(path, fname)
+
+
+class TestGraphvizRegressions(RenderedTestCase):
+    """Perform regression tests in graphs dir."""
+
+    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
+    def test_regression(self, _, fname, path):
+        self._render_and_compare_dot_file(path, fname)
+
+
 def parse_args():
     """Parse arguments. Deprecated since pydot 2.0."""
     parser = argparse.ArgumentParser(add_help=False)
@@ -437,6 +494,5 @@ def parse_args():
 
 if __name__ == "__main__":
     parse_args()
-    test_dir = os.path.dirname(os.path.abspath(__file__))
     print("The tests are using `pydot` from:  {pd}".format(pd=pydot))
     unittest.main(verbosity=2)
