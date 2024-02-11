@@ -1,4 +1,4 @@
-diGraph G{
+digraph G{
 graph [charset="utf8"]
 1[label="Umlaut"];
 2[label="ü"];
