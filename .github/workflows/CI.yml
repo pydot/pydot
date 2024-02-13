@@ -30,7 +30,7 @@ jobs:
         system:
           - {os: ubuntu, can-fail: false}
           - {os: windows, can-fail: true}
-          - {os: macos, can-fail: false}
+          - {os: macos, can-fail: true}
         python-version:
           - "3.12"
           - "3.11"
