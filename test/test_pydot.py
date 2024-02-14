@@ -24,6 +24,7 @@ if sys.version_info >= (3, 8):
 else:
     from ._functools import cached_property
 
+TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
 
 TEST_PROGRAM = "dot"
 TESTS_DIR_1 = "my_tests"
@@ -94,6 +95,25 @@ def _load_test_cases(casedir):
         return fname.removesuffix(".dot")
 
     return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
+
+
+def _compare_images(fname: str, pydot: RenderResult, gv: RenderResult) -> bool:
+    """Compare two RenderResult objects for the named test.
+
+    If the images differ and a ``TEST_ERROR_DIR`` has been provided, create
+    a subdir for the test and dump both images there for examination."""
+    if pydot.checksum == gv.checksum:
+        return True
+    if TEST_ERROR_DIR is not None:
+        dirname = fname.replace(".", "_")
+        out_dir = os.path.join(os.path.normpath(TEST_ERROR_DIR), dirname)
+        os.makedirs(out_dir)
+        pydot_path = os.path.join(out_dir, "err_pydot.jpeg")
+        gv_path = os.path.join(out_dir, "err_graphviz.jpeg")
+        with open(pydot_path, "wb") as p, open(gv_path, "wb") as g:
+            p.write(pydot.data)
+            g.write(gv.data)
+    return False
 
 
 class PydotTestCase(unittest.TestCase):
@@ -424,11 +444,11 @@ class TestShapeFiles(PydotTestCase):
         g.set_shape_files(pngs)
 
         rendered = RenderResult(g.create(format="jpe"))
-        original = Renderer.graphviz(dot_file, encoding="ascii")
-        if rendered.checksum != original.checksum:
+        graphviz = Renderer.graphviz(dot_file, encoding="ascii")
+        if not _compare_images("from-past-to-future", rendered, graphviz):
             raise AssertionError(
                 "from-past-to-future.dot: "
-                f"{rendered.checksum} != {original.checksum} "
+                f"{rendered.checksum} != {graphviz.checksum} "
                 "(found pydot vs graphviz difference)"
             )
 
@@ -442,7 +462,7 @@ class RenderedTestCase(PydotTestCase):
             s = f.read()
         estimate = chardet.detect(s)
         encoding = encodings.get(fname, estimate["encoding"])
-        pydot = Renderer.pydot(
+        rendered = Renderer.pydot(
             fpath,
             encoding,
         )
@@ -450,15 +470,9 @@ class RenderedTestCase(PydotTestCase):
             fpath,
             encoding,
         )
-        if pydot.checksum != graphviz.checksum:
-            # In case of error, save both images locally for inspection
-            now = datetime.datetime.now().strftime("%H_%M_%S")
-            with open(f"err_{fname}_pydot_{now}.jpeg", "wb") as f:
-                f.write(pydot.data)
-            with open(f"err_{fname}_graphviz_{now}.jpeg", "wb") as f:
-                f.write(graphviz.data)
+        if not _compare_images(fname, rendered, graphviz):
             raise AssertionError(
-                f"{fname}: {pydot.checksum} != {graphviz.checksum} "
+                f"{fname}: {rendered.checksum} != {graphviz.checksum} "
                 "(found pydot vs graphviz difference)"
             )
 

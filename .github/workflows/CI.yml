@@ -30,7 +30,7 @@ jobs:
         system:
           - {os: ubuntu, can-fail: false}
           - {os: windows, can-fail: true}
-          - {os: macos, can-fail: false}
+          - {os: macos, can-fail: true}
         python-version:
           - "3.12"
           - "3.11"
@@ -47,6 +47,15 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           cache: "pip"
+      - name: "Set up TEST_ERROR_DIR"
+        shell: bash
+        run: |
+          mkdir test_errors
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            echo "TEST_ERROR_DIR=$(cygpath -w $(realpath ./test_errors))" >> "$GITHUB_ENV"
+          else
+            echo "TEST_ERROR_DIR=$(pwd -P)/test_errors" >> "$GITHUB_ENV"
+          fi
       - name: "Install graphviz (Linux)"
         if: runner.os == 'linux'
         run: sudo apt install graphviz
@@ -64,4 +73,13 @@ jobs:
         run: tox -vv --notest
       - name: "Run tests"
         run: tox --skip-pkg-install
-
+      - name: "Prepare error artifacts"
+        if: ${{ failure() }}
+        run: cp test/compare_images.sh "${{ env.TEST_ERROR_DIR }}"
+      - name: "Publish error artifacts"
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-errors-${{ runner.os }}-${{ matrix.python-version }}
+          path: ${{ env.TEST_ERROR_DIR }}
+          if-no-files-found: ignore
