@@ -392,6 +392,8 @@ class TestGraphAPI(PydotTestCase):
         self.assertIsInstance(pydot.__version__, str)
 
 
+# TODO: Remove skipIf when graphviz 10.0.1 is available
+@unittest.skipIf(sys.platform.startswith("win"), "Unreliable on Windows")
 class TestShapeFiles(PydotTestCase):
     shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
@@ -472,8 +474,19 @@ class TestMyRegressions(RenderedTestCase):
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
+    _skip_on_win = [
+        "b51.dot",
+        "b53.dot",
+        "clust2.dot",
+        "proc3d.dot",
+    ]
+
     @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
     def test_regression(self, _, fname, path):
+        if sys.platform.startswith("win") and fname in self._skip_on_win:
+            # TODO: remove when graphviz 10.0.1 is available
+            self.skipTest(f"{fname} results are unpredictable on Windows")
+            return
         self._render_and_compare_dot_file(path, fname)
 
 
