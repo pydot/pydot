@@ -81,6 +81,46 @@ CLUSTER_ATTRIBUTES = {
 # fmt: on
 
 
+OUTPUT_FORMATS = {
+    "canon",
+    "cmap",
+    "cmapx",
+    "cmapx_np",
+    "dia",
+    "dot",
+    "fig",
+    "gd",
+    "gd2",
+    "gif",
+    "hpgl",
+    "imap",
+    "imap_np",
+    "ismap",
+    "jpe",
+    "jpeg",
+    "jpg",
+    "mif",
+    "mp",
+    "pcl",
+    "pdf",
+    "pic",
+    "plain",
+    "plain-ext",
+    "png",
+    "ps",
+    "ps2",
+    "svg",
+    "svgz",
+    "vml",
+    "vmlz",
+    "vrml",
+    "vtx",
+    "wbmp",
+    "xdot",
+    "xlib",
+}
+
+
 DEFAULT_PROGRAMS = {
     "dot",
     "twopi",
@@ -89,6 +129,46 @@ DEFAULT_PROGRAMS = {
     "fdp",
     "sfdp",
 }
+
+
+def __generate_attribute_methods(Klass, attrs):
+    """Generate setter and getter methods for attributes."""
+    for attr in attrs:
+        # Generate all the Getter methods.
+        #
+        def __getter(self, _attr=attr):
+            return self.get(_attr)
+
+        setattr(Klass, f"get_{attr}", __getter)
+
+        # Generate all the Setter methods.
+        #
+        def __setter(self, *args, _attr=attr):
+            return self.set(_attr, *args)
+
+        setattr(Klass, f"set_{attr}", __setter)
+
+
+def __generate_format_methods(Klass):
+    """Generate create_ and write_ methods for formats."""
+    # Automatically creates all
+    # the methods enabling the creation
+    # of output in any of the supported formats.
+    for frmt in OUTPUT_FORMATS:
+
+        def __create_method(self, f=frmt, prog=None, encoding=None):
+            """Refer to docstring of method `create`."""
+            return self.create(format=f, prog=prog, encoding=encoding)
+
+        setattr(Klass, f"create_{frmt}", __create_method)
+
+    for frmt in OUTPUT_FORMATS ^ {"raw"}:
+
+        def __write_method(self, path, f=frmt, prog=None, encoding=None):
+            """Refer to docstring of method `write`."""
+            self.write(path, format=f, prog=prog, encoding=encoding)
+
+        setattr(Klass, f"write_{frmt}", __write_method)
 
 
 def is_windows():
@@ -516,23 +596,6 @@ class Common(object):
         """Get sequence"""
         return self.obj_dict["sequence"]
 
-    def create_attribute_methods(self, obj_attributes):
-        for attr in obj_attributes:
-            # Generate all the Setter methods.
-            #
-            self.__setattr__(
-                "set_" + attr,
-                lambda x, a=attr: self.obj_dict["attributes"].__setitem__(
-                    a, x
-                ),
-            )
-
-            # Generate all the Getter methods.
-            #
-            self.__setattr__(
-                "get_" + attr, lambda a=attr: self.__get_attribute__(a)
-            )
-
 
 class Node(Common):
     """A graph node.
@@ -581,8 +644,6 @@ class Node(Common):
 
             self.obj_dict["name"] = quote_if_necessary(name)
             self.obj_dict["port"] = port
-
-        self.create_attribute_methods(NODE_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -640,6 +701,9 @@ class Node(Common):
         return node + ";"
 
 
+__generate_attribute_methods(Node, NODE_ATTRIBUTES)
+
+
 class Edge(Common):
     """A graph edge.
 
@@ -686,7 +750,6 @@ class Edge(Common):
             self.obj_dict["sequence"] = None
         else:
             self.obj_dict = obj_dict
-        self.create_attribute_methods(EDGE_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -813,6 +876,9 @@ class Edge(Common):
         return " ".join(edge) + ";"
 
 
+__generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
+
+
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
 
@@ -889,8 +955,6 @@ class Graph(Common):
             self.obj_dict["subgraphs"] = dict()
 
             self.set_parent_graph(self)
-
-        self.create_attribute_methods(GRAPH_ATTRIBUTES)
 
     def __str__(self):
         return self.to_string()
@@ -1404,6 +1468,9 @@ class Graph(Common):
         return "".join(graph)
 
 
+__generate_attribute_methods(Graph, GRAPH_ATTRIBUTES)
+
+
 class Subgraph(Graph):
     """Class representing a subgraph in Graphviz's dot language.
 
@@ -1513,7 +1580,8 @@ class Cluster(Graph):
             self.obj_dict["type"] = "subgraph"
             self.obj_dict["name"] = quote_if_necessary("cluster_" + graph_name)
 
-        self.create_attribute_methods(CLUSTER_ATTRIBUTES)
+
+__generate_attribute_methods(Cluster, CLUSTER_ATTRIBUTES)
 
 
 class Dot(Graph):
@@ -1528,67 +1596,8 @@ class Dot(Graph):
         Graph.__init__(self, *argsl, **argsd)
 
         self.shape_files = list()
-        self.formats = [
-            "canon",
-            "cmap",
-            "cmapx",
-            "cmapx_np",
-            "dia",
-            "dot",
-            "fig",
-            "gd",
-            "gd2",
-            "gif",
-            "hpgl",
-            "imap",
-            "imap_np",
-            "ismap",
-            "jpe",
-            "jpeg",
-            "jpg",
-            "mif",
-            "mp",
-            "pcl",
-            "pdf",
-            "pic",
-            "plain",
-            "plain-ext",
-            "png",
-            "ps",
-            "ps2",
-            "svg",
-            "svgz",
-            "vml",
-            "vmlz",
-            "vrml",
-            "vtx",
-            "wbmp",
-            "xdot",
-            "xlib",
-        ]
-
+        self.formats = OUTPUT_FORMATS
         self.prog = "dot"
-
-        # Automatically creates all
-        # the methods enabling the creation
-        # of output in any of the supported formats.
-        for frmt in self.formats:
-
-            def new_method(f=frmt, prog=None, encoding=None):
-                """Refer to docstring of method `create`."""
-                return self.create(format=f, prog=prog, encoding=encoding)
-
-            name = "create_{fmt}".format(fmt=frmt)
-            self.__setattr__(name, new_method)
-
-        for frmt in self.formats + ["raw"]:
-
-            def new_method(path, f=frmt, prog=None, encoding=None):
-                """Refer to docstring of method `write.`"""
-                self.write(path, format=f, prog=prog, encoding=encoding)
-
-            name = "write_{fmt}".format(fmt=frmt)
-            self.__setattr__(name, new_method)
 
     def __getstate__(self):
         dict = copy.copy(self.obj_dict)
@@ -1792,3 +1801,6 @@ class Dot(Graph):
         )
 
         return stdout_data
+
+
+__generate_format_methods(Dot)
