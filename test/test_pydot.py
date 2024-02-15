@@ -413,7 +413,10 @@ class TestGraphAPI(PydotTestCase):
 
 
 # TODO: Remove skipIf when graphviz 10.0.1 is available
-@unittest.skipIf(sys.platform.startswith("win"), "Unreliable on Windows")
+@unittest.skipIf(
+    sys.platform.startswith("win") or sys.platform == "darwin",
+    "Unreliable on Windows and macOS",
+)
 class TestShapeFiles(PydotTestCase):
     shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
