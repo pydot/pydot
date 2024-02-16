@@ -285,11 +285,11 @@ class frozendict(dict):
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-id_re_alpha_nums = re.compile("^[_a-zA-Z][a-zA-Z0-9_,]*$", re.UNICODE)
+id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_\.]*$", re.UNICODE)
 id_re_alpha_nums_with_ports = re.compile(
-    '^[_a-zA-Z][a-zA-Z0-9_,:"]*[a-zA-Z0-9_,"]+$', re.UNICODE
+    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$', re.UNICODE
 )
-id_re_num = re.compile("^[0-9,]+$", re.UNICODE)
+id_re_num = re.compile(r"^[0-9\.]+$", re.UNICODE)
 id_re_with_port = re.compile("^([^:]*):([^:]*)$", re.UNICODE)
 id_re_dbl_quoted = re.compile('^".*"$', re.S | re.UNICODE)
 id_re_html = re.compile("^<.*>$", re.S | re.UNICODE)
@@ -314,8 +314,12 @@ def needs_quotes(s):
     if s in dot_keywords:
         return False
 
-    chars = [ord(c) for c in s if ord(c) > 0x7F or ord(c) == 0]
-    if chars and not id_re_dbl_quoted.match(s) and not id_re_html.match(s):
+    has_high_chars = any([ord(c) > 0x7F or ord(c) == 0 for c in s])
+    if (
+        has_high_chars
+        and not id_re_dbl_quoted.match(s)
+        and not id_re_html.match(s)
+    ):
         return True
 
     for test_re in [
