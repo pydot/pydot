@@ -299,6 +299,26 @@ class TestGraphAPI(PydotTestCase):
             self.graph_directed.get_nodes()[0].to_string(), "node [shape=box];"
         )
 
+    def test_comma_separated_attribute_values_to_string(self):
+        self._reset_graphs()
+        self.graph_directed.add_node(
+            pydot.Node("node", color="green", style="rounded,filled")
+        )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string(),
+            'node [color=green, style="rounded,filled"];',
+        )
+
+    def test_attribute_string_values_quoting(self):
+        self._reset_graphs()
+        self.graph_directed.add_node(
+            pydot.Node("node", length=1.234, size="2.345", radius="9,876")
+        )
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string(),
+            'node [length=1.234, radius="9,876", size=2.345];',
+        )
+
     def test_names_of_a_thousand_nodes(self):
         self._reset_graphs()
         names = {"node_%05d" % i for i in range(10**3)}
