@@ -414,7 +414,7 @@ class TestGraphAPI(PydotTestCase):
 
 # TODO: Remove skipIf when graphviz 10.0.1 is available
 @unittest.skipIf(
-    sys.platform.startswith("win") or sys.platform == "darwin",
+    sys.platform.startswith(("win", "darwin")),
     "Unreliable on Windows and macOS",
 )
 class TestShapeFiles(PydotTestCase):
@@ -491,7 +491,7 @@ class TestMyRegressions(RenderedTestCase):
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
-    _skip_on_win = [
+    _skip_on_win_mac = [
         "b51.dot",
         "b53.dot",
         "clust2.dot",
@@ -500,10 +500,14 @@ class TestGraphvizRegressions(RenderedTestCase):
 
     @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
     def test_regression(self, _, fname, path):
-        if sys.platform.startswith("win") and fname in self._skip_on_win:
+        if (
+            sys.platform.startswith(("win", "darwin"))
+            and fname in self._skip_on_win_mac
+        ):
             # TODO: remove when graphviz 10.0.1 is available
-            self.skipTest(f"{fname} results are unpredictable on Windows")
-            return
+            self.skipTest(
+                f"{fname} results are unpredictable on Windows and macOS"
+            )
         self._render_and_compare_dot_file(path, fname)
 
 
