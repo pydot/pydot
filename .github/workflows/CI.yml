@@ -61,7 +61,7 @@ jobs:
         run: sudo apt install graphviz
       - name: "Install graphviz (Windows)"
         if: runner.os == 'windows'
-        run: choco install graphviz
+        run: choco install graphviz --ignore-http-cache
       - name: "Install graphviz (macOS)"
         if: runner.os == 'macos'
         run: brew install graphviz
