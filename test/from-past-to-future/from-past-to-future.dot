@@ -10,55 +10,55 @@ digraph G {
 
 	/* Nodes */
 	subgraph cluster_Computers {label="Computers"; labelloc="b"; Computers_icon};
-	Computers_icon [label="", shape=box, style=invis, shapefile="Computers.png"];
+	Computers_icon [label="", shape=plaintext, image="Computers.png"];
                 
 	subgraph cluster_Semantic_Web {label="Semantic Web"; labelloc="b"; Semantic_Web_icon};
-	Semantic_Web_icon [label="", shape=box, style=invis, shapefile="Semantic_Web.png"];
+	Semantic_Web_icon [label="", shape=plaintext, image="Semantic_Web.png"];
                 
 	subgraph cluster_Cryptography {label="Cryptography"; labelloc="b"; Cryptography_icon};
-	Cryptography_icon [label="", shape=box, style=invis, shapefile="Cryptography.png"];
+	Cryptography_icon [label="", shape=plaintext, image="Cryptography.png"];
                 
 	subgraph cluster_Automata {label="Automata"; labelloc="b"; Automata_icon};
-	Automata_icon [label="", shape=box, style=invis, shapefile="Automata.png"];
+	Automata_icon [label="", shape=plaintext, image="Automata.png"];
                 
 	subgraph cluster_AI {label="A.I."; labelloc="b"; AI_icon};
-	AI_icon [label="", shape=box, style=invis, shapefile="AI.png"];
+	AI_icon [label="", shape=plaintext, image="AI.png"];
                 
 	subgraph cluster_Chaos {label="Chaos / Fractals"; labelloc="b"; Chaos_icon};
-	Chaos_icon [label="", shape=box, style=invis, shapefile="Chaos.png"];
+	Chaos_icon [label="", shape=plaintext, image="Chaos.png"];
                 
 	subgraph cluster_XML {label="XML / RDF / URI"; labelloc="b"; XML_icon};
-	XML_icon [label="", shape=box, style=invis, shapefile="XML.png"];
+	XML_icon [label="", shape=plaintext, image="XML.png"];
                 
 	subgraph cluster_Ontology {label="Ontology / Clustering"; labelloc="b"; Ontology_icon};
-	Ontology_icon [label="", shape=box, style=invis, shapefile="Ontology.png"];
+	Ontology_icon [label="", shape=plaintext, image="Ontology.png"];
                 
 	subgraph cluster_Biology {label="Biology / Neurons"; labelloc="b"; Biology_icon};
-	Biology_icon [label="", shape=box, style=invis, shapefile="Biology.png"];
+	Biology_icon [label="", shape=plaintext, image="Biology.png"];
                 
 	subgraph cluster_Agents {label="Agents / Security"; labelloc="b"; Agents_icon};
-	Agents_icon [label="", shape=box, style=invis, shapefile="Agents.png"];
+	Agents_icon [label="", shape=plaintext, image="Agents.png"];
                 
 	subgraph cluster_Small_World {label="The Small World Project"; labelloc="b"; Small_World_icon};
-	Small_World_icon [label="", shape=box, style=invis, shapefile="Small_World.png"];
+	Small_World_icon [label="", shape=plaintext, image="Small_World.png"];
                 
 	subgraph cluster_Social_Networks {label="Social Networks"; labelloc="b"; Social_Networks_icon};
-	Social_Networks_icon [label="", shape=box, style=invis, shapefile="Social_Networks.png"];
+	Social_Networks_icon [label="", shape=plaintext, image="Social_Networks.png"];
                 
 	subgraph cluster_Search_Engines {label="Search Engines"; labelloc="b"; Search_Engines_icon};
-	Search_Engines_icon [label="", shape=box, style=invis, shapefile="Search_Engines.png"];
+	Search_Engines_icon [label="", shape=plaintext, image="Search_Engines.png"];
                 
 	subgraph cluster_Turing {label="A. Turing"; labelloc="b"; Turing_icon};
-	Turing_icon [label="", shape=box, style=invis, shapefile="Turing.png"];
+	Turing_icon [label="", shape=plaintext, image="Turing.png"];
                 
 	subgraph cluster_Rejewski {label="M. Rejewski"; labelloc="b"; Rejewski_icon};
-	Rejewski_icon [label="", shape=box, style=invis, shapefile="Rejewski.png"];
+	Rejewski_icon [label="", shape=plaintext, image="Rejewski.png"];
                 
 	subgraph cluster_Dertouzos {label="M. Dertouzos"; labelloc="b"; Dertouzos_icon};
-	Dertouzos_icon [label="", shape=box, style=invis, shapefile="Dertouzos.png"];
+	Dertouzos_icon [label="", shape=plaintext, image="Dertouzos.png"];
                 
 	subgraph cluster_Berners_Lee {label="T. Berners-Lee"; labelloc="b"; Berners_Lee_icon};
-	Berners_Lee_icon [label="", shape=box, style=invis, shapefile="Berners_Lee.png"];
+	Berners_Lee_icon [label="", shape=plaintext, image="Berners_Lee.png"];
                 
 	/* Relationships */
 	Computers_icon -> Semantic_Web_icon;
