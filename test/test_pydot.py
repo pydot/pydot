@@ -236,21 +236,18 @@ class TestGraphAPI(PydotTestCase):
         ]
         expected_concat = observed_concat = ""
         for graph_type, simplify, expected in test_combinations:
-            expected_concat += "graph_type %s, simplify %s: %s\n" % (
-                graph_type,
-                simplify,
-                expected,
+            expected_concat += (
+                f"graph_type {graph_type}, simplify {simplify}: {expected}\n"
             )
             g.set_type(graph_type)
             g.set_simplify(simplify)
             try:
                 observed = " ".join(g.to_string().split())
             except (NameError, TypeError) as e:
-                observed = "%s: %s" % (type(e).__name__, e)
-            observed_concat += "graph_type %s, simplify %s: %s\n" % (
-                graph_type,
-                simplify,
-                observed,
+                type_name = type(e).__name__
+                observed = f"{type_name}: {e}"
+            observed_concat += (
+                f"graph_type {graph_type}, simplify {simplify}: {observed}\n"
             )
         self.maxDiff = None
         self.assertMultiLineEqual(expected_concat, observed_concat)
@@ -321,7 +318,7 @@ class TestGraphAPI(PydotTestCase):
 
     def test_names_of_a_thousand_nodes(self):
         self._reset_graphs()
-        names = {"node_%05d" % i for i in range(10**3)}
+        names = {f"node_{i:05d}" for i in range(10**3)}
         for name in names:
             self.graph_directed.add_node(pydot.Node(name, label=name))
 
@@ -528,5 +525,5 @@ def parse_args():
 
 if __name__ == "__main__":
     parse_args()
-    print("The tests are using `pydot` from:  {pd}".format(pd=pydot))
+    print(f"The tests are using `pydot` from:  {pydot}")
     unittest.main(verbosity=2)
