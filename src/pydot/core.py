@@ -18,7 +18,7 @@ except Exception as e:
     warnings.warn(
         "`pydot` could not import `dot_parser`, "
         "so `pydot` will be unable to parse DOT files. "
-        "The error was:  {e}".format(e=e)
+        f"The error was:  {e}"
     )
 
 
@@ -280,7 +280,8 @@ class frozendict(dict):
             return h
 
     def __repr__(self):
-        return "frozendict(%s)" % dict.__repr__(self)
+        dict_repr = dict.__repr__(self)
+        return f"frozendict({dict_repr})"
 
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
@@ -457,8 +458,8 @@ def graph_from_adjacency_matrix(matrix, node_prefix="", directed=False):
             if e:
                 graph.add_edge(
                     Edge(
-                        "%s%s" % (node_prefix, node_orig),
-                        "%s%s" % (node_prefix, node_dest),
+                        f"{node_prefix}{node_orig}",
+                        f"{node_prefix}{node_dest}",
                     )
                 )
             node_dest += 1
@@ -494,8 +495,8 @@ def graph_from_incidence_matrix(matrix, node_prefix="", directed=False):
         if len(nodes) == 2:
             graph.add_edge(
                 Edge(
-                    "%s%s" % (node_prefix, abs(nodes[0])),
-                    "%s%s" % (node_prefix, nodes[1]),
+                    f"{node_prefix}{abs(nodes[0])}",
+                    f"{node_prefix}{nodes[1]}",
                 )
             )
 
@@ -687,7 +688,7 @@ class Node(Common):
             if value == "":
                 value = '""'
             if value is not None:
-                node_attr.append("%s=%s" % (attr, quote_if_necessary(value)))
+                node_attr.append(f"{attr}={quote_if_necessary(value)}")
             else:
                 node_attr.append(attr)
 
@@ -868,7 +869,7 @@ class Edge(Common):
             if value == "":
                 value = '""'
             if value is not None:
-                edge_attr.append("%s=%s" % (attr, quote_if_necessary(value)))
+                edge_attr.append(f"{attr}={quote_if_necessary(value)}")
             else:
                 edge_attr.append(attr)
 
@@ -939,11 +940,8 @@ class Graph(Common):
 
             if graph_type not in ["graph", "digraph"]:
                 raise pydot.Error(
-                    (
-                        'Invalid type "{t}". '
-                        "Accepted graph types are: "
-                        "graph, digraph"
-                    ).format(t=graph_type)
+                    f'Invalid type "{graph_type}". '
+                    "Accepted graph types are: graph, digraph"
                 )
 
             self.obj_dict["name"] = quote_if_necessary(graph_name)
@@ -1396,9 +1394,8 @@ class Graph(Common):
             "show_keyword", True
         ):
             graph_type = ""
-        s = "{type} {name} {{\n".format(
-            type=graph_type, name=self.obj_dict["name"]
-        )
+        graph_name = self.obj_dict["name"]
+        s = f"{graph_type} {graph_name} {{\n"
         graph.append(s)
 
         for attr in sorted(self.obj_dict["attributes"]):
@@ -1407,7 +1404,7 @@ class Graph(Common):
                 if val == "":
                     val = '""'
                 if val is not None:
-                    graph.append("%s=%s" % (attr, quote_if_necessary(val)))
+                    graph.append(f"{attr}={quote_if_necessary(val)}")
                 else:
                     graph.append(attr)
 
@@ -1761,7 +1758,7 @@ class Dot(Graph):
             f.write(f_data)
             f.close()
 
-        arguments = ["-T{}".format(format)] + args + [tmp_name]
+        arguments = [f"-T{format}"] + args + [tmp_name]
 
         try:
             stdout_data, stderr_data, process = call_graphviz(
@@ -1772,7 +1769,7 @@ class Dot(Graph):
         except OSError as e:
             if e.errno == errno.ENOENT:
                 args = list(e.args)
-                args[1] = '"{prog}" not found in path.'.format(prog=prog)
+                args[1] = f'"{prog}" not found in path.'
                 raise OSError(*args)
             else:
                 raise
@@ -1784,25 +1781,15 @@ class Dot(Graph):
         os.unlink(tmp_name)
 
         if process.returncode != 0:
-            message = (
-                '"{prog}" with args {arguments} returned code: {code}\n\n'
-                "stdout, stderr:\n {out}\n{err}\n"
-            ).format(
-                prog=prog,
-                arguments=arguments,
-                code=process.returncode,
-                out=stdout_data,
-                err=stderr_data,
+            code = process.returncode
+            print(
+                f'"{prog}" with args {arguments} returned code: {code}\n\n'
+                f"stdout, stderr:\n {stdout_data}\n{stderr_data}\n"
             )
-            print(message)
 
         assert (
             process.returncode == 0
-        ), '"{prog}" with args {arguments} returned code: {code}'.format(
-            prog=prog,
-            arguments=arguments,
-            code=process.returncode,
-        )
+        ), f'"{prog}" with args {arguments} returned code: {process.returncode}'
 
         return stdout_data
 
