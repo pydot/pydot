@@ -1,4 +1,4 @@
-[![Build Status](https://www.travis-ci.com/pydot/pydot.svg?branch=master)](https://www.travis-ci.com/pydot/pydot)
+![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -8,7 +8,7 @@ About
 
 `pydot`:
 
-  - is an interface to [Graphviz][1]
+  - is an interface to [Graphviz][1],
   - can parse and dump into the [DOT language][2] used by GraphViz,
   - is written in pure Python,
 
@@ -235,11 +235,14 @@ Distributed under an [MIT license][10].
 Contacts
 ========
 
-Maintainers:
-- Sebastian Kalinowski <sebastian@kalinowski.eu> (GitHub: @prmtl)
-- Peter Nowee <peter@peternowee.com> (GitHub: @peternowee)
+Current maintainer(s): 
+- Łukasz Łapiński <lukaszlapinski7 (at) gmail (dot) com>
 
-Original author: Ero Carrera <ero.carrera@gmail.com>
+Past maintainers:
+- Sebastian Kalinowski <sebastian (at) kalinowski (dot) eu> (GitHub: @prmtl)
+- Peter Nowee <peter (at) peternowee (dot) com> (GitHub: @peternowee)
+
+Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 
 
 [1]: https://www.graphviz.org
