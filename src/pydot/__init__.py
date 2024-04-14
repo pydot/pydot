@@ -1,4 +1,5 @@
 """An interface to GraphViz."""
+
 import logging
 
 __author__ = "Ero Carrera"
@@ -11,5 +12,5 @@ _logger.debug("pydot initializing")
 _logger.debug("pydot %s", __version__)
 
 
-from pydot.exceptions import *
-from pydot.core import *
+from pydot.exceptions import *  # noqa: E402, F403
+from pydot.core import *  # noqa: F403, E402

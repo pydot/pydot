@@ -51,7 +51,6 @@ dev = [
 ]
 tests = [
   'chardet',
-  'black',
   'tox',
   'parameterized',
   'unittest-parallel',
