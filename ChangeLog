@@ -7,7 +7,9 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 2.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Added:
+- Add standard Python logging, using the logger name `pydot`. For
+  details, see the new section on Troubleshooting in README.md.
 
 
 2.0.0 (2023-12-30)

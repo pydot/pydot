@@ -14,7 +14,7 @@ About
 
 and [`networkx`][3] can convert its graphs to `pydot`.
 
-Development occurs at [GitHub][11], where you can report issues and
+Development occurs at [GitHub][4], where you can report issues and
 contribute code.
 
 
@@ -34,7 +34,7 @@ start with. Here are 3 common options:
 
     Use this method if you already have a DOT-file describing a graph,
     for example as output of another program. Let's say you already
-    have this `example.dot` (based on an [example from Wikipedia][12]):
+    have this `example.dot` (based on an [example from Wikipedia][5]):
 
     ```dot
     graph my_graph {
@@ -199,13 +199,13 @@ For more help, see the docstrings of the various pydot objects and
 methods. For example, `help(pydot)`, `help(pydot.Graph)` and
 `help(pydot.Dot.write)`.
 
-More [documentation contributions welcome][13].
+More [documentation contributions welcome][6].
 
 
 Installation
 ============
 
-From [PyPI][4] using [`pip`][5]:
+From [PyPI][7] using [`pip`][8]:
 
 `pip install pydot`
 
@@ -217,19 +217,55 @@ From source:
 Dependencies
 ============
 
-- [`pyparsing`][6]: used only for *loading* DOT files,
+- [`pyparsing`][9]: used only for *loading* DOT files,
   installed automatically during `pydot` installation.
 
 - GraphViz: used to render graphs as PDF, PNG, SVG, etc.
   Should be installed separately, using your system's
-  [package manager][7], something similar (e.g., [MacPorts][8]),
-  or from [its source][9].
+  [package manager][10], something similar (e.g., [MacPorts][11]),
+  or from [its source][12].
+
+
+Troubleshooting
+===============
+
+How to enable logging
+---------------------
+
+`pydot` uses Python's standard `logging` module. To see the logs,
+assuming logging has not been configured already:
+
+    >>> import logging
+    >>> logging.basicConfig(level=logging.DEBUG)
+    >>> import pydot
+    DEBUG:pydot:pydot initializing
+    DEBUG:pydot:pydot <version>
+    DEBUG:pydot.core:pydot core module initializing
+    DEBUG:pydot.dot_parser:pydot dot_parser module initializing
+
+**Warning**: When `DEBUG` level logging is enabled, `pydot` may log the
+data that it processes, such as graph contents or DOT strings. This can
+cause the log to become very large or contain sensitive information.
+
+Advanced logging configuration
+------------------------------
+
+- Check out the [Python logging documentation][13] and the
+  [`logging_tree`][14] visualizer.
+- `pydot` does not add any handlers to its loggers, nor does it setup
+  or modify your root logger. The `pydot` loggers are created with the
+  default level `NOTSET`.
+- `pydot` registers the following loggers:
+  - `pydot`: Parent logger. Emits a few messages during startup.
+  - `pydot.core`: Messages related to pydot objects, Graphviz execution
+                  and anything else not covered by the other loggers.
+  - `pydot.dot_parser`: Messages related to the parsing of DOT strings.
 
 
 License
 =======
 
-Distributed under an [MIT license][10].
+Distributed under an [MIT license][15].
 
 
 Contacts
@@ -248,13 +284,15 @@ Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 [1]: https://www.graphviz.org
 [2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [3]: https://github.com/networkx/networkx
-[4]: https://pypi.python.org/pypi
-[5]: https://github.com/pypa/pip
-[6]: https://github.com/pyparsing/pyparsing
-[7]: https://en.wikipedia.org/wiki/Package_manager
-[8]: https://www.macports.org
-[9]: https://gitlab.com/graphviz/graphviz
-[10]: https://github.com/pydot/pydot/blob/master/LICENSE
-[11]: https://github.com/pydot/pydot
-[12]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
-[13]: https://github.com/pydot/pydot/issues/130
+[4]: https://github.com/pydot/pydot
+[5]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
+[6]: https://github.com/pydot/pydot/issues/130
+[7]: https://pypi.org/project/pydot/
+[8]: https://github.com/pypa/pip
+[9]: https://github.com/pyparsing/pyparsing
+[10]: https://en.wikipedia.org/wiki/Package_manager
+[11]: https://www.macports.org
+[12]: https://gitlab.com/graphviz/graphviz
+[13]: https://docs.python.org/3/library/logging.html
+[14]: https://pypi.org/project/logging_tree/
+[15]: https://github.com/pydot/pydot/blob/master/LICENSE

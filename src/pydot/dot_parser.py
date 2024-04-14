@@ -8,6 +8,8 @@ Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 
+import logging
+
 from pyparsing import (
     CaselessLiteral,
     CharsNotIn,
@@ -31,6 +33,10 @@ import pydot
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
+
+
+_logger = logging.getLogger(__name__)
+_logger.debug("pydot dot_parser module initializing")
 
 
 class P_AttrList(object):
