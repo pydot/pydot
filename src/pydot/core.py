@@ -370,11 +370,9 @@ def id_needs_quotes(s):
 
 
 def quote_id_if_necessary(s):
-    """Enclose attribute value in quotes, if needed."""
+    """Enclose id value in quotes, if needed."""
     if isinstance(s, bool):
-        if s is True:
-            return "True"
-        return "False"
+        return str(s).lower()
 
     if not isinstance(s, str):
         return s
@@ -389,9 +387,9 @@ def quote_id_if_necessary(s):
 
 
 def quote_attr_if_necessary(s):
-
+    """Enclose attribute value in quotes, if necessary."""
     if isinstance(s, bool):
-        return str(s)
+        return str(s).lower()
 
     if not isinstance(s, str):
         return s
