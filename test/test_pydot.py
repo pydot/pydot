@@ -294,7 +294,7 @@ class TestGraphAPI(PydotTestCase):
         self.graph_directed.add_node(pydot.Node("node", shape="box"))
         self.assertEqual(
             self.graph_directed.get_nodes()[0].to_string(),
-            'node [shape="box"];'
+            'node [shape="box"];',
         )
 
     def test_comma_separated_attribute_values_to_string(self):

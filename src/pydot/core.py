@@ -300,7 +300,7 @@ def make_quoted(s):
     s.translate(replace)
     for a, b in replace.items():
         s = s.replace(a, b)
-    return fr'"{s}"'
+    return rf'"{s}"'
 
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
@@ -311,7 +311,8 @@ re_html = re.compile(r"^<.*>$", re.S)
 
 id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_\.]*$")
 id_re_alpha_nums_with_ports = re.compile(
-    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$')
+    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$'
+)
 id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
 
 
@@ -321,11 +322,7 @@ def any_needs_quotes(s):
     Returns True, False, or None if the result is indeterminate.
     """
     has_high_chars = any([ord(c) > 0x7F or ord(c) == 0 for c in s])
-    if (
-        has_high_chars
-        and not re_dbl_quoted.match(s)
-        and not re_html.match(s)
-    ):
+    if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
         return True
 
     for test_re in [re_all_numeric, re_dbl_quoted, re_html]:
@@ -866,7 +863,7 @@ class Edge(Common):
 
         if node_port_idx > 0:
             a = node_str[:node_port_idx]
-            b = node_str[node_port_idx + 1:]
+            b = node_str[node_port_idx + 1 :]
 
             node = quote_id_if_necessary(a)
             node += ":" + quote_id_if_necessary(b)
@@ -1621,7 +1618,9 @@ class Cluster(Graph):
 
         if obj_dict is None:
             self.obj_dict["type"] = "subgraph"
-            self.obj_dict["name"] = quote_id_if_necessary("cluster_" + graph_name)
+            self.obj_dict["name"] = quote_id_if_necessary(
+                "cluster_" + graph_name
+            )
 
 
 __generate_attribute_methods(Cluster, CLUSTER_ATTRIBUTES)
