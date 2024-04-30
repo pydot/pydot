@@ -290,19 +290,52 @@ class frozendict(dict):
         return f"frozendict({dict_repr})"
 
 
+def make_quoted(s):
+    """Transform a string into a quoted string, escaping specials."""
+    replace = {
+        '"': r"\"",
+        "\n": r"\n",
+        "\r": r"\r",
+    }
+    s.translate(replace)
+    for a, b in replace.items():
+        s = s.replace(a, b)
+    return fr'"{s}"'
+
+
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_\.]*$", re.UNICODE)
+re_all_numeric = re.compile(r"^[0-9\.]+$")
+re_dbl_quoted = re.compile(r'^".*"$', re.S)
+re_html = re.compile(r"^<.*>$", re.S)
+
+id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_\.]*$")
 id_re_alpha_nums_with_ports = re.compile(
-    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$', re.UNICODE
-)
-id_re_num = re.compile(r"^[0-9\.]+$", re.UNICODE)
-id_re_with_port = re.compile("^([^:]*):([^:]*)$", re.UNICODE)
-id_re_dbl_quoted = re.compile('^".*"$', re.S | re.UNICODE)
-id_re_html = re.compile("^<.*>$", re.S | re.UNICODE)
+    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$')
+id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
 
 
-def needs_quotes(s):
+def any_needs_quotes(s):
+    """Determine if a string needs to be quoted.
+
+    Returns True, False, or None if the result is indeterminate.
+    """
+    has_high_chars = any([ord(c) > 0x7F or ord(c) == 0 for c in s])
+    if (
+        has_high_chars
+        and not re_dbl_quoted.match(s)
+        and not re_html.match(s)
+    ):
+        return True
+
+    for test_re in [re_all_numeric, re_dbl_quoted, re_html]:
+        if test_re.match(s):
+            return False
+
+    return None
+
+
+def id_needs_quotes(s):
     """Checks whether a string is a dot language ID.
 
     It will check whether the string is solely composed
@@ -321,19 +354,12 @@ def needs_quotes(s):
     if s in dot_keywords:
         return False
 
-    has_high_chars = any([ord(c) > 0x7F or ord(c) == 0 for c in s])
-    if (
-        has_high_chars
-        and not id_re_dbl_quoted.match(s)
-        and not id_re_html.match(s)
-    ):
-        return True
+    any_result = any_needs_quotes(s)
+    if any_result is not None:
+        return any_result
 
     for test_re in [
         id_re_alpha_nums,
-        id_re_num,
-        id_re_dbl_quoted,
-        id_re_html,
         id_re_alpha_nums_with_ports,
     ]:
         if test_re.match(s):
@@ -341,12 +367,12 @@ def needs_quotes(s):
 
     m = id_re_with_port.match(s)
     if m:
-        return needs_quotes(m.group(1)) or needs_quotes(m.group(2))
+        return id_needs_quotes(m.group(1)) or id_needs_quotes(m.group(2))
 
     return True
 
 
-def quote_if_necessary(s):
+def quote_id_if_necessary(s):
     """Enclose attribute value in quotes, if needed."""
     if isinstance(s, bool):
         if s is True:
@@ -359,18 +385,28 @@ def quote_if_necessary(s):
     if not s:
         return s
 
-    if needs_quotes(s):
-        replace = {
-            '"': r"\"",
-            "\n": r"\n",
-            "\r": r"\r",
-        }
-        for a, b in replace.items():
-            s = s.replace(a, b)
-
-        return '"' + s + '"'
+    if id_needs_quotes(s):
+        return make_quoted(s)
 
     return s
+
+
+def quote_attr_if_necessary(s):
+
+    if isinstance(s, bool):
+        return str(s)
+
+    if not isinstance(s, str):
+        return s
+
+    if s in dot_keywords:
+        return make_quoted(s)
+
+    any_result = any_needs_quotes(s)
+    if any_result is not None and not any_result:
+        return s
+
+    return make_quoted(s)
 
 
 def graph_from_dot_data(s):
@@ -653,7 +689,7 @@ class Node(Common):
             if isinstance(name, int):
                 name = str(name)
 
-            self.obj_dict["name"] = quote_if_necessary(name)
+            self.obj_dict["name"] = quote_id_if_necessary(name)
             self.obj_dict["port"] = port
 
     def __str__(self):
@@ -685,7 +721,7 @@ class Node(Common):
         """Return string representation of node in DOT language."""
         # RMF: special case defaults for node, edge and graph properties.
         #
-        node = quote_if_necessary(self.obj_dict["name"])
+        node = quote_id_if_necessary(self.obj_dict["name"])
 
         node_attr = list()
 
@@ -694,7 +730,7 @@ class Node(Common):
             if value == "":
                 value = '""'
             if value is not None:
-                node_attr.append(f"{attr}={quote_if_necessary(value)}")
+                node_attr.append(f"{attr}={quote_attr_if_necessary(value)}")
             else:
                 node_attr.append(attr)
 
@@ -750,7 +786,7 @@ class Edge(Common):
             src = src.get_name()
         if isinstance(dst, (Node, Subgraph, Cluster)):
             dst = dst.get_name()
-        points = (quote_if_necessary(src), quote_if_necessary(dst))
+        points = (quote_id_if_necessary(src), quote_id_if_necessary(dst))
         self.obj_dict["points"] = points
         if obj_dict is None:
             # Copy the attributes
@@ -830,10 +866,10 @@ class Edge(Common):
 
         if node_port_idx > 0:
             a = node_str[:node_port_idx]
-            b = node_str[node_port_idx + 1 :]
+            b = node_str[node_port_idx + 1:]
 
-            node = quote_if_necessary(a)
-            node += ":" + quote_if_necessary(b)
+            node = quote_id_if_necessary(a)
+            node += ":" + quote_id_if_necessary(b)
 
             return node
 
@@ -875,7 +911,7 @@ class Edge(Common):
             if value == "":
                 value = '""'
             if value is not None:
-                edge_attr.append(f"{attr}={quote_if_necessary(value)}")
+                edge_attr.append(f"{attr}={quote_attr_if_necessary(value)}")
             else:
                 edge_attr.append(attr)
 
@@ -950,7 +986,7 @@ class Graph(Common):
                     "Accepted graph types are: graph, digraph"
                 )
 
-            self.obj_dict["name"] = quote_if_necessary(graph_name)
+            self.obj_dict["name"] = quote_id_if_necessary(graph_name)
             self.obj_dict["type"] = graph_type
 
             self.obj_dict["strict"] = strict
@@ -1410,7 +1446,7 @@ class Graph(Common):
                 if val == "":
                     val = '""'
                 if val is not None:
-                    graph.append(f"{attr}={quote_if_necessary(val)}")
+                    graph.append(f"{attr}={quote_attr_if_necessary(val)}")
                 else:
                     graph.append(attr)
 
@@ -1585,7 +1621,7 @@ class Cluster(Graph):
 
         if obj_dict is None:
             self.obj_dict["type"] = "subgraph"
-            self.obj_dict["name"] = quote_if_necessary("cluster_" + graph_name)
+            self.obj_dict["name"] = quote_id_if_necessary("cluster_" + graph_name)
 
 
 __generate_attribute_methods(Cluster, CLUSTER_ATTRIBUTES)
