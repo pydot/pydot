@@ -148,7 +148,7 @@ class TestGraphAPI(PydotTestCase):
         g.add_node(node)
         node.set("label", "mine")
         s = g.to_string()
-        expected = "digraph G {\nlegend [label=mine, shape=box];\n}\n"
+        expected = 'digraph G {\nlegend [label="mine", shape="box"];\n}\n'
         assert s == expected
 
     def test_attribute_with_implicit_value(self):
@@ -293,7 +293,8 @@ class TestGraphAPI(PydotTestCase):
         self._reset_graphs()
         self.graph_directed.add_node(pydot.Node("node", shape="box"))
         self.assertEqual(
-            self.graph_directed.get_nodes()[0].to_string(), "node [shape=box];"
+            self.graph_directed.get_nodes()[0].to_string(),
+            'node [shape="box"];'
         )
 
     def test_comma_separated_attribute_values_to_string(self):
@@ -303,7 +304,7 @@ class TestGraphAPI(PydotTestCase):
         )
         self.assertEqual(
             self.graph_directed.get_nodes()[0].to_string(),
-            'node [color=green, style="rounded,filled"];',
+            'node [color="green", style="rounded,filled"];',
         )
 
     def test_attribute_string_values_quoting(self):
