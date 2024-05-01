@@ -8,13 +8,13 @@ About
 
 `pydot`:
 
-  - is an interface to [Graphviz][1],
-  - can parse and dump into the [DOT language][2] used by GraphViz,
+  - is an interface to [Graphviz][gv],
+  - can parse and dump into the [DOT language][wiki_dot] used by GraphViz,
   - is written in pure Python,
 
-and [`networkx`][3] can convert its graphs to `pydot`.
+and [`networkx`][networkx] can convert its graphs to `pydot`.
 
-Development occurs at [GitHub][4], where you can report issues and
+Development occurs at [GitHub][pydot_gh], where you can report issues and
 contribute code.
 
 
@@ -34,7 +34,7 @@ start with. Here are 3 common options:
 
     Use this method if you already have a DOT-file describing a graph,
     for example as output of another program. Let's say you already
-    have this `example.dot` (based on an [example from Wikipedia][5]):
+    have this `example.dot` (based on an [example from Wikipedia][wiki_example]):
 
     ```dot
     graph my_graph {
@@ -199,13 +199,13 @@ For more help, see the docstrings of the various pydot objects and
 methods. For example, `help(pydot)`, `help(pydot.Graph)` and
 `help(pydot.Dot.write)`.
 
-More [documentation contributions welcome][6].
+More [documentation contributions welcome][contrib].
 
 
 Installation
 ============
 
-From [PyPI][7] using [`pip`][8]:
+From [PyPI][pypi] using [`pip`][pip]:
 
 `pip install pydot`
 
@@ -217,13 +217,13 @@ From source:
 Dependencies
 ============
 
-- [`pyparsing`][9]: used only for *loading* DOT files,
+- [`pyparsing`][pyparsing]: used only for *loading* DOT files,
   installed automatically during `pydot` installation.
 
 - GraphViz: used to render graphs as PDF, PNG, SVG, etc.
   Should be installed separately, using your system's
-  [package manager][10], something similar (e.g., [MacPorts][11]),
-  or from [its source][12].
+  [package manager][pkg], something similar (e.g., [MacPorts][mac]),
+  or from [its source][src].
 
 
 Troubleshooting
@@ -250,8 +250,8 @@ cause the log to become very large or contain sensitive information.
 Advanced logging configuration
 ------------------------------
 
-- Check out the [Python logging documentation][13] and the
-  [`logging_tree`][14] visualizer.
+- Check out the [Python logging documentation][log] and the
+  [`logging_tree`][log_tree] visualizer.
 - `pydot` does not add any handlers to its loggers, nor does it setup
   or modify your root logger. The `pydot` loggers are created with the
   default level `NOTSET`.
@@ -265,7 +265,7 @@ Advanced logging configuration
 License
 =======
 
-Distributed under an [MIT license][15].
+Distributed under an [MIT license][NIT].
 
 
 Contacts
@@ -281,18 +281,18 @@ Past maintainers:
 Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 
 
-[1]: https://www.graphviz.org
-[2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
-[3]: https://github.com/networkx/networkx
-[4]: https://github.com/pydot/pydot
-[5]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
-[6]: https://github.com/pydot/pydot/issues/130
-[7]: https://pypi.org/project/pydot/
-[8]: https://github.com/pypa/pip
-[9]: https://github.com/pyparsing/pyparsing
-[10]: https://en.wikipedia.org/wiki/Package_manager
-[11]: https://www.macports.org
-[12]: https://gitlab.com/graphviz/graphviz
-[13]: https://docs.python.org/3/library/logging.html
-[14]: https://pypi.org/project/logging_tree/
-[15]: https://github.com/pydot/pydot/blob/master/LICENSE
+[gv]: https://www.graphviz.org
+[wiki_dot]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
+[networkx]: https://github.com/networkx/networkx
+[pydot_gh]: https://github.com/pydot/pydot
+[wiki_example]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
+[contrib]: https://github.com/pydot/pydot/issues/130
+[pypi]: https://pypi.org/project/pydot/
+[pip]: https://github.com/pypa/pip
+[pyparsing]: https://github.com/pyparsing/pyparsing
+[pkg]: https://en.wikipedia.org/wiki/Package_manager
+[mac]: https://www.macports.org
+[src]: https://gitlab.com/graphviz/graphviz
+[log]: https://docs.python.org/3/library/logging.html
+[log_tree]: https://pypi.org/project/logging_tree/
+[MIT]: https://github.com/pydot/pydot/blob/master/LICENSE
