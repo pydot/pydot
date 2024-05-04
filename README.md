@@ -265,7 +265,7 @@ Advanced logging configuration
 License
 =======
 
-Distributed under an [MIT license][NIT].
+Distributed under an [MIT license][MIT].
 
 
 Contacts
