@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import warnings
+from enum import Enum
 
 import pydot
 
@@ -87,44 +88,44 @@ CLUSTER_ATTRIBUTES = {
 # fmt: on
 
 
-OUTPUT_FORMATS = {
-    "canon",
-    "cmap",
-    "cmapx",
-    "cmapx_np",
-    "dia",
-    "dot",
-    "fig",
-    "gd",
-    "gd2",
-    "gif",
-    "hpgl",
-    "imap",
-    "imap_np",
-    "ismap",
-    "jpe",
-    "jpeg",
-    "jpg",
-    "mif",
-    "mp",
-    "pcl",
-    "pdf",
-    "pic",
-    "plain",
-    "plain-ext",
-    "png",
-    "ps",
-    "ps2",
-    "svg",
-    "svgz",
-    "vml",
-    "vmlz",
-    "vrml",
-    "vtx",
-    "wbmp",
-    "xdot",
-    "xlib",
-}
+class OUTPUT_FORMATS(Enum):
+    CANON = "canon"
+    CMAP = "cmap"
+    CMAPX = "cmapx"
+    CMAPX_NP = "cmapx_np"
+    DIA = "dia"
+    DOT = "dot"
+    FIG = "fig"
+    GD = "gd"
+    GD2 = "gd2"
+    GIF = "gif"
+    HPGL = "hpgl"
+    IMAP = "imap"
+    IMAP_NP = "imap_np"
+    ISMAP = "ismap"
+    JPE = "jpe"
+    JPEG = "jpeg"
+    JPG = "jpg"
+    MIF = "mif"
+    MP = "mp"
+    PCL = "pcl"
+    PDF = "pdf"
+    PIC = "pic"
+    PLAIN = "plain"
+    PLAIN_EXT = "plain-ext"
+    PNG = "png"
+    PS = "ps"
+    PS2 = "ps2"
+    RAW = "raw"
+    SVG = "svg"
+    SVGZ = "svgz"
+    VML = "vml"
+    VMLZ = "vmlz"
+    VRML = "vrml"
+    VTX = "vtx"
+    WBMP = "wbmp"
+    XDOT = "xdot"
+    XLIB = "xlib"
 
 
 DEFAULT_PROGRAMS = {
@@ -161,20 +162,22 @@ def __generate_format_methods(Klass):
     # the methods enabling the creation
     # of output in any of the supported formats.
     for frmt in OUTPUT_FORMATS:
-
-        def __create_method(self, f=frmt, prog=None, encoding=None):
+        if frmt == OUTPUT_FORMATS.RAW:
+            continue
+        
+        def __create_method(self, f=frmt.value, prog=None, encoding=None):
             """Refer to docstring of method `create`."""
             return self.create(format=f, prog=prog, encoding=encoding)
 
-        setattr(Klass, f"create_{frmt}", __create_method)
+        setattr(Klass, f"create_{frmt.value}", __create_method)
 
-    for frmt in OUTPUT_FORMATS ^ {"raw"}:
+    for frmt in OUTPUT_FORMATS:
 
-        def __write_method(self, path, f=frmt, prog=None, encoding=None):
+        def __write_method(self, path, f=frmt.value, prog=None, encoding=None):
             """Refer to docstring of method `write`."""
             self.write(path, format=f, prog=prog, encoding=encoding)
 
-        setattr(Klass, f"write_{frmt}", __write_method)
+        setattr(Klass, f"write_{frmt.value}", __write_method)
 
 
 def is_windows():
@@ -1644,7 +1647,7 @@ class Dot(Graph):
         """
         self.prog = prog
 
-    def write(self, path, prog=None, format="raw", encoding=None):
+    def write(self, path, prog=None, format: OUTPUT_FORMATS=OUTPUT_FORMATS.RAW, encoding=None):
         """Writes a graph to a file.
 
         Given a filename 'path' it will open/create and truncate
@@ -1671,7 +1674,7 @@ class Dot(Graph):
         """
         if prog is None:
             prog = self.prog
-        if format == "raw":
+        if format == OUTPUT_FORMATS.RAW:
             s = self.to_string()
             with io.open(path, mode="wt", encoding=encoding) as f:
                 f.write(s)
@@ -1681,7 +1684,7 @@ class Dot(Graph):
                 f.write(s)
         return True
 
-    def create(self, prog=None, format="ps", encoding=None):
+    def create(self, prog=None, format=OUTPUT_FORMATS.PS, encoding=None):
         """Creates and returns a binary image for the graph.
 
         create will write the graph to a temporary dot file in the
@@ -1764,7 +1767,7 @@ class Dot(Graph):
             f.write(f_data)
             f.close()
 
-        arguments = [f"-T{format}"] + args + [tmp_name]
+        arguments = [f"-T{format.value}"] + args + [tmp_name]
 
         try:
             stdout_data, stderr_data, process = call_graphviz(
