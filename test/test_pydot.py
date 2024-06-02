@@ -19,10 +19,6 @@ from parameterized import parameterized
 import pydot
 import unittest
 
-if sys.version_info >= (3, 8):
-    from functools import cached_property
-else:
-    from ._functools import cached_property
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
 
@@ -44,7 +40,7 @@ class RenderResult:
         """Get the raw image data for the result."""
         return self._data
 
-    @cached_property
+    @functools.cached_property
     def checksum(self):
         """Get the sha256 checksum for the result."""
         return sha256(self.data).hexdigest()
