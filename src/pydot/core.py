@@ -1,7 +1,6 @@
 """An interface to GraphViz."""
 
 import copy
-import io
 import errno
 import logging
 import os
@@ -12,7 +11,6 @@ import tempfile
 import warnings
 
 import pydot
-
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -261,7 +259,7 @@ class frozendict(dict):
                     elif isinstance(v, dict):
                         arg[k] = frozendict(v)
                     elif isinstance(v, list):
-                        v_ = list()
+                        v_ = []
                         for elm in v:
                             if isinstance(elm, dict):
                                 v_.append(frozendict(elm))
@@ -321,7 +319,7 @@ def needs_quotes(s):
     if s in dot_keywords:
         return False
 
-    has_high_chars = any([ord(c) > 0x7F or ord(c) == 0 for c in s])
+    has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
     if (
         has_high_chars
         and not id_re_dbl_quoted.match(s)
@@ -395,7 +393,7 @@ def graph_from_dot_file(path, encoding=None):
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
-    with io.open(path, "rt", encoding=encoding) as f:
+    with open(path, encoding=encoding) as f:
         s = f.read()
     graphs = graph_from_dot_data(s)
     return graphs
@@ -512,7 +510,7 @@ def graph_from_incidence_matrix(matrix, node_prefix="", directed=False):
     return graph
 
 
-class Common(object):
+class Common:
     """Common information to several classes.
 
     Should not be directly used, several classes are derived from
@@ -632,7 +630,7 @@ class Node(Common):
             self.obj_dict = obj_dict
 
         else:
-            self.obj_dict = dict()
+            self.obj_dict = {}
 
             # Copy the attributes
             #
@@ -687,7 +685,7 @@ class Node(Common):
         #
         node = quote_if_necessary(self.obj_dict["name"])
 
-        node_attr = list()
+        node_attr = []
 
         for attr in sorted(self.obj_dict["attributes"]):
             value = self.obj_dict["attributes"][attr]
@@ -745,7 +743,7 @@ class Edge(Common):
     """
 
     def __init__(self, src="", dst="", obj_dict=None, **attrs):
-        self.obj_dict = dict()
+        self.obj_dict = {}
         if isinstance(src, (Node, Subgraph, Cluster)):
             src = src.get_name()
         if isinstance(dst, (Node, Subgraph, Cluster)):
@@ -868,7 +866,7 @@ class Edge(Common):
         else:
             edge.append(dst)
 
-        edge_attr = list()
+        edge_attr = []
 
         for attr in sorted(self.obj_dict["attributes"]):
             value = self.obj_dict["attributes"][attr]
@@ -940,7 +938,7 @@ class Graph(Common):
             self.obj_dict = obj_dict
 
         else:
-            self.obj_dict = dict()
+            self.obj_dict = {}
 
             self.obj_dict["attributes"] = dict(attrs)
 
@@ -958,9 +956,9 @@ class Graph(Common):
             self.obj_dict["simplify"] = simplify
 
             self.obj_dict["current_child_sequence"] = 1
-            self.obj_dict["nodes"] = dict()
-            self.obj_dict["edges"] = dict()
-            self.obj_dict["subgraphs"] = dict()
+            self.obj_dict["nodes"] = {}
+            self.obj_dict["edges"] = {}
+            self.obj_dict["subgraphs"] = {}
 
             self.set_parent_graph(self)
 
@@ -1154,7 +1152,7 @@ class Graph(Common):
         Node instances is returned.
         An empty list is returned otherwise.
         """
-        match = list()
+        match = []
 
         if name in self.obj_dict["nodes"]:
             match.extend(
@@ -1176,7 +1174,7 @@ class Graph(Common):
         This method returns the list of Node instances
         composing the graph.
         """
-        node_objs = list()
+        node_objs = []
 
         for node in self.obj_dict["nodes"]:
             obj_dict_list = self.obj_dict["nodes"][node]
@@ -1265,7 +1263,7 @@ class Graph(Common):
             edge_points = (src_or_list, dst)
             edge_points_reverse = (dst, src_or_list)
 
-        match = list()
+        match = []
 
         if edge_points in self.obj_dict["edges"] or (
             self.get_top_graph_type() == "graph"
@@ -1294,7 +1292,7 @@ class Graph(Common):
         This method returns the list of Edge instances
         composing the graph.
         """
-        edge_objs = list()
+        edge_objs = []
 
         for edge in self.obj_dict["edges"]:
             obj_dict_list = self.obj_dict["edges"][edge]
@@ -1336,7 +1334,7 @@ class Graph(Common):
         Subgraph instances is returned.
         An empty list is returned otherwise.
         """
-        match = list()
+        match = []
 
         if name in self.obj_dict["subgraphs"]:
             sgraphs_obj_dict = self.obj_dict["subgraphs"].get(name)
@@ -1355,7 +1353,7 @@ class Graph(Common):
         This method returns the list of Subgraph instances
         in the graph.
         """
-        sgraph_objs = list()
+        sgraph_objs = []
 
         for sgraph in self.obj_dict["subgraphs"]:
             obj_dict_list = self.obj_dict["subgraphs"][sgraph]
@@ -1389,7 +1387,7 @@ class Graph(Common):
         @return: graph and subelements
         @rtype: `str`
         """
-        graph = list()
+        graph = []
 
         if self.obj_dict.get("strict", None) is not None:
             if self == self.get_parent_graph() and self.obj_dict["strict"]:
@@ -1418,7 +1416,7 @@ class Graph(Common):
 
         edges_done = set()
 
-        edge_obj_dicts = list()
+        edge_obj_dicts = []
         for k in self.obj_dict["edges"]:
             edge_obj_dicts.extend(self.obj_dict["edges"][k])
 
@@ -1430,11 +1428,11 @@ class Graph(Common):
         else:
             edge_src_set, edge_dst_set = set(), set()
 
-        node_obj_dicts = list()
+        node_obj_dicts = []
         for k in self.obj_dict["nodes"]:
             node_obj_dicts.extend(self.obj_dict["nodes"][k])
 
-        sgraph_obj_dicts = list()
+        sgraph_obj_dicts = []
         for k in self.obj_dict["subgraphs"]:
             sgraph_obj_dicts.extend(self.obj_dict["subgraphs"][k])
 
@@ -1602,7 +1600,7 @@ class Dot(Graph):
     def __init__(self, *argsl, **argsd):
         Graph.__init__(self, *argsl, **argsd)
 
-        self.shape_files = list()
+        self.shape_files = []
         self.formats = OUTPUT_FORMATS
         self.prog = "dot"
 
@@ -1673,11 +1671,11 @@ class Dot(Graph):
             prog = self.prog
         if format == "raw":
             s = self.to_string()
-            with io.open(path, mode="wt", encoding=encoding) as f:
+            with open(path, mode="w", encoding=encoding) as f:
                 f.write(s)
         else:
             s = self.create(prog, format, encoding=encoding)
-            with io.open(path, mode="wb") as f:
+            with open(path, mode="wb") as f:
                 f.write(s)
         return True
 
@@ -1793,9 +1791,10 @@ class Dot(Graph):
                 f"stdout, stderr:\n {stdout_data}\n{stderr_data}\n"
             )
 
-        assert (
-            process.returncode == 0
-        ), f'"{prog}" with args {arguments} returned code: {process.returncode}'
+        assert process.returncode == 0, (
+            f'"{prog}" with args {arguments} '
+            f"returned code: {process.returncode}"
+        )
 
         return stdout_data
 

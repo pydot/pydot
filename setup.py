@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Installation script."""
+
 try:
     from setuptools import setup
 except ImportError:
@@ -9,7 +10,6 @@ import ast
 import codecs
 import os
 import re
-
 
 CURRENT_DIR = os.path.dirname(__file__)
 
