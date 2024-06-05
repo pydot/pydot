@@ -6,7 +6,7 @@ name = 'pydot'
 description = "Python interface to Graphviz's Dot"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">= 3.7"
+requires-python = ">= 3.8"
 dependencies = [
   'pyparsing>=3.0.9'
 ]
@@ -46,17 +46,19 @@ Changelog = "https://github.com/pydot/pydot/blob/master/ChangeLog"
 [project.optional-dependencies]
 dev = [
   'chardet',
-  'black',
   'parameterized',
+  'ruff'
 ]
 tests = [
   'chardet',
-  'tox',
   'parameterized',
+  'tox',
   'unittest-parallel',
 ]
 release = ['zest.releaser[recommended]']
 
-[tool.black]
+[tool.ruff]
 line-length = 79
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.ruff.lint]
+select = ['E', 'F', 'W', 'I', 'UP', 'C4']

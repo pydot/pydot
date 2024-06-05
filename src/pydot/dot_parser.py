@@ -39,7 +39,7 @@ _logger = logging.getLogger(__name__)
 _logger.debug("pydot dot_parser module initializing")
 
 
-class P_AttrList(object):
+class P_AttrList:
     def __init__(self, toks):
         self.attrs = {}
         i = 0
@@ -70,7 +70,7 @@ class DefaultStatement(P_AttrList):
         return f"{name}({self.default_type}, {self.attrs!r})"
 
 
-top_graphs = list()
+top_graphs = []
 
 
 def push_top_graph_stmt(s, loc, toks):
@@ -304,7 +304,7 @@ def push_edge_stmt(s, loc, toks):
 
     if isinstance(toks[2][0], ParseResults):
         n_next_list = [[n.get_name()] for n in toks[2][0]]
-        for n_next in [n for n in n_next_list]:
+        for n_next in list(n_next_list):
             n_next_port = do_node_ports(n_next)
             e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
@@ -325,7 +325,7 @@ def push_edge_stmt(s, loc, toks):
 
     # if the target of this edge is the name of a node
     elif isinstance(toks[2][0], str):
-        for n_next in [n for n in tuple(toks)[2::2]]:
+        for n_next in list(tuple(toks)[2::2]):
             if isinstance(n_next, P_AttrList) or not isinstance(
                 n_next[0], str
             ):
@@ -337,7 +337,8 @@ def push_edge_stmt(s, loc, toks):
             n_prev = n_next[0] + n_next_port
     else:
         raise Exception(
-            f"Edge target {toks[2][0]} with type {type(toks[2][0])} unsupported."
+            f"Edge target {toks[2][0]} with type {type(toks[2][0])}"
+            " unsupported."
         )
 
     return e
@@ -475,7 +476,7 @@ def graph_definition():
         graphparser = OneOrMore(
             (
                 Optional(strict_)
-                + Group((graph_ | digraph_))
+                + Group(graph_ | digraph_)
                 + Optional(ID)
                 + graph_stmt
             ).setResultsName("graph")
@@ -508,7 +509,7 @@ def parse_dot_data(s):
     @rtype: `list` of `pydot.Dot`
     """
     global top_graphs
-    top_graphs = list()
+    top_graphs = []
     try:
         graphparser = graph_definition()
         graphparser.parseWithTabs()

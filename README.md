@@ -1,6 +1,6 @@
 ![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 
 # Pydot
 
