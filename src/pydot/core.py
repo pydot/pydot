@@ -659,7 +659,7 @@ class Node(Common):
 
     def set_name(self, node_name):
         """Set the node's name."""
-        self.obj_dict["name"] = node_name
+        self.obj_dict["name"] = quote_if_necessary(node_name)
 
     def get_name(self):
         """Get the node's name."""
