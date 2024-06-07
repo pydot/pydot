@@ -1,28 +1,23 @@
-# coding=utf-8
 """Unit testing of `pydot`."""
+
 # TODO:
 # -test graph generation APIs (from adjacency, etc..)
 # -test del_node, del_edge methods
 # -test Common.set method
+
 import argparse
-from hashlib import sha256
-import importlib
 import functools
-import io
+import importlib
 import os
 import pickle
 import string
 import sys
+import unittest
+from hashlib import sha256
 
 import chardet
-from parameterized import parameterized
 import pydot
-import unittest
-
-if sys.version_info >= (3, 8):
-    from functools import cached_property
-else:
-    from ._functools import cached_property
+from parameterized import parameterized
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
 
@@ -44,7 +39,7 @@ class RenderResult:
         """Get the raw image data for the result."""
         return self._data
 
-    @cached_property
+    @functools.cached_property
     def checksum(self):
         """Get the sha256 checksum for the result."""
         return sha256(self.data).hexdigest()
@@ -55,7 +50,7 @@ class Renderer:
 
     @classmethod
     def graphviz(cls, filename, encoding):
-        with io.open(filename, "rt", encoding=encoding) as stdin:
+        with open(filename, encoding=encoding) as stdin:
             stdout_data, stderr_data, process = pydot.call_graphviz(
                 program=TEST_PROGRAM,
                 arguments=["-Tjpe"],
@@ -438,7 +433,7 @@ class TestGraphAPI(PydotTestCase):
             cm.output,
             [
                 "DEBUG:pydot:pydot initializing",
-                "DEBUG:pydot:pydot %s" % pydot.__version__,
+                f"DEBUG:pydot:pydot {pydot.__version__}",
                 "DEBUG:pydot.core:pydot core module initializing",
                 "DEBUG:pydot.dot_parser:pydot dot_parser module initializing",
             ],
@@ -464,7 +459,7 @@ class TestShapeFiles(PydotTestCase):
             if fname.endswith(".png")
         ]
 
-        with open(dot_file, "rt") as f:
+        with open(dot_file) as f:
             graph_data = f.read()
 
         graphs = pydot.graph_from_dot_data(graph_data)

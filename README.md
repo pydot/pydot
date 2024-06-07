@@ -1,236 +1,197 @@
 ![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 
+# Pydot
 
-About
-=====
+`pydot` is a Python interface to Graphviz and its DOT language. You can use `pydot` to create, read, edit, and visualize graphs.
 
-`pydot`:
+- It's made in pure Python, with only one dependency – pyparsing – other than Graphviz itself.
+- It's compatible with `networkx`, which can convert its graphs to `pydot`.
 
-  - is an interface to [Graphviz][1],
-  - can parse and dump into the [DOT language][2] used by GraphViz,
-  - is written in pure Python,
+To see what Graphviz is capable of, check the [Graphviz Gallery](https://graphviz.org/gallery/)!
 
-and [`networkx`][3] can convert its graphs to `pydot`.
+## Dependencies
 
-Development occurs at [GitHub][4], where you can report issues and
-contribute code.
+- [`pyparsing`][pyparsing]: used only for *loading* DOT files, installed automatically during `pydot` installation.
+- GraphViz: used to render graphs in a variety of formats, including PNG, SVG, PDF, and more.
+  Should be installed separately, using your system's [package manager][pkg], something similar (e.g., [MacPorts][mac]), or from [its source][src].
 
+## Installation
 
-Examples
-========
+- From [PyPI][pypi]:
 
-The examples here will show you the most common input, editing and
-output methods.
+  `pip install pydot`
 
-Input
------
+- Development installation:
 
-No matter what you want to do with `pydot`, it will need some input to
-start with. Here are 3 common options:
+  `pip install -e .`
 
-1. Import a graph from an existing DOT-file.
+## Quickstart
 
-    Use this method if you already have a DOT-file describing a graph,
-    for example as output of another program. Let's say you already
-    have this `example.dot` (based on an [example from Wikipedia][5]):
+### 1. Input
 
-    ```dot
-    graph my_graph {
-       bgcolor="yellow";
-       a [label="Foo"];
-       b [shape=circle];
-       a -- b -- c [color=blue];
-    }
-    ```
+No matter what you want to do with `pydot`, you'll need some input to start with. Here are the common ways to get some data to work with.
 
-    Just read the graph from the DOT-file:
+#### Import a graph from an existing DOT file
 
-    ```python
-    import pydot
+Let's say you already have a file `example.dot` (based on an [example from Wikipedia][wiki_example]):
 
-    graphs = pydot.graph_from_dot_file("example.dot")
-    graph = graphs[0]
-    ```
+```dot
+graph my_graph {
+    bgcolor="yellow";
+    a [label="Foo"];
+    b [shape=circle];
+    a -- b -- c [color=blue];
+}
+```
 
-2. or: Parse a graph from an existing DOT-string.
+You can read the graph from the file in this way:
 
-    Use this method if you already have a DOT-string describing a
-    graph in a Python variable:
+```python
+import pydot
 
-    ```python
-    import pydot
+graphs = pydot.graph_from_dot_file("example.dot")
+graph = graphs[0]
+```
 
-    dot_string = """graph my_graph {
-        bgcolor="yellow";
-        a [label="Foo"];
-        b [shape=circle];
-        a -- b -- c [color=blue];
-    }"""
+#### Parse a graph from an existing DOT string
 
-    graphs = pydot.graph_from_dot_data(dot_string)
-    graph = graphs[0]
-    ```
+Use this method if you already have a string describing a DOT graph:
 
-3. or: Create a graph from scratch using pydot objects.
+```python
+import pydot
 
-    Now this is where the cool stuff starts. Use this method if you
-    want to build new graphs from Python.
+dot_string = """graph my_graph {
+    bgcolor="yellow";
+    a [label="Foo"];
+    b [shape=circle];
+    a -- b -- c [color=blue];
+}"""
 
-    ```python
-    import pydot
+graphs = pydot.graph_from_dot_data(dot_string)
+graph = graphs[0]
+```
 
-    graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="yellow")
+#### Create a graph from scratch using pydot objects
 
-    # Add nodes
-    my_node = pydot.Node("a", label="Foo")
-    graph.add_node(my_node)
-    # Or, without using an intermediate variable:
-    graph.add_node(pydot.Node("b", shape="circle"))
+This is where the cool stuff starts. Use this method if you want to build new graphs with Python code.
 
-    # Add edges
-    my_edge = pydot.Edge("a", "b", color="blue")
-    graph.add_edge(my_edge)
-    # Or, without using an intermediate variable:
-    graph.add_edge(pydot.Edge("b", "c", color="blue"))
-    ```
+```python
+import pydot
 
-    Imagine using these basic building blocks from your Python program
-    to dynamically generate a graph. For example, start out with a
-    basic `pydot.Dot` graph object, then loop through your data while
-    adding nodes and edges. Use values from your data as labels, to
-    determine shapes, edges and so forth. This way, you can easily
-    build visualizations of thousands of interconnected items.
+graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="yellow")
 
-4. or: Convert a NetworkX graph to a pydot graph.
+# Add nodes
+my_node = pydot.Node("a", label="Foo")
+graph.add_node(my_node)
+# Or, without using an intermediate variable:
+graph.add_node(pydot.Node("b", shape="circle"))
 
-    NetworkX has conversion methods for pydot graphs:
+# Add edges
+my_edge = pydot.Edge("a", "b", color="blue")
+graph.add_edge(my_edge)
+# Or, without using an intermediate variable:
+graph.add_edge(pydot.Edge("b", "c", color="blue"))
+```
 
-    ```python
-    import networkx
-    import pydot
+You can use these basic building blocks in your Python program
+to dynamically generate a graph. For example, start with a
+basic `pydot.Dot` graph object, then loop through your data
+as you add nodes and edges. Use values from your data as labels to
+determine shapes, edges and so on. This allows you to easily create
+visualizations of thousands of related objects.
 
-    # See NetworkX documentation on how to build a NetworkX graph.
+#### Convert a NetworkX graph to a pydot graph
 
-    graph = networkx.drawing.nx_pydot.to_pydot(my_networkx_graph)
-    ```
+NetworkX has conversion methods for pydot graphs:
 
-Edit
-----
+```python
+import networkx
+import pydot
+
+# See NetworkX documentation on how to build a NetworkX graph.
+graph = networkx.drawing.nx_pydot.to_pydot(my_networkx_graph)
+```
+
+### 2. Edit
 
 You can now further manipulate your graph using pydot methods:
 
-- Add further nodes and edges:
+Add more nodes and edges:
+
+```python
+graph.add_edge(pydot.Edge("b", "d", style="dotted"))
+```
+
+Edit attributes of graphs, nodes and edges:
+
+```python
+graph.set_bgcolor("lightyellow")
+graph.get_node("b")[0].set_shape("box")
+```
+
+### 3. Output
+
+Here are three different output options:
+
+#### Generate an image
+
+If you just want to save the image to a file, use one of the `write_*` methods:
+```python
+graph.write_png("output.png")
+```
+
+If you need to further process the image output, the `create_*` methods will get you a Python `bytes` object:
+```python
+output_graphviz_svg = graph.create_svg()
+```
+
+#### Retrieve the DOT string
+
+There are two different DOT strings you can retrieve:
+
+- The "raw" pydot DOT: This is generated the fastest and will
+  usually still look quite similar to the DOT you put in. It is
+  generated by pydot itself, without calling Graphviz.
 
   ```python
-  graph.add_edge(pydot.Edge("b", "d", style="dotted"))
+  # As a string:
+  output_raw_dot = graph.to_string()
+  # Or, save it as a DOT-file:
+  graph.write_raw("output_raw.dot")
   ```
 
-- Edit attributes of graph, nodes and edges:
+- The Graphviz DOT: You can use it to check how Graphviz lays out
+  the graph before it produces an image. It is generated by
+  Graphviz.
 
   ```python
-  graph.set_bgcolor("lightyellow")
-  graph.get_node("b")[0].set_shape("box")
+  # As a bytes literal:
+  output_graphviz_dot = graph.create_dot()
+  # Or, save it as a DOT-file:
+  graph.write_dot("output_graphviz.dot")
   ```
 
-Output
-------
+#### Convert to a NetworkX graph
 
-Here are 3 different output options:
+NetworkX has a conversion method for pydot graphs:
 
-1. Generate an image.
+```python
+my_networkx_graph = networkx.drawing.nx_pydot.from_pydot(graph)
+```
 
-    To generate an image of the graph, use one of the `create_*()` or
-    `write_*()` methods.
-
-    - If you need to further process the output in Python, the
-      `create_*` methods will get you a Python bytes object:
-
-      ```python
-      output_graphviz_svg = graph.create_svg()
-      ```
-
-    - If instead you just want to save the image to a file, use one of
-      the `write_*` methods:
-
-      ```python
-      graph.write_png("output.png")
-      ```
-
-2. Retrieve the DOT string.
-
-    There are two different DOT strings you can retrieve:
-
-    - The "raw" pydot DOT: This is generated the fastest and will
-      usually still look quite similar to the DOT you put in. It is
-      generated by pydot itself, without calling Graphviz.
-
-      ```python
-      # As a string:
-      output_raw_dot = graph.to_string()
-      # Or, save it as a DOT-file:
-      graph.write_raw("output_raw.dot")
-      ```
-
-    - The Graphviz DOT: You can use it to check how Graphviz lays out
-      the graph before it produces an image. It is generated by
-      Graphviz.
-
-      ```python
-      # As a bytes literal:
-      output_graphviz_dot = graph.create_dot()
-      # Or, save it as a DOT-file:
-      graph.write_dot("output_graphviz.dot")
-      ```
-
-3. Convert to a NetworkX graph.
-
-    Here as well, NetworkX has a conversion method for pydot graphs:
-
-    ```python
-    my_networkx_graph = networkx.drawing.nx_pydot.from_pydot(graph)
-    ```
-
-More help
----------
+### More help
 
 For more help, see the docstrings of the various pydot objects and
 methods. For example, `help(pydot)`, `help(pydot.Graph)` and
 `help(pydot.Dot.write)`.
 
-More [documentation contributions welcome][6].
+More [documentation contributions welcome][contrib].
 
+## Troubleshooting
 
-Installation
-============
-
-From [PyPI][7] using [`pip`][8]:
-
-`pip install pydot`
-
-From source:
-
-`python setup.py install`
-
-
-Dependencies
-============
-
-- [`pyparsing`][9]: used only for *loading* DOT files,
-  installed automatically during `pydot` installation.
-
-- GraphViz: used to render graphs as PDF, PNG, SVG, etc.
-  Should be installed separately, using your system's
-  [package manager][10], something similar (e.g., [MacPorts][11]),
-  or from [its source][12].
-
-
-Troubleshooting
-===============
-
-How to enable logging
----------------------
+### Enable logging
 
 `pydot` uses Python's standard `logging` module. To see the logs,
 assuming logging has not been configured already:
@@ -247,11 +208,10 @@ assuming logging has not been configured already:
 data that it processes, such as graph contents or DOT strings. This can
 cause the log to become very large or contain sensitive information.
 
-Advanced logging configuration
-------------------------------
+### Advanced logging configuration
 
-- Check out the [Python logging documentation][13] and the
-  [`logging_tree`][14] visualizer.
+- Check out the [Python logging documentation][log] and the
+  [`logging_tree`][log_tree] visualizer.
 - `pydot` does not add any handlers to its loggers, nor does it setup
   or modify your root logger. The `pydot` loggers are created with the
   default level `NOTSET`.
@@ -262,14 +222,12 @@ Advanced logging configuration
   - `pydot.dot_parser`: Messages related to the parsing of DOT strings.
 
 
-License
-=======
+## License
 
-Distributed under an [MIT license][15].
+Distributed under the [MIT license][MIT].
 
 
-Contacts
-========
+## Contacts
 
 Current maintainer(s): 
 - Łukasz Łapiński <lukaszlapinski7 (at) gmail (dot) com>
@@ -281,18 +239,16 @@ Past maintainers:
 Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 
 
-[1]: https://www.graphviz.org
-[2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
-[3]: https://github.com/networkx/networkx
-[4]: https://github.com/pydot/pydot
-[5]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
-[6]: https://github.com/pydot/pydot/issues/130
-[7]: https://pypi.org/project/pydot/
-[8]: https://github.com/pypa/pip
-[9]: https://github.com/pyparsing/pyparsing
-[10]: https://en.wikipedia.org/wiki/Package_manager
-[11]: https://www.macports.org
-[12]: https://gitlab.com/graphviz/graphviz
-[13]: https://docs.python.org/3/library/logging.html
-[14]: https://pypi.org/project/logging_tree/
-[15]: https://github.com/pydot/pydot/blob/master/LICENSE
+[wiki_dot]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
+[networkx]: https://github.com/networkx/networkx
+[pydot_gh]: https://github.com/pydot/pydot
+[wiki_example]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
+[contrib]: https://github.com/pydot/pydot/issues/130
+[pypi]: https://pypi.org/project/pydot/
+[pyparsing]: https://github.com/pyparsing/pyparsing
+[pkg]: https://en.wikipedia.org/wiki/Package_manager
+[mac]: https://www.macports.org
+[src]: https://gitlab.com/graphviz/graphviz
+[log]: https://docs.python.org/3/library/logging.html
+[log_tree]: https://pypi.org/project/logging_tree/
+[MIT]: https://github.com/pydot/pydot/blob/master/LICENSE
