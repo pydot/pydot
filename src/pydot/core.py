@@ -1042,7 +1042,7 @@ class Graph(Common):
 
     def set_name(self, graph_name):
         """Set the graph's name."""
-        self.obj_dict["name"] = graph_name
+        self.obj_dict["name"] = quote_if_necessary(graph_name)
 
     def get_name(self):
         """Get the graph's name."""
