@@ -387,8 +387,9 @@ def quote_id_if_necessary(s):
 
 
 def quote_attr_if_necessary(s):
+    """Enclose attribute value in quotes, if needed."""
     if isinstance(s, bool):
-        return str(s)
+        return str(s).lower()
 
     if not isinstance(s, str):
         return s
@@ -650,6 +651,29 @@ class Common:
         """Get sequence"""
         return self.obj_dict["sequence"]
 
+    @staticmethod
+    def _format_attr(key: str, value):
+        """Turn a key-value pair into an attribute, properly quoted."""
+        if value == "":
+            value = '""'
+        if value is not None:
+            return f"{key}={quote_attr_if_necessary(value)}"
+        return key
+
+    def formatted_attr_list(self):
+        """Return a list of the class's attributes as formatted strings."""
+        return [
+            self._format_attr(k, v)
+            for k, v in sorted(self.obj_dict["attributes"].items())
+        ]
+
+    def attrs_string(self):
+        """Format the current attributes list for output."""
+        attrs = self.formatted_attr_list()
+        if not attrs:
+            return ""
+        return f"[{', '.join(attrs)}]"
+
 
 class Node(Common):
     """A graph node.
@@ -730,29 +754,14 @@ class Node(Common):
         #
         node = quote_id_if_necessary(self.obj_dict["name"])
 
-        node_attr = []
-
-        for attr in self.obj_dict["attributes"]:
-            value = self.obj_dict["attributes"][attr]
-            if value == "":
-                value = '""'
-            if value is not None:
-                node_attr.append(f"{attr}={quote_attr_if_necessary(value)}")
-            else:
-                node_attr.append(attr)
-
-        # No point in having nodes setting any defaults if the don't set
-        # any attributes...
-        #
-        if node in ("graph", "node", "edge") and len(node_attr) == 0:
+        # No point in having default nodes that don't set any attributes...
+        if (
+            node in ("graph", "node", "edge")
+            and len(self.obj_dict.get("attributes", {})) == 0
+        ):
             return ""
 
-        node_attr = ", ".join(node_attr)
-
-        if node_attr:
-            node += " [" + node_attr + "]"
-
-        return node + ";"
+        return f"{node} {self.attrs_string()};"
 
 
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
@@ -906,22 +915,8 @@ class Edge(Common):
         else:
             edge.append(dst)
 
-        edge_attr = []
-
-        for attr in self.obj_dict["attributes"]:
-            value = self.obj_dict["attributes"][attr]
-            if value == "":
-                value = '""'
-            if value is not None:
-                edge_attr.append(f"{attr}={quote_attr_if_necessary(value)}")
-            else:
-                edge_attr.append(attr)
-
-        edge_attr = ", ".join(edge_attr)
-
-        if edge_attr:
-            edge.append(" [" + edge_attr + "]")
-
+        if self.attrs_string():
+            edge.append(self.attrs_string())
         return " ".join(edge) + ";"
 
 
@@ -1434,17 +1429,7 @@ class Graph(Common):
         s = f"{graph_type} {graph_name} {{\n"
         graph.append(s)
 
-        for attr in self.obj_dict["attributes"]:
-            if self.obj_dict["attributes"].get(attr, None) is not None:
-                val = self.obj_dict["attributes"].get(attr)
-                if val == "":
-                    val = '""'
-                if val is not None:
-                    graph.append(f"{attr}={quote_attr_if_necessary(val)}")
-                else:
-                    graph.append(attr)
-
-                graph.append(";\n")
+        graph.extend(f"{a};\n" for a in self.formatted_attr_list())
 
         edges_done = set()
 
