@@ -571,10 +571,7 @@ class Common:
 
     def get_top_graph_type(self):
         """Find the topmost parent graph type for the current object."""
-        if isinstance(self, Graph):
-            parent = self
-        else:
-            parent = self.get_parent_graph()
+        parent = self.get_parent_graph()
         if parent is None:
             return None
         while True:
