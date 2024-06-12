@@ -569,6 +569,19 @@ class Common:
     def get_parent_graph(self):
         return self.obj_dict.get("parent_graph", None)
 
+    def get_top_graph_type(self):
+        """Find the topmost parent graph type for the current object."""
+        parent = self.get_parent_graph()
+        if parent is None:
+            return None
+        while True:
+            parent_ = parent.get_parent_graph()
+            if parent_ == parent:
+                break
+            parent = parent_
+
+        return parent.obj_dict["type"]
+
     def set(self, name, value):
         """Set an attribute value by name.
 
@@ -788,7 +801,7 @@ class Edge(Common):
         if not isinstance(edge, Edge):
             raise pydot.Error("Can not compare an edge to a non-edge object.")
 
-        if self.get_parent_graph().get_top_graph_type() == "graph":
+        if self.get_top_graph_type() == "graph":
             # If the graph is undirected, the edge has neither
             # source nor destination.
             #
@@ -849,13 +862,8 @@ class Edge(Common):
         else:
             edge = [src]
 
-        if (
-            self.get_parent_graph()
-            and self.get_parent_graph().get_top_graph_type()
-            and self.get_parent_graph().get_top_graph_type() == "digraph"
-        ):
+        if self.get_top_graph_type() == "digraph":
             edge.append("->")
-
         else:
             edge.append("--")
 
@@ -967,16 +975,6 @@ class Graph(Common):
 
     def get_graph_type(self):
         return self.obj_dict["type"]
-
-    def get_top_graph_type(self):
-        parent = self
-        while True:
-            parent_ = parent.get_parent_graph()
-            if parent_ == parent:
-                break
-            parent = parent_
-
-        return parent.obj_dict["type"]
 
     def set_graph_defaults(self, **attrs):
         self.add_node(Node("graph", **attrs))
