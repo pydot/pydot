@@ -869,10 +869,11 @@ class Edge(Common):
 
         if isinstance(src, frozendict):
             sgraph = Subgraph(obj_dict=src)
-            edge = [sgraph.to_string(
-                indent=indent,
-                indent_level=indent_level,
-                inline=True)]
+            edge = [
+                sgraph.to_string(
+                    indent=indent, indent_level=indent_level, inline=True
+                )
+            ]
         elif isinstance(src, int):
             edge = [str(src)]
         else:
@@ -885,10 +886,11 @@ class Edge(Common):
 
         if isinstance(dst, frozendict):
             sgraph = Subgraph(obj_dict=dst)
-            edge.append(sgraph.to_string(
-                indent=indent,
-                indent_level=indent_level,
-                inline=True))
+            edge.append(
+                sgraph.to_string(
+                    indent=indent, indent_level=indent_level, inline=True
+                )
+            )
         elif isinstance(dst, int):
             edge.append(str(dst))
         else:
@@ -1399,8 +1401,7 @@ class Graph(Common):
             for obj in obj_list:
                 Graph(obj_dict=obj).set_parent_graph(parent_graph)
 
-    def to_string(
-            self, indent="", indent_level=0, inline=False):
+    def to_string(self, indent="", indent_level=0, inline=False):
         """Return string representation of graph in DOT language.
 
         @return: graph and subelements
@@ -1416,9 +1417,8 @@ class Graph(Common):
 
         first_line = []
 
-        if (
-            self == self.get_parent_graph()
-            and self.obj_dict.get("strict", False)
+        if self == self.get_parent_graph() and self.obj_dict.get(
+            "strict", False
         ):
             first_line.append("strict")
 
@@ -1443,7 +1443,8 @@ class Graph(Common):
                     val = '""'
                 if val is not None:
                     graph.append(
-                        f"{child_indent}{attr}={quote_if_necessary(val)}")
+                        f"{child_indent}{attr}={quote_if_necessary(val)}"
+                    )
                 else:
                     graph.append(f"{child_indent}{attr}")
 
@@ -1489,7 +1490,8 @@ class Graph(Common):
                         continue
 
                 node_str = node.to_string(
-                    indent=indent, indent_level=indent_level + 1)
+                    indent=indent, indent_level=indent_level + 1
+                )
                 graph.append(f"{node_str}\n")
 
             elif obj["type"] == "edge":
@@ -1499,7 +1501,8 @@ class Graph(Common):
                     continue
 
                 edge_str = edge.to_string(
-                    indent=indent, indent_level=indent_level + 1)
+                    indent=indent, indent_level=indent_level + 1
+                )
                 graph.append(f"{edge_str}\n")
                 edges_done.add(edge)
 
