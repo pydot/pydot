@@ -700,7 +700,7 @@ class Node(Common):
 
         node_attr = []
 
-        for attr in sorted(self.obj_dict["attributes"]):
+        for attr in self.obj_dict["attributes"]:
             value = self.obj_dict["attributes"][attr]
             if value == "":
                 value = '""'
@@ -876,7 +876,7 @@ class Edge(Common):
 
         edge_attr = []
 
-        for attr in sorted(self.obj_dict["attributes"]):
+        for attr in self.obj_dict["attributes"]:
             value = self.obj_dict["attributes"][attr]
             if value == "":
                 value = '""'
@@ -1400,7 +1400,7 @@ class Graph(Common):
         s = f"{graph_type} {graph_name} {{\n"
         graph.append(s)
 
-        for attr in sorted(self.obj_dict["attributes"]):
+        for attr in self.obj_dict["attributes"]:
             if self.obj_dict["attributes"].get(attr, None) is not None:
                 val = self.obj_dict["attributes"].get(attr)
                 if val == "":

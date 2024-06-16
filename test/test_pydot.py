@@ -143,7 +143,7 @@ class TestGraphAPI(PydotTestCase):
         g.add_node(node)
         node.set("label", "mine")
         s = g.to_string()
-        expected = "digraph G {\nlegend [label=mine, shape=box];\n}\n"
+        expected = "digraph G {\nlegend [shape=box, label=mine];\n}\n"
         assert s == expected
 
     def test_attribute_with_implicit_value(self):
@@ -308,7 +308,7 @@ class TestGraphAPI(PydotTestCase):
         )
         self.assertEqual(
             self.graph_directed.get_nodes()[0].to_string(),
-            'node [length=1.234, radius="9,876", size=2.345];',
+            'node [length=1.234, size=2.345, radius="9,876"];',
         )
 
     def test_names_of_a_thousand_nodes(self):
