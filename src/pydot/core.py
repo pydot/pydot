@@ -667,7 +667,7 @@ class Common:
         """Return a list of the class's attributes as formatted strings."""
         return [
             self._format_attr(k, v)
-            for k, v in sorted(self.obj_dict["attributes"].items())
+            for k, v in self.obj_dict["attributes"].items()
         ]
 
     def attrs_string(self):
