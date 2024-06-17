@@ -370,9 +370,11 @@ def id_needs_quotes(s):
     return True
 
 
-def quote_id_if_necessary(s, unquoted_keywords=list()):
+def quote_id_if_necessary(s, unquoted_keywords=None):
     """Enclose identifier in quotes, if needed."""
-    unquoted = [w.lower() for w in unquoted_keywords]
+    unquoted = [
+        w.lower() for w in list(unquoted_keywords if unquoted_keywords else [])
+    ]
 
     if isinstance(s, bool):
         return str(s).lower()
