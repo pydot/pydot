@@ -367,18 +367,21 @@ def id_needs_quotes(s):
     return True
 
 
-def quote_id_if_necessary(s):
-    """Enclose attribute value in quotes, if needed."""
-    if isinstance(s, bool):
-        if s is True:
-            return "True"
-        return "False"
+def quote_id_if_necessary(s, unquoted_keywords=list()):
+    """Enclose identifier in quotes, if needed."""
+    unquoted = [w.lower() for w in unquoted_keywords]
 
+    if isinstance(s, bool):
+        return str(s).lower()
     if not isinstance(s, str):
         return s
-
     if not s:
         return s
+
+    if s.lower() in unquoted:
+        return s
+    if s.lower() in dot_keywords:
+        return make_quoted(s)
 
     if id_needs_quotes(s):
         return make_quoted(s)
@@ -752,7 +755,9 @@ class Node(Common):
         """Return string representation of node in DOT language."""
         # RMF: special case defaults for node, edge and graph properties.
         #
-        node = quote_id_if_necessary(self.obj_dict["name"])
+        node = quote_id_if_necessary(
+            self.obj_dict["name"], unquoted_keywords=("graph", "node", "edge")
+        )
 
         # No point in having default nodes that don't set any attributes...
         if (
