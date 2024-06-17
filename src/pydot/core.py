@@ -723,7 +723,7 @@ class Node(Common):
             if isinstance(name, int):
                 name = str(name)
 
-            self.obj_dict["name"] = quote_id_if_necessary(name)
+            self.obj_dict["name"] = name
             self.obj_dict["port"] = port
 
     def __str__(self):
@@ -807,7 +807,7 @@ class Edge(Common):
             src = src.get_name()
         if isinstance(dst, (Node, Subgraph, Cluster)):
             dst = dst.get_name()
-        points = (quote_id_if_necessary(src), quote_id_if_necessary(dst))
+        points = (src, dst)
         self.obj_dict["points"] = points
         if obj_dict is None:
             # Copy the attributes
@@ -988,7 +988,7 @@ class Graph(Common):
                     "Accepted graph types are: graph, digraph"
                 )
 
-            self.obj_dict["name"] = quote_id_if_necessary(graph_name)
+            self.obj_dict["name"] = graph_name
             self.obj_dict["type"] = graph_type
 
             self.obj_dict["strict"] = strict
@@ -1430,7 +1430,7 @@ class Graph(Common):
             "show_keyword", True
         ):
             graph_type = ""
-        graph_name = self.obj_dict["name"]
+        graph_name = quote_id_if_necessary(self.obj_dict["name"])
         s = f"{graph_type} {graph_name} {{\n"
         graph.append(s)
 
