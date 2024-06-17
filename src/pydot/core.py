@@ -1102,11 +1102,13 @@ class Graph(Common):
             self.obj_dict["nodes"][graph_node.get_name()] = [
                 graph_node.obj_dict
             ]
-            graph_node.set_parent_graph(self.get_parent_graph())
         else:
             self.obj_dict["nodes"][graph_node.get_name()].append(
                 graph_node.obj_dict
             )
+
+        if not node or graph_node.get_parent_graph() is None:
+            graph_node.set_parent_graph(self.get_parent_graph())
 
         graph_node.set_sequence(self.get_next_sequence_number())
 

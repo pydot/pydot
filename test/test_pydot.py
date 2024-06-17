@@ -340,6 +340,28 @@ class TestGraphAPI(PydotTestCase):
         self.assertRaises(TypeError, self.graph_directed.add_subgraph, 1)
         self.assertRaises(TypeError, self.graph_directed.add_subgraph, "a")
 
+    def test_node_parenting(self):
+        g = pydot.Dot()
+        n = pydot.Node("node a")
+        n2 = pydot.Node("node a")
+        g.add_node(n)
+        g.add_node(n2)
+
+        nodes = g.get_node('"node a"')
+        for node in nodes:
+            assert node.get_parent_graph() == g
+
+        sg = pydot.Subgraph("sub sg")
+        sg_n = pydot.Node("node a")
+        sg.add_node(sg_n)
+        self.assertEqual(sg_n.get_parent_graph(), sg)
+
+        g.add_node(sg_n)
+        self.assertEqual(sg_n.get_parent_graph(), sg)
+
+        g.add_subgraph(sg)
+        self.assertEqual(sg_n.get_parent_graph(), g)
+
     def test_quoting(self):
         g = pydot.Dot()
         g.add_node(pydot.Node("test", label=string.printable))
