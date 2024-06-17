@@ -319,6 +319,9 @@ def any_needs_quotes(s):
 
     Returns True, False, or None if the result is indeterminate.
     """
+    if s.isalnum():
+        return False
+
     has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
     if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
         return True
@@ -670,12 +673,14 @@ class Common:
             for k, v in self.obj_dict["attributes"].items()
         ]
 
-    def attrs_string(self):
-        """Format the current attributes list for output."""
+    def attrs_string(self, prefix=""):
+        """Format the current attributes list for output.
+
+        The `prefix` string will be prepended iff text is generated."""
         attrs = self.formatted_attr_list()
         if not attrs:
             return ""
-        return f"[{', '.join(attrs)}]"
+        return f"{prefix}[{', '.join(attrs)}]"
 
 
 class Node(Common):
@@ -766,7 +771,7 @@ class Node(Common):
         ):
             return ""
 
-        return f"{node} {self.attrs_string()};"
+        return f"{node}{self.attrs_string(prefix=" ")};"
 
 
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
@@ -920,9 +925,7 @@ class Edge(Common):
         else:
             edge.append(dst)
 
-        if self.attrs_string():
-            edge.append(self.attrs_string())
-        return " ".join(edge) + ";"
+        return f"{' '.join(edge)}{self.attrs_string(prefix=" ")};"
 
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
