@@ -771,7 +771,7 @@ class Node(Common):
         ):
             return ""
 
-        return f"{node}{self.attrs_string(prefix=" ")};"
+        return f"{node}{self.attrs_string(prefix=' ')};"
 
 
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
@@ -925,7 +925,7 @@ class Edge(Common):
         else:
             edge.append(dst)
 
-        return f"{' '.join(edge)}{self.attrs_string(prefix=" ")};"
+        return f"{' '.join(edge)}{self.attrs_string(prefix=' ')};"
 
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
