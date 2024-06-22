@@ -14,9 +14,12 @@ dependencies = [
 authors = [
   {name = "Ero Carrera", email = "ero.carrera@gmail.com"},
   {name = "Peter Nowee", email = "peter@peternowee.com"},
+  {name = "Łukasz", email = "lukaszlapinski7@gmail.com"},
+  {name = "FeRD (Frank Dana)", email = "ferdnyc@gmail.com"},
 ]
 maintainers = [
   {name = "Peter Nowee", email = "peter@peternowee.com"},
+  {name = "Łukasz", email = "lukaszlapinski7@gmail.com"},
 ]
 keywords = ["graphviz", "dot", "graphs", "visualization"]
 classifiers = [
