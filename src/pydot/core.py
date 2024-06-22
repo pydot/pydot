@@ -697,6 +697,8 @@ class Node(Common):
         # RMF: special case defaults for node, edge and graph properties.
         #
         node = quote_if_necessary(self.obj_dict["name"])
+        if node is None:
+            node = "<unnamed>"
 
         node_attr = []
 
