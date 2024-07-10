@@ -291,14 +291,11 @@ class frozendict(dict):
 def make_quoted(s):
     """Transform a string into a quoted string, escaping specials."""
     replace = {
-        '"': r"\"",
-        "\n": r"\n",
-        "\r": r"\r",
+        ord('"'): r"\"",
+        ord("\n"): r"\n",
+        ord("\r"): r"\r",
     }
-    s.translate(replace)
-    for a, b in replace.items():
-        s = s.replace(a, b)
-    return rf'"{s}"'
+    return rf'"{s.translate(replace)}"'
 
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
@@ -678,7 +675,8 @@ class Common:
     def attrs_string(self, prefix=""):
         """Format the current attributes list for output.
 
-        The `prefix` string will be prepended iff text is generated."""
+        The `prefix` string will be prepended if and only if some
+        output is generated."""
         attrs = self.formatted_attr_list()
         if not attrs:
             return ""
