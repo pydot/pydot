@@ -4,13 +4,18 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 (https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
 
 
-2.0.1 (unreleased)
+3.0.0 (unreleased)
 ------------------
 
 Added:
+- Breaking change: support for Python 3.7 dropped totally. (#371)
+  It was already dropped, but now it's official.
+- Breaking change (but for nobody): Old unknown syntax removed (#377).
+  A "port angle" that takes the form `@<id>`
+  and an alternative form of a port `:(<id>,<id>)` deleted.
+- Quoting for attribute values fixed (#363).
 - Add standard Python logging, using the logger name `pydot`. For
   details, see the new section on Troubleshooting in README.md.
-
 
 2.0.0 (2023-12-30)
 ------------------
