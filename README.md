@@ -270,4 +270,4 @@ Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 [src]: https://gitlab.com/graphviz/graphviz
 [log]: https://docs.python.org/3/library/logging.html
 [log_tree]: https://pypi.org/project/logging_tree/
-[MIT]: https://github.com/pydot/pydot/blob/master/LICENSE
+[MIT]: https://github.com/pydot/pydot/blob/main/LICENSE
