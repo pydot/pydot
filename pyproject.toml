@@ -47,7 +47,7 @@ version = {attr = "pydot.__version__"}
 
 [project.urls]
 Homepage = "https://github.com/pydot/pydot"
-Changelog = "https://github.com/pydot/pydot/blob/master/ChangeLog"
+Changelog = "https://github.com/pydot/pydot/blob/main/ChangeLog"
 "Bug Tracker" = "https://github.com/pydot/pydot/issues"
 
 [project.optional-dependencies]
