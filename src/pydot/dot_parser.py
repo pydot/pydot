@@ -372,12 +372,9 @@ def graph_definition():
         rbrace = Literal("}")
         lbrack = Literal("[")
         rbrack = Literal("]")
-        lparen = Literal("(")
-        rparen = Literal(")")
         equals = Literal("=")
         comma = Literal(",")
         semi = Literal(";")
-        at = Literal("@")
         minus = Literal("-")
 
         # keywords
@@ -410,17 +407,7 @@ def graph_definition():
 
         righthand_id = (float_number | ID).setName("righthand_id")
 
-        port_angle = (at + ID).setName("port_angle")
-
-        port_location = (
-            OneOrMore(Group(colon + ID))
-            | Group(colon + lparen + ID + comma + ID + rparen)
-        ).setName("port_location")
-
-        port = (
-            Group(port_location + Optional(port_angle))
-            | Group(port_angle + Optional(port_location))
-        ).setName("port")
+        port = Group(OneOrMore(Group(colon + ID))).setName("port")
 
         node_id = ID + Optional(port)
         a_list = OneOrMore(
