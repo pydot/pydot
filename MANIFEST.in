@@ -2,10 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
-include README.md
-include LICENSE
-include ChangeLog
+include *.md
 include *.txt
+include LICENSES/*.txt
+include ChangeLog
+include .reuse/dep5
 prune .github
 exclude .git*
 graft test
