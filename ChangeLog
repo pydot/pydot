@@ -6,13 +6,32 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 (https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
 
 
-2.0.1 (unreleased)
+3.0.0 (unreleased)
 ------------------
 
 Added:
+- Breaking change: support for Python 3.7 dropped totally (#371).
+  It was already dropped, but now it's official.
+- Breaking change (but for nobody): Invalid syntax removed (#377).
+  Removed syntax rules that were never implemented in graphviz's own parser.
+- Internal storage and lookup of identifiers (names) improved (#363).
+  Pydot now always stores values as they were originally input, and only performs
+  quoting on output.
+  Previously, when a graph element was created with a name that contained a space
+  or otherwise required quoting, the quotes would be added immediately, making it
+  more difficult to retrieve the element using the `.get_*()` lookup methods.
+  If a name requiring quotes was later set using `.set_name()`, no quotes would be
+  added, causing the graph definition to become invalid.
+  (Thanks to @tusharsadhwani for initially pointing out the name-quoting issues.)
+- Keywords can now be used as names or attribute values (#363).
+  Graphviz keywords like "graph" or "subgraph" will now be properly quoted
+  when used as attribute values or as names, where appropriate.
+- Attribute sorting removed (#361).
+  Pydot will preserve the original order of attributes as defined.
+- Quoting for attribute values fixed (#320).
+  Attribute values containing comma-separated strings will now be quoted correctly.
 - Add standard Python logging, using the logger name `pydot`. For
   details, see the new section on Troubleshooting in README.md.
-
 
 2.0.0 (2023-12-30)
 ------------------
