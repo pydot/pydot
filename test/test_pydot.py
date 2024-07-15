@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 """Unit testing of `pydot`."""
 
 # TODO:
