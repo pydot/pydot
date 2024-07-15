@@ -407,7 +407,10 @@ def graph_definition():
 
         righthand_id = (float_number | ID).setName("righthand_id")
 
-        port = Group(OneOrMore(Group(colon + ID))).setName("port")
+        port = (
+            Group(Group(colon + ID) + Group(colon + ID))
+            | Group(Group(colon + ID))
+        ).setName("port")
 
         node_id = ID + Optional(port)
         a_list = OneOrMore(
