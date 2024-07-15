@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 """Graphviz's dot language parser.
 
 The dotparser parses GraphViz files in

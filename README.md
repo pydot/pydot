@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 pydot contributors
+
+SPDX-License-Identifier: MIT
+-->
+
 ![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
