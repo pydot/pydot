@@ -31,6 +31,11 @@ Removed:
   Removed syntax rules that were never implemented in graphviz's own parser.
 - Attribute sorting removed (#361).
   Pydot will preserve the original order of attributes as defined.
+- Breaking change: Remove `.create_attribute_methods()` from classes (#318).
+  Setters and getters for attributes are now added to class definitions
+  by calls to `pydot.core.__generate_attribute_methods()` immediately
+  after the class is defined, for better compatibility with type-checking
+  and introspection.
 
 Changed:
 - Internal storage and lookup of identifiers (names) improved (#363).
