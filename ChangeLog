@@ -9,7 +9,10 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 3.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+This is a bugfix release to correct a critical error introduced in 3.0.0.
+
+Changed:
+- Fix quoting in `Edge.to_string()`. (#384)
 
 
 3.0.0 (2024-07-15)
