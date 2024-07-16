@@ -903,7 +903,7 @@ class Edge(Common):
 
             return node
 
-        return node_str
+        return quote_id_if_necessary(node_str)
 
     def to_string(self):
         """Return string representation of edge in DOT language."""
