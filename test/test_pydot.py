@@ -397,6 +397,23 @@ class TestGraphAPI(PydotTestCase):
                 """),
         )
 
+    def test_edge_quoting(self):
+        """Test the fix for issue #383 (pydot 3.0.0)."""
+        g = pydot.Graph("", graph_type="digraph")
+        g.add_node(pydot.Node("Node^A"))
+        g.add_node(pydot.Node("Node^B"))
+        g.add_edge(pydot.Edge("Node^A", "Node^B"))
+        self.assertEqual(
+            g.to_string(),
+            textwrap.dedent("""\
+            digraph  {
+            "Node^A";
+            "Node^B";
+            "Node^A" -> "Node^B";
+            }
+            """),
+        )
+
     def test_id_storage_and_lookup(self):
         g = pydot.Graph()
         a = pydot.Node("my node")
