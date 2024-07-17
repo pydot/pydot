@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
+version = 1
+SPDX-PackageName = "pydot"
+SPDX-PackageSupplier = "Łukasz <lukaszlapinski7@gmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/pydot/pydot"
+
+[[annotations]]
+path = ["test/graphs/**", "test/my_tests/**", "test/from-past-to-future/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "pydot contributors"
+SPDX-License-Identifier = "MIT"
