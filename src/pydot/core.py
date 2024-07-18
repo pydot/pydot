@@ -1462,12 +1462,9 @@ class Graph(Common):
             first_line.append("strict")
 
         graph_type = self.obj_dict["type"]
-        if (
-            graph_type != "subgraph"
-            or self.obj_dict.get("show_keyword", True)
-        ):
+        if graph_type != "subgraph" or self.obj_dict.get("show_keyword", True):
             first_line.append(graph_type)
-            
+
             # Suppressing the keyword hides the name as well
             graph_name = self.obj_dict.get("name")
             if graph_name:
@@ -1476,7 +1473,9 @@ class Graph(Common):
         first_line.append("{\n")
         graph.append(" ".join(first_line))
 
-        graph.extend(f"{child_indent}{a};\n" for a in self.formatted_attr_list())
+        graph.extend(
+            f"{child_indent}{a};\n" for a in self.formatted_attr_list()
+        )
 
         edges_done = set()
 
