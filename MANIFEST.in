@@ -6,7 +6,7 @@ include *.md
 include *.txt
 include LICENSES/*.txt
 include ChangeLog
-include .reuse/dep5
+include REUSE.toml
 prune .github
 exclude .git*
 graft test
