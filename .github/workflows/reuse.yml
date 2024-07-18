@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
+name: REUSE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: REUSE Compliance Check
+        uses: fsfe/reuse-action@v4.0.0

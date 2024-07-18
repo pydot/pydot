@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 pydot contributors
+
+SPDX-License-Identifier: MIT
+-->
+
 # Security Policy
 ## Reporting a vulnerability
 

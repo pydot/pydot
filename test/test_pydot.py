@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 """Unit testing of `pydot`."""
 
 # TODO:
@@ -12,6 +16,7 @@ import os
 import pickle
 import string
 import sys
+import textwrap
 import unittest
 from hashlib import sha256
 
@@ -143,7 +148,7 @@ class TestGraphAPI(PydotTestCase):
         g.add_node(node)
         node.set("label", "mine")
         s = g.to_string()
-        expected = "digraph G {\nlegend [label=mine, shape=box];\n}\n"
+        expected = "digraph G {\nlegend [shape=box, label=mine];\n}\n"
         assert s == expected
 
     def test_attribute_with_implicit_value(self):
@@ -308,7 +313,7 @@ class TestGraphAPI(PydotTestCase):
         )
         self.assertEqual(
             self.graph_directed.get_nodes()[0].to_string(),
-            'node [length=1.234, radius="9,876", size=2.345];',
+            'node [length=1.234, size=2.345, radius="9,876"];',
         )
 
     def test_names_of_a_thousand_nodes(self):
@@ -340,11 +345,118 @@ class TestGraphAPI(PydotTestCase):
         self.assertRaises(TypeError, self.graph_directed.add_subgraph, 1)
         self.assertRaises(TypeError, self.graph_directed.add_subgraph, "a")
 
+    def test_node_parenting(self):
+        g = pydot.Dot()
+        n = pydot.Node("node a")
+        n2 = pydot.Node("node a")
+        g.add_node(n)
+        g.add_node(n2)
+
+        nodes = g.get_node('"node a"')
+        for node in nodes:
+            assert node.get_parent_graph() == g
+
+        sg = pydot.Subgraph("sub sg")
+        sg_n = pydot.Node("node a")
+        sg.add_node(sg_n)
+        self.assertEqual(sg_n.get_parent_graph(), sg)
+
+        g.add_node(sg_n)
+        self.assertEqual(sg_n.get_parent_graph(), sg)
+
+        g.add_subgraph(sg)
+        self.assertEqual(sg_n.get_parent_graph(), g)
+
     def test_quoting(self):
         g = pydot.Dot()
         g.add_node(pydot.Node("test", label=string.printable))
         data = g.create(format="jpe")
         self.assertEqual(len(data) > 0, True)
+
+    def test_keyword_quoting(self):
+        g = pydot.Dot(graph_name="graph", graph_type="graph")
+        g.add_node(pydot.Node("digraph", color="red"))
+        g.add_node(pydot.Node("strict", shape="box"))
+        g.add_node(pydot.Node("A", label="digraph"))
+        g.add_node(pydot.Node("B", label="subgraph"))
+        g.add_node(pydot.Node("edge", style="dashed"))
+        g.add_edge(pydot.Edge("A", "B", xlabel="node"))
+
+        formatted = g.to_string()
+        self.assertEqual(
+            formatted,
+            textwrap.dedent("""\
+                graph "graph" {
+                "digraph" [color=red];
+                "strict" [shape=box];
+                A [label="digraph"];
+                B [label="subgraph"];
+                edge [style=dashed];
+                A -- B [xlabel="node"];
+                }
+                """),
+        )
+
+    def test_edge_quoting(self):
+        """Test the fix for issue #383 (pydot 3.0.0)."""
+        g = pydot.Graph("", graph_type="digraph")
+        g.add_node(pydot.Node("Node^A"))
+        g.add_node(pydot.Node("Node^B"))
+        g.add_edge(pydot.Edge("Node^A", "Node^B"))
+        self.assertEqual(
+            g.to_string(),
+            textwrap.dedent("""\
+            digraph  {
+            "Node^A";
+            "Node^B";
+            "Node^A" -> "Node^B";
+            }
+            """),
+        )
+
+    def test_id_storage_and_lookup(self):
+        g = pydot.Graph()
+        a = pydot.Node("my node")
+        b = pydot.Node('"node B"')
+        e = pydot.Edge(a, b)
+
+        g.add_node(a)
+        g.add_node(b)
+        g.add_edge(e)
+
+        a_out = g.get_node("my node")[0]
+        b_out = g.get_node('"node B"')[0]
+        self.assertEqual(g.get_node("node B"), [])
+        self.assertEqual(id(a_out.obj_dict), id(a.obj_dict))
+        self.assertEqual(id(b_out.obj_dict), id(b.obj_dict))
+
+        e_out = g.get_edge("my node", '"node B"')[0]
+        self.assertEqual(id(e_out.obj_dict), id(e.obj_dict))
+
+        sg = pydot.Subgraph("sub graph", graph_type="graph")
+        sgA = pydot.Node("sg A")
+        sgB = pydot.Node('"sg B"')
+        sg.add_node(sgA)
+        sg.add_node(sgB)
+        g.add_subgraph(sg)
+
+        sg_out = g.get_subgraph("sub graph")[0]
+        self.assertEqual(id(sg_out.obj_dict), id(sg.obj_dict))
+
+        g_nodes_out = g.get_nodes()
+        self.assertEqual(id(g_nodes_out[0].obj_dict), id(a.obj_dict))
+        self.assertEqual(id(g_nodes_out[1].obj_dict), id(b.obj_dict))
+
+        g_edges_out = g.get_edges()
+        self.assertEqual(id(g_edges_out[0].obj_dict), id(e.obj_dict))
+
+        g_sg_out = g.get_subgraphs()
+        self.assertEqual(id(g_sg_out[0].obj_dict), id(sg.obj_dict))
+
+        sg_nodes_out = sg.get_nodes()
+        self.assertEqual(id(sg_nodes_out[0].obj_dict), id(sgA.obj_dict))
+        self.assertEqual(id(sg_nodes_out[1].obj_dict), id(sgB.obj_dict))
+        self.assertEqual(sg.get_edges(), [])
 
     def test_dot_args(self):
         g = pydot.Dot()

@@ -1,15 +1,19 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 name: "CodeQL"
 
 on:
   push:
-    branches: ["master"]
+    branches: ["main"]
     paths-ignore: 
       - "**/README.md" 
       - "LICENSE" 
       - "ChangeLog" 
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: ["master"]
+    branches: ["main"]
     paths-ignore: 
       - "**/README.md" 
       - "LICENSE" 
@@ -38,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL

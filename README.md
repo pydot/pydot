@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 pydot contributors
+
+SPDX-License-Identifier: MIT
+-->
+
 ![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
@@ -19,13 +25,32 @@ To see what Graphviz is capable of, check the [Graphviz Gallery](https://graphvi
 
 ## Installation
 
-- From [PyPI][pypi]:
+- Latest release, from [PyPI][pypi]:
 
-  `pip install pydot`
+  ```bash
+  pip install pydot
+  ```
 
-- Development installation:
+- Current development code, from this repository:
 
-  `pip install -e .`
+  ```bash
+  pip install git+https://github.com/pydot/pydot.git
+  ```
+
+- Development installation, to modify the code or contribute changes:
+
+  ```bash
+  # Clone the repository
+  git clone https://github.com/pydot/pydot
+  cd pydot
+
+  # (Optional: create a virtual environment)
+  python3 -m venv _venv
+  . ./_venv/bin/activate
+
+  # Make an editable install of pydot from the source tree
+  pip install -e .
+  ```
 
 ## Quickstart
 
@@ -251,4 +276,4 @@ Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 [src]: https://gitlab.com/graphviz/graphviz
 [log]: https://docs.python.org/3/library/logging.html
 [log_tree]: https://pypi.org/project/logging_tree/
-[MIT]: https://github.com/pydot/pydot/blob/master/LICENSE
+[MIT]: https://github.com/pydot/pydot/blob/main/LICENSE

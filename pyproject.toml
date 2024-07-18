@@ -1,5 +1,10 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = 'pydot'
@@ -13,9 +18,12 @@ dependencies = [
 authors = [
   {name = "Ero Carrera", email = "ero.carrera@gmail.com"},
   {name = "Peter Nowee", email = "peter@peternowee.com"},
+  {name = "Łukasz", email = "lukaszlapinski7@gmail.com"},
+  {name = "FeRD (Frank Dana)", email = "ferdnyc@gmail.com"},
 ]
 maintainers = [
   {name = "Peter Nowee", email = "peter@peternowee.com"},
+  {name = "Łukasz", email = "lukaszlapinski7@gmail.com"},
 ]
 keywords = ["graphviz", "dot", "graphs", "visualization"]
 classifiers = [
@@ -26,11 +34,11 @@ classifiers = [
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.5",
-  "Programming Language :: Python :: 3.6",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering :: Visualization",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -38,9 +46,12 @@ dynamic = [
   'version',
 ]
 
+[tool.setuptools.dynamic]
+version = {attr = "pydot.__version__"}
+
 [project.urls]
 Homepage = "https://github.com/pydot/pydot"
-Changelog = "https://github.com/pydot/pydot/blob/master/ChangeLog"
+Changelog = "https://github.com/pydot/pydot/blob/main/ChangeLog"
 "Bug Tracker" = "https://github.com/pydot/pydot/issues"
 
 [project.optional-dependencies]
@@ -52,6 +63,7 @@ dev = [
 tests = [
   'chardet',
   'parameterized',
+  'ruff',
   'tox',
   'unittest-parallel',
 ]
