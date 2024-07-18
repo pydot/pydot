@@ -1464,7 +1464,7 @@ class Graph(Common):
         graph_type = self.obj_dict["type"]
         if (
             graph_type != "subgraph"
-            or not self.obj_dict.get("show_keyword", True)
+            or self.obj_dict.get("show_keyword", True)
         ):
             first_line.append(graph_type)
             
