@@ -5,6 +5,7 @@
 [paths]
 source =
   src
+  */site-packages
 
 [run]
 branch = true
