@@ -12,23 +12,12 @@ import re
 import subprocess
 import sys
 import tempfile
-import warnings
 
 import pydot
+import pydot.dot_parser
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
-
-
-try:
-    from pydot import dot_parser
-except Exception as e:
-    warnings.warn(
-        "`pydot` could not import `dot_parser`, "
-        "so `pydot` will be unable to parse DOT files. "
-        f"The error was:  {e}"
-    )
-
 
 # fmt: off
 GRAPH_ATTRIBUTES = {
@@ -422,7 +411,7 @@ def graph_from_dot_data(s):
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
-    return dot_parser.parse_dot_data(s)
+    return pydot.dot_parser.parse_dot_data(s)
 
 
 def graph_from_dot_file(path, encoding=None):
