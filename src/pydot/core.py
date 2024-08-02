@@ -1765,44 +1765,34 @@ class Dot(Graph):
             args = []
 
         # temp file
-        tmp_fd, tmp_name = tempfile.mkstemp()
-        os.close(tmp_fd)
-        self.write(tmp_name, encoding=encoding)
-        tmp_dir = os.path.dirname(tmp_name)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            fp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False)
+            fp.close()
+            self.write(fp.name, encoding=encoding)
 
-        # For each of the image files...
-        for img in self.shape_files:
-            # Get its data
-            f = open(img, "rb")
-            f_data = f.read()
-            f.close()
-            # And copy it under a file with the same name in
-            # the temporary directory
-            f = open(os.path.join(tmp_dir, os.path.basename(img)), "wb")
-            f.write(f_data)
-            f.close()
+            # For each of the image files, copy it to the temporary directory
+            # with the same filename as the original
+            for img in self.shape_files:
+                outfile = os.path.join(tmp_dir, os.path.basename(img))
+                with open(img, "rb") as img_in, open(outfile, "wb") as img_out:
+                    img_data = img_in.read()
+                    img_out.write(img_data)
 
-        arguments = [f"-T{format}"] + args + [tmp_name]
+            arguments = [f"-T{format}"] + args + [fp.name]
 
-        try:
-            stdout_data, stderr_data, process = call_graphviz(
-                program=prog,
-                arguments=arguments,
-                working_dir=tmp_dir,
-            )
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                args = list(e.args)
-                args[1] = f'"{prog}" not found in path.'
-                raise OSError(*args)
-            else:
-                raise
-
-        # clean file litter
-        for img in self.shape_files:
-            os.unlink(os.path.join(tmp_dir, os.path.basename(img)))
-
-        os.unlink(tmp_name)
+            try:
+                stdout_data, stderr_data, process = call_graphviz(
+                    program=prog,
+                    arguments=arguments,
+                    working_dir=tmp_dir,
+                )
+            except OSError as e:
+                if e.errno == errno.ENOENT:
+                    args = list(e.args)
+                    args[1] = f'"{prog}" not found in path.'
+                    raise OSError(*args)
+                else:
+                    raise
 
         if process.returncode != 0:
             code = process.returncode
