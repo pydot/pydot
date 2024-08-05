@@ -13,6 +13,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 
 import logging
+import threading
 
 from pyparsing import (
     CaselessLiteral,
@@ -74,7 +75,8 @@ class DefaultStatement(P_AttrList):
         return f"{name}({self.default_type}, {self.attrs!r})"
 
 
-top_graphs = []
+thread_local = threading.local()
+thread_local.top_graphs = []
 
 
 def push_top_graph_stmt(s, loc, toks):
@@ -98,7 +100,7 @@ def push_top_graph_stmt(s, loc, toks):
             g = pydot.Dot(graph_type=element, **attrs)
             attrs["type"] = element
 
-            top_graphs.append(g)
+            thread_local.top_graphs.append(g)
 
         elif isinstance(element, str):
             g.set_name(element)
@@ -120,13 +122,13 @@ def push_top_graph_stmt(s, loc, toks):
         else:
             raise ValueError(f"Unknown element statement: {element}")
 
-    for g in top_graphs:
+    for g in thread_local.top_graphs:
         update_parent_graph_hierarchy(g)
 
-    if len(top_graphs) == 1:
-        return top_graphs[0]
+    if len(thread_local.top_graphs) == 1:
+        return thread_local.top_graphs[0]
 
-    return top_graphs
+    return thread_local.top_graphs
 
 
 def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
@@ -502,8 +504,8 @@ def parse_dot_data(s):
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
-    global top_graphs
-    top_graphs = []
+    global thread_local
+    thread_local.top_graphs = []
     try:
         graphparser = graph_definition()
         graphparser.parseWithTabs()
