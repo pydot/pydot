@@ -707,7 +707,6 @@ class Node(Common):
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "node"
             self.obj_dict["parent_graph"] = None
-            self.obj_dict["parent_node_list"] = None
             self.obj_dict["sequence"] = None
 
             # Remove the compass point
@@ -812,7 +811,6 @@ class Edge(Common):
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "edge"
             self.obj_dict["parent_graph"] = None
-            self.obj_dict["parent_edge_list"] = None
             self.obj_dict["sequence"] = None
         else:
             self.obj_dict = obj_dict
