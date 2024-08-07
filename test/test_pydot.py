@@ -182,6 +182,16 @@ class TestGraphAPI(PydotTestCase):
         g.add_node(pydot.Node("node!"))
         pickle.dumps(g)
 
+    def test_dot_pickling(self):
+        g = pydot.Dot()
+        g.set_prog("neato")
+        g.set_shape_files("dummy.png")
+        pkl = pickle.dumps(g)
+        g2 = pickle.loads(pkl)
+        self.assertIsInstance(g2, pydot.Dot)
+        self.assertEqual(g2.prog, "neato")
+        self.assertEqual(g2.shape_files[0], "dummy.png")
+
     def test_unicode_ids(self):
         node1 = '"aánñoöüé€"'
         node2 = '"îôø®çßΩ"'
