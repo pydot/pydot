@@ -1625,11 +1625,22 @@ class Dot(Graph):
         self.prog = "dot"
 
     def __getstate__(self):
-        dict = copy.copy(self.obj_dict)
-        return dict
+        state = {
+            "obj_dict": copy.copy(self.obj_dict),
+            "prog": self.prog,
+            "shape_files": copy.deepcopy(self.shape_files),
+            "formats": copy.copy(self.formats),
+        }
+        return state
 
     def __setstate__(self, state):
-        self.obj_dict = state
+        if "obj_dict" not in state:
+            # Backwards compatibility for old picklings
+            state = {"obj_dict": state}
+        self.obj_dict = state.get("obj_dict", {})
+        self.prog = state.get("prog", "dot")
+        self.shape_files = state.get("shape_files", [])
+        self.formats = state.get("formats", OUTPUT_FORMATS)
 
     def set_shape_files(self, file_paths):
         """Add the paths of the required image files.
