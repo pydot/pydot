@@ -74,11 +74,9 @@ class DefaultStatement(P_AttrList):
         return f"{name}({self.default_type}, {self.attrs!r})"
 
 
-top_graphs = []
-
-
 def push_top_graph_stmt(s, loc, toks):
     attrs = {}
+    top_graphs = []
     g = None
 
     for element in toks:
@@ -502,8 +500,6 @@ def parse_dot_data(s):
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
-    global top_graphs
-    top_graphs = []
     try:
         graphparser = graph_definition()
         graphparser.parseWithTabs()

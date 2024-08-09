@@ -16,6 +16,7 @@ import os
 import pickle
 import string
 import sys
+import tempfile
 import textwrap
 import unittest
 from hashlib import sha256
@@ -180,6 +181,16 @@ class TestGraphAPI(PydotTestCase):
         g.add_edge(pydot.Edge(("D", "E")))
         g.add_node(pydot.Node("node!"))
         pickle.dumps(g)
+
+    def test_dot_pickling(self):
+        g = pydot.Dot()
+        g.set_prog("neato")
+        g.set_shape_files("dummy.png")
+        pkl = pickle.dumps(g)
+        g2 = pickle.loads(pkl)
+        self.assertIsInstance(g2, pydot.Dot)
+        self.assertEqual(g2.prog, "neato")
+        self.assertEqual(g2.shape_files[0], "dummy.png")
 
     def test_unicode_ids(self):
         node1 = '"aánñoöüé€"'
@@ -462,7 +473,9 @@ class TestGraphAPI(PydotTestCase):
         g = pydot.Dot()
         u = pydot.Node("a")
         g.add_node(u)
-        g.write_svg("test.svg", prog=["twopi", "-Goverlap=scale"])
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            outfile = os.path.join(tmp_dir, "test.svg")
+            g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
 
     def test_edge_equality_basics_3_same_points_not_not_equal(self):
         # Fail example: pydot 1.4.1 on Python 2.

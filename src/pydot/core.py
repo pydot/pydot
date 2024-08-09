@@ -707,7 +707,6 @@ class Node(Common):
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "node"
             self.obj_dict["parent_graph"] = None
-            self.obj_dict["parent_node_list"] = None
             self.obj_dict["sequence"] = None
 
             # Remove the compass point
@@ -812,7 +811,6 @@ class Edge(Common):
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "edge"
             self.obj_dict["parent_graph"] = None
-            self.obj_dict["parent_edge_list"] = None
             self.obj_dict["sequence"] = None
         else:
             self.obj_dict = obj_dict
@@ -1625,11 +1623,22 @@ class Dot(Graph):
         self.prog = "dot"
 
     def __getstate__(self):
-        dict = copy.copy(self.obj_dict)
-        return dict
+        state = {
+            "obj_dict": copy.copy(self.obj_dict),
+            "prog": self.prog,
+            "shape_files": copy.deepcopy(self.shape_files),
+            "formats": copy.copy(self.formats),
+        }
+        return state
 
     def __setstate__(self, state):
-        self.obj_dict = state
+        if "obj_dict" not in state:
+            # Backwards compatibility for old picklings
+            state = {"obj_dict": state}
+        self.obj_dict = state.get("obj_dict", {})
+        self.prog = state.get("prog", "dot")
+        self.shape_files = state.get("shape_files", [])
+        self.formats = state.get("formats", OUTPUT_FORMATS)
 
     def set_shape_files(self, file_paths):
         """Add the paths of the required image files.
@@ -1765,44 +1774,34 @@ class Dot(Graph):
             args = []
 
         # temp file
-        tmp_fd, tmp_name = tempfile.mkstemp()
-        os.close(tmp_fd)
-        self.write(tmp_name, encoding=encoding)
-        tmp_dir = os.path.dirname(tmp_name)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            fp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False)
+            fp.close()
+            self.write(fp.name, encoding=encoding)
 
-        # For each of the image files...
-        for img in self.shape_files:
-            # Get its data
-            f = open(img, "rb")
-            f_data = f.read()
-            f.close()
-            # And copy it under a file with the same name in
-            # the temporary directory
-            f = open(os.path.join(tmp_dir, os.path.basename(img)), "wb")
-            f.write(f_data)
-            f.close()
+            # For each of the image files, copy it to the temporary directory
+            # with the same filename as the original
+            for img in self.shape_files:
+                outfile = os.path.join(tmp_dir, os.path.basename(img))
+                with open(img, "rb") as img_in, open(outfile, "wb") as img_out:
+                    img_data = img_in.read()
+                    img_out.write(img_data)
 
-        arguments = [f"-T{format}"] + args + [tmp_name]
+            arguments = [f"-T{format}"] + args + [fp.name]
 
-        try:
-            stdout_data, stderr_data, process = call_graphviz(
-                program=prog,
-                arguments=arguments,
-                working_dir=tmp_dir,
-            )
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                args = list(e.args)
-                args[1] = f'"{prog}" not found in path.'
-                raise OSError(*args)
-            else:
-                raise
-
-        # clean file litter
-        for img in self.shape_files:
-            os.unlink(os.path.join(tmp_dir, os.path.basename(img)))
-
-        os.unlink(tmp_name)
+            try:
+                stdout_data, stderr_data, process = call_graphviz(
+                    program=prog,
+                    arguments=arguments,
+                    working_dir=tmp_dir,
+                )
+            except OSError as e:
+                if e.errno == errno.ENOENT:
+                    args = list(e.args)
+                    args[1] = f'"{prog}" not found in path.'
+                    raise OSError(*args)
+                else:
+                    raise
 
         if process.returncode != 0:
             code = process.returncode
