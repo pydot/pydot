@@ -70,7 +70,9 @@ tests = [
   'parameterized',
   'ruff',
   'tox',
-  'unittest-parallel',
+  'pytest',
+  'pytest-cov',
+  'pytest-xdist[psutil]',
 ]
 release = ['zest.releaser[recommended]']
 
