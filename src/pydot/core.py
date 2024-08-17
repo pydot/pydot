@@ -405,6 +405,9 @@ def quote_attr_if_necessary(s):
 def graph_from_dot_data(s):
     """Load graphs from DOT description in string `s`.
 
+    This function is NOT thread-safe due to the internal use of `pyparsing`.
+    Use a lock if needed.
+
     @param s: string in [DOT language](
         https://en.wikipedia.org/wiki/DOT_(graph_description_language))
 
@@ -416,6 +419,9 @@ def graph_from_dot_data(s):
 
 def graph_from_dot_file(path, encoding=None):
     """Load graphs from DOT file at `path`.
+
+    This function is NOT thread-safe due to the internal use of `pyparsing`.
+    Use a lock if needed.
 
     @param path: to DOT file
     @param encoding: as passed to `io.open`.

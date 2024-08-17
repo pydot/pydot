@@ -497,6 +497,9 @@ def graph_definition():
 def parse_dot_data(s):
     """Parse DOT description in (unicode) string `s`.
 
+    This function is NOT thread-safe due to the internal use of `pyparsing`.
+    Use a lock if needed.
+
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
