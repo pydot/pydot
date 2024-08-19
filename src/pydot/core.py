@@ -11,7 +11,7 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
+from pydot._vendor import tempfile
 
 import pydot
 import pydot.dot_parser
@@ -1774,7 +1774,7 @@ class Dot(Graph):
             args = []
 
         # temp file
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
             fp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False)
             fp.close()
             self.write(fp.name, encoding=encoding)
