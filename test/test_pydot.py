@@ -16,7 +16,6 @@ import os
 import pickle
 import string
 import sys
-import tempfile
 import textwrap
 import unittest
 from hashlib import sha256
@@ -24,6 +23,7 @@ from hashlib import sha256
 import chardet
 import pydot
 from parameterized import parameterized
+from pydot._vendor import tempfile
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
 
@@ -473,7 +473,9 @@ class TestGraphAPI(PydotTestCase):
         g = pydot.Dot()
         u = pydot.Node("a")
         g.add_node(u)
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory(
+            ignore_cleanup_errors=True
+        ) as tmp_dir:
             outfile = os.path.join(tmp_dir, "test.svg")
             g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
 
