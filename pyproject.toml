@@ -76,6 +76,9 @@ release = ['zest.releaser[recommended]']
 
 [tool.ruff]
 line-length = 79
+exclude = [
+    "src/pydot/_vendor",
+]
 
 [tool.ruff.lint]
 select = ['E', 'F', 'W', 'I', 'UP', 'C4']

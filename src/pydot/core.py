@@ -11,10 +11,10 @@ import os
 import re
 import subprocess
 import sys
-from pydot._vendor import tempfile
 
 import pydot
 import pydot.dot_parser
+from pydot._vendor import tempfile
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -1774,7 +1774,9 @@ class Dot(Graph):
             args = []
 
         # temp file
-        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
+        with tempfile.TemporaryDirectory(
+            ignore_cleanup_errors=True
+        ) as tmp_dir:
             fp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False)
             fp.close()
             self.write(fp.name, encoding=encoding)
