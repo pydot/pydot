@@ -12,3 +12,10 @@ path = ["test/graphs/**", "test/my_tests/**", "test/from-past-to-future/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "pydot contributors"
 SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["src/pydot/_vendor/tempfile.py"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright © 2001-2023 Python Software Foundation. All rights reserved."
+SPDX-License-Identifier = "Python-2.0"
+

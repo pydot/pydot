@@ -11,10 +11,10 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 
 import pydot
 import pydot.dot_parser
+from pydot._vendor import tempfile
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -309,8 +309,14 @@ def any_needs_quotes(s):
 
     Returns True, False, or None if the result is indeterminate.
     """
-    if s.isalnum():
+
+    # Strings consisting _only_ of digits are safe unquoted
+    if s.isdigit():
         return False
+
+    # MIXED-aphanumeric values need quoting if they *start* with a digit
+    if s.isalnum():
+        return s[0].isdigit()
 
     has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
     if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
@@ -405,6 +411,9 @@ def quote_attr_if_necessary(s):
 def graph_from_dot_data(s):
     """Load graphs from DOT description in string `s`.
 
+    This function is NOT thread-safe due to the internal use of `pyparsing`.
+    Use a lock if needed.
+
     @param s: string in [DOT language](
         https://en.wikipedia.org/wiki/DOT_(graph_description_language))
 
@@ -416,6 +425,9 @@ def graph_from_dot_data(s):
 
 def graph_from_dot_file(path, encoding=None):
     """Load graphs from DOT file at `path`.
+
+    This function is NOT thread-safe due to the internal use of `pyparsing`.
+    Use a lock if needed.
 
     @param path: to DOT file
     @param encoding: as passed to `io.open`.
@@ -1774,7 +1786,9 @@ class Dot(Graph):
             args = []
 
         # temp file
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory(
+            ignore_cleanup_errors=True
+        ) as tmp_dir:
             fp = tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False)
             fp.close()
             self.write(fp.name, encoding=encoding)

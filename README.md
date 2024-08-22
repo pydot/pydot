@@ -251,6 +251,12 @@ cause the log to become very large or contain sensitive information.
 
 Distributed under the [MIT license][MIT].
 
+The module [`pydot._vendor.tempfile`][tempfile]
+is based on the Python 3.12 standard library module
+[`tempfile.py`][tempfile-src],
+Copyright © 2001-2023 Python Software Foundation. All rights reserved.
+Licensed under the terms of the [Python-2.0][Python-2.0] license.
+
 
 ## Contacts
 
@@ -276,4 +282,7 @@ Original author: Ero Carrera <ero (dot) carrera (at) gmail (dot) com>
 [src]: https://gitlab.com/graphviz/graphviz
 [log]: https://docs.python.org/3/library/logging.html
 [log_tree]: https://pypi.org/project/logging_tree/
-[MIT]: https://github.com/pydot/pydot/blob/main/LICENSE
+[MIT]: https://github.com/pydot/pydot/blob/main/LICENSES/MIT.txt
+[Python-2.0]: https://github.com/pydot/pydot/blob/main/LICENSES/Python-2.0.txt
+[tempfile]: https://github.com/pydot/pydot/blob/main/src/pydot/_vendor/tempfile.py
+[tempfile-src]: https://github.com/python/cpython/blob/8edfa0b0b4ae4235bb3262d952c23e7581516d4f/Lib/tempfile.py
