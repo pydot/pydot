@@ -309,8 +309,14 @@ def any_needs_quotes(s):
 
     Returns True, False, or None if the result is indeterminate.
     """
-    if s.isalnum():
+
+    # Strings consisting _only_ of digits are safe unquoted
+    if s.isdigit():
         return False
+
+    # MIXED-aphanumeric values need quoting if they *start* with a digit
+    if s.isalnum():
+        return s[0].isdigit()
 
     has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
     if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
