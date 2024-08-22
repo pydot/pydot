@@ -412,7 +412,8 @@ class TestGraphAPI(PydotTestCase):
         """Test the fix for issue #408."""
         g = pydot.Dot(graph_name="issue408", graph_type="graph")
         n1 = pydot.Node(
-            "11herbs", label="and 11¼ spices", fontsize=12, height="1")
+            "11herbs", label="and 11¼ spices", fontsize=12, height="1"
+        )
         n2 = pydot.Node("nooks9nooks", fontsize="14pt", height="2in")
         g.add_node(n1)
         g.add_node(n2)
