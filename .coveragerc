@@ -10,7 +10,9 @@ source =
 [run]
 branch = true
 parallel = true
+relative_files = true
 source =
-  pydot
   test
+source_pkgs =
+  pydot
 
