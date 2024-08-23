@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 name: Post coverage comment
 
 on:
@@ -33,3 +37,4 @@ jobs:
           # Update those if you changed the default values:
           # COMMENT_ARTIFACT_NAME: python-coverage-comment-action
           # COMMENT_FILENAME: python-coverage-comment-action.txt
+
