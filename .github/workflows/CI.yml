@@ -111,8 +111,20 @@ jobs:
         with:
           pattern: coverage-data-*
           merge-multiple: true
-      - name: "Combine coverage data"
-        run: coverage combine
-      - name: "Report aggregate coverage"
-        run: coverage report
-
+      # - name: "Combine coverage data"
+      #   run: coverage combine
+      # - name: "Report aggregate coverage"
+      #   run: coverage report
+      - name: "Coverage comment"
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          MERGE_COVERAGE_FILES: true
+          ANNOTATE_MISSING_LINES: true
+      - name: "Store PR comment for secure workflow"
+        uses: actions/upload-artifact@v4
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
