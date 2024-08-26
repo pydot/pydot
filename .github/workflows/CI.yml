@@ -99,6 +99,22 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     needs: tests
+    permissions:
+      # NOTE: These permissions will only really be relevant for
+      # internal PRs (those based on a branch in the repo). When
+      # running in a PR branch from a fork, GitHub's standard
+      # permissions won't allow writing to the repo, which is why
+      # coverage data is published as a build artifact and passed
+      # to the secure workflow in coverage.yml for processing.
+      # See: py-cov-action/python-coverage-comment-action#461
+      #
+      # Gives the action the necessary permissions for publishing new
+      # comments in pull requests.
+      pull-requests: write
+      # Gives the action the necessary permissions for pushing data to the
+      # python-coverage-comment-action branch, and for editing existing
+      # comments (to avoid publishing multiple comments in the same PR)
+      contents: write
     steps:
       - name: "Check out source"
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
