@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
+[paths]
+source =
+  src
+  */site-packages
+
+[run]
+branch = true
+parallel = true
+relative_files = true
+source =
+  test
+source_pkgs =
+  pydot
+

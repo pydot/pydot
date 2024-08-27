@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2024 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
+# Flag PRs touching the coverage workflows for additional scrutiny
+/.github/workflows/CI.yml       @lkk7
+/.github/workflows/coverage.yml @lkk7
+
