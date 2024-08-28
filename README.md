@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 -->
 
 ![CI](https://github.com/pydot/pydot/actions/workflows/CI.yml/badge.svg)
+[![Coverage](https://raw.githubusercontent.com/pydot/pydot/python-coverage-comment-action-data/badge.svg)](https://htmlpreview.github.io/?https://github.com/pydot/pydot/blob/python-coverage-comment-action-data/htmlcov/index.html)
 [![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 
