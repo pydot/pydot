@@ -15,4 +15,9 @@ source =
   test
 source_pkgs =
   pydot
+omit =
+  **/_vendor/*
 
+[report]
+omit =
+  **/_vendor/*
