@@ -9,7 +9,6 @@
 # -test del_node, del_edge methods
 # -test Common.set method
 
-import argparse
 import functools
 import importlib
 import os
@@ -666,4 +665,3 @@ class TestGraphvizRegressions(RenderedTestCase):
     @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
     def test_regression(self, _, fname, path):
         self._render_and_compare_dot_file(path, fname)
-
