@@ -662,6 +662,14 @@ class Common:
         return self.obj_dict["sequence"]
 
     @staticmethod
+    def get_indent(indent, indent_level):
+        if isinstance(indent, (int, float)):
+            indent_str = " " * int(indent)
+        else:
+            indent_str = str(indent)
+        return indent_str * indent_level
+
+    @staticmethod
     def _format_attr(key: str, value):
         """Turn a key-value pair into an attribute, properly quoted."""
         if value == "":
@@ -760,10 +768,10 @@ class Node(Common):
 
         self.obj_dict["attributes"]["style"] = ",".join(styles)
 
-    def to_string(self):
+    def to_string(self, indent="", indent_level=1):
         """Return string representation of node in DOT language."""
-        # RMF: special case defaults for node, edge and graph properties.
-        #
+        indent_str = self.get_indent(indent, indent_level)
+
         node = quote_id_if_necessary(
             self.obj_dict["name"], unquoted_keywords=("graph", "node", "edge")
         )
@@ -775,7 +783,7 @@ class Node(Common):
         ):
             return ""
 
-        return f"{node}{self.attrs_string(prefix=' ')};"
+        return f"{indent_str}{node}{self.attrs_string(prefix=' ')};"
 
 
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
@@ -904,13 +912,20 @@ class Edge(Common):
 
         return quote_id_if_necessary(node_str)
 
-    def to_string(self):
+    def to_string(self, indent="", indent_level=1):
         """Return string representation of edge in DOT language."""
         src = self.parse_node_ref(self.get_source())
         dst = self.parse_node_ref(self.get_destination())
 
+        indent_str = self.get_indent(indent, indent_level)
+
         if isinstance(src, frozendict):
-            edge = [Subgraph(obj_dict=src).to_string()]
+            sgraph = Subgraph(obj_dict=src)
+            edge = [
+                sgraph.to_string(
+                    indent=indent, indent_level=indent_level, inline=True
+                )
+            ]
         elif isinstance(src, int):
             edge = [str(src)]
         else:
@@ -922,13 +937,18 @@ class Edge(Common):
             edge.append("--")
 
         if isinstance(dst, frozendict):
-            edge.append(Subgraph(obj_dict=dst).to_string())
+            sgraph = Subgraph(obj_dict=dst)
+            edge.append(
+                sgraph.to_string(
+                    indent=indent, indent_level=indent_level, inline=True
+                )
+            )
         elif isinstance(dst, int):
             edge.append(str(dst))
         else:
             edge.append(dst)
 
-        return f"{' '.join(edge)}{self.attrs_string(prefix=' ')};"
+        return f"{indent_str}{' '.join(edge)}{self.attrs_string(prefix=' ')};"
 
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
@@ -1419,28 +1439,42 @@ class Graph(Common):
             for obj in obj_list:
                 Graph(obj_dict=obj).set_parent_graph(parent_graph)
 
-    def to_string(self):
+    def to_string(self, indent="", indent_level=0, inline=False):
         """Return string representation of graph in DOT language.
 
         @return: graph and subelements
         @rtype: `str`
         """
+        indent_str = self.get_indent(indent, indent_level)
+        child_indent = self.get_indent(indent, indent_level + 1)
+
         graph = []
 
-        if self.obj_dict.get("strict", None) is not None:
-            if self == self.get_parent_graph() and self.obj_dict["strict"]:
-                graph.append("strict ")
+        if not inline:
+            graph.append(indent_str)
+
+        first_line = []
+
+        if self == self.get_parent_graph() and self.obj_dict.get(
+            "strict", False
+        ):
+            first_line.append("strict")
 
         graph_type = self.obj_dict["type"]
-        if graph_type == "subgraph" and not self.obj_dict.get(
-            "show_keyword", True
-        ):
-            graph_type = ""
-        graph_name = quote_id_if_necessary(self.obj_dict["name"])
-        s = f"{graph_type} {graph_name} {{\n"
-        graph.append(s)
+        if graph_type != "subgraph" or self.obj_dict.get("show_keyword", True):
+            first_line.append(graph_type)
 
-        graph.extend(f"{a};\n" for a in self.formatted_attr_list())
+            # Suppressing the keyword hides the name as well
+            graph_name = self.obj_dict.get("name")
+            if graph_name:
+                first_line.append(quote_id_if_necessary(graph_name))
+
+        first_line.append("{\n")
+        graph.append(" ".join(first_line))
+
+        graph.extend(
+            f"{child_indent}{a};\n" for a in self.formatted_attr_list()
+        )
 
         edges_done = set()
 
@@ -1481,7 +1515,10 @@ class Graph(Common):
                     ):
                         continue
 
-                graph.append(node.to_string() + "\n")
+                node_str = node.to_string(
+                    indent=indent, indent_level=indent_level + 1
+                )
+                graph.append(f"{node_str}\n")
 
             elif obj["type"] == "edge":
                 edge = Edge(obj_dict=obj)
@@ -1489,14 +1526,21 @@ class Graph(Common):
                 if self.obj_dict.get("simplify", False) and edge in edges_done:
                     continue
 
-                graph.append(edge.to_string() + "\n")
+                edge_str = edge.to_string(
+                    indent=indent, indent_level=indent_level + 1
+                )
+                graph.append(f"{edge_str}\n")
                 edges_done.add(edge)
 
             else:
-                sgraph = Subgraph(obj_dict=obj)
-                graph.append(sgraph.to_string() + "\n")
+                sgraph_str = Subgraph(obj_dict=obj).to_string(
+                    indent=indent, indent_level=indent_level + 1
+                )
+                graph.append(f"{sgraph_str}\n")
 
-        graph.append("}\n")
+        graph.append(f"{indent_str}}}")
+        if not inline:
+            graph.append("\n")
 
         return "".join(graph)
 

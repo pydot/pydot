@@ -438,7 +438,7 @@ class TestGraphAPI(PydotTestCase):
         self.assertEqual(
             g.to_string(),
             textwrap.dedent("""\
-            digraph  {
+            digraph {
             "Node^A";
             "Node^B";
             "Node^A" -> "Node^B";
