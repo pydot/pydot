@@ -9,7 +9,6 @@
 # -test del_node, del_edge methods
 # -test Common.set method
 
-import argparse
 import functools
 import importlib
 import os
@@ -666,24 +665,3 @@ class TestGraphvizRegressions(RenderedTestCase):
     @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
     def test_regression(self, _, fname, path):
         self._render_and_compare_dot_file(path, fname)
-
-
-def parse_args():
-    """Parse arguments. Deprecated since pydot 2.0."""
-    parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("--no-check", action="store_true")
-    args, unknown = parser.parse_known_args()
-    if args.no_check:
-        print(
-            "WARNING: The --no-check option became redundant with pydot 2.0 "
-            "and will be removed in a future major release of pydot.\n",
-            file=sys.stderr,
-        )
-    # avoid confusing `unittest`
-    sys.argv = [sys.argv[0]] + unknown
-
-
-if __name__ == "__main__":
-    parse_args()
-    print(f"The tests are using `pydot` from:  {pydot}")
-    unittest.main(verbosity=2)
