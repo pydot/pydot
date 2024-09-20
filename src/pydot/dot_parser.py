@@ -361,6 +361,19 @@ def push_node_stmt(s, loc, toks):
     return n
 
 
+def possibly_unquote(s):
+    if not s.str or not (s.str.startswith('"') and s.str.endswith('"')):
+        return s
+    qs: str = s.str[1:-1]
+    if qs.startswith('<') or qs.endswith('>'):
+        return s
+    if ':' in qs or '"' in qs:
+        return s
+    if qs.isascii():
+        return qs
+    return s
+
+
 graphparser = None
 
 
@@ -394,7 +407,7 @@ def graph_definition():
 
         double_quoted_string = QuotedString(
             '"', multiline=True, unquoteResults=False, escChar="\\"
-        )
+        ).set_results_name('str').set_parse_action(possibly_unquote)
 
         html_text = Forward()
         inner_html = OneOrMore(CharsNotIn("<>") | html_text)
