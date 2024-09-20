@@ -478,9 +478,10 @@ class TestGraphAPI(PydotTestCase):
 
         a_out = g.get_node("my node")[0]
         b_out = g.get_node('"node B"')[0]
-        self.assertEqual(g.get_node("node B"), [])
+        b2_out = g.get_node("node B")[0]
         self.assertEqual(id(a_out.obj_dict), id(a.obj_dict))
         self.assertEqual(id(b_out.obj_dict), id(b.obj_dict))
+        self.assertEqual(id(b2_out.obj_dict), id(b.obj_dict))
 
         e_out = g.get_edge("my node", '"node B"')[0]
         self.assertEqual(id(e_out.obj_dict), id(e.obj_dict))
