@@ -6,6 +6,7 @@
 
 import copy
 import errno
+import itertools
 import logging
 import os
 import re
@@ -406,6 +407,13 @@ def quote_attr_if_necessary(s):
         return s
 
     return make_quoted(s)
+
+
+def format_for_lookup(s: str) -> list[str]:
+    """Return a list of the possible lookup forms of an identifier."""
+    if re_dbl_quoted.match(s) or re_html.match(s):
+        return [s, ]
+    return [s, f'"{s}"']
 
 
 def graph_from_dot_data(s):
@@ -1200,7 +1208,7 @@ class Graph(Common):
 
         return False
 
-    def get_node(self, name):
+    def get_node(self, name: str):
         """Retrieve a node from the graph.
 
         Given a node's name the corresponding Node
@@ -1210,17 +1218,15 @@ class Graph(Common):
         Node instances is returned.
         An empty list is returned otherwise.
         """
-        match = []
-
-        if name in self.obj_dict["nodes"]:
-            match.extend(
-                [
-                    Node(obj_dict=obj_dict)
-                    for obj_dict in self.obj_dict["nodes"][name]
-                ]
-            )
-
-        return match
+        _id = None
+        for n in format_for_lookup(name):
+            if n in self.obj_dict["nodes"]:
+                _id = n
+                break
+        return [
+            Node(obj_dict=obj_dict)
+            for obj_dict in self.obj_dict["nodes"].get(_id, [])
+        ]
 
     def get_nodes(self):
         """Get the list of Node instances."""
@@ -1315,31 +1321,39 @@ class Graph(Common):
         An empty list is returned otherwise.
         """
         if isinstance(src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
+            endpoints = tuple(src_or_list)
         else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
+            endpoints = (src_or_list, dst)
 
-        match = []
+        src_names = format_for_lookup(str(endpoints[0]))
+        dst_names = format_for_lookup(str(endpoints[1]))
 
-        if edge_points in self.obj_dict["edges"] or (
-            self.get_top_graph_type() == "graph"
-            and edge_points_reverse in self.obj_dict["edges"]
-        ):
-            edges_obj_dict = self.obj_dict["edges"].get(
-                edge_points,
-                self.obj_dict["edges"].get(edge_points_reverse, None),
-            )
+        # This insanity is all to create a list of possible unquoted and
+        # quoted forms of the requested endpoints, trying both the unquoted
+        # and quoted form for each endpoint that has both.
+        #
+        # For example, ('<<i>html</i>>', 'abc') will be expanded to look for
+        # ('<<i>html</i>>', '"abc"') as well, even though the HTML-like
+        # string has no alternate quoted form.
+        edges = list(itertools.zip_longest(
+            src_names, dst_names,
+            fillvalue=src_names[0] if len(src_names) == 1 else dst_names[0]
+        ))
 
-            for edge_obj_dict in edges_obj_dict:
-                match.append(
-                    Edge(
-                        edge_points[0], edge_points[1], obj_dict=edge_obj_dict
-                    )
-                )
+        match = None
+        for ep in edges:
+            if ep in self.obj_dict["edges"]:
+                match = ep
+            elif (self.get_top_graph_type() == "graph" and
+                  tuple(reversed(ep)) in self.obj_dict["edges"]):
+                match = tuple(reversed(ep))
+            if match is not None:
+                break
 
-        return match
+        return [
+            Edge(str(endpoints[0]), str(endpoints[1]), obj_dict=od)
+            for od in self.obj_dict["edges"].get(match, [])
+        ]
 
     def get_edges(self):
         return self.get_edge_list()
@@ -1392,15 +1406,12 @@ class Graph(Common):
         Subgraph instances is returned.
         An empty list is returned otherwise.
         """
-        match = []
-
-        if name in self.obj_dict["subgraphs"]:
-            sgraphs_obj_dict = self.obj_dict["subgraphs"].get(name)
-
-            for obj_dict_list in sgraphs_obj_dict:
-                match.append(Subgraph(obj_dict=obj_dict_list))
-
-        return match
+        for n in format_for_lookup(name):
+            if n in self.obj_dict["subgraphs"]:
+                return [
+                    Subgraph(obj_dict=od)
+                    for od in self.obj_dict["subgraphs"].get(n)
+                ]
 
     def get_subgraphs(self):
         return self.get_subgraph_list()
