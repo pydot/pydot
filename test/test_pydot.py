@@ -429,6 +429,26 @@ class TestGraphAPI(PydotTestCase):
                 """),
         )
 
+    def test_alphanum_quoting2(self):
+        """Test the fix for issue #418."""
+        g = pydot.Dot(graph_name="issue418", graph_type="graph")
+        n1 = pydot.Node("foo.bar", color="red")
+        n2 = pydot.Node("baz", color="blue")
+        g.add_node(n1)
+        g.add_node(n2)
+        g.add_edge(pydot.Edge(n1, n2))
+
+        self.assertEqual(
+            g.to_string(),
+            textwrap.dedent("""\
+                graph issue418 {
+                "foo.bar" [color=red];
+                baz [color=blue];
+                "foo.bar" -- baz;
+                }
+                """),
+        )
+
     def test_edge_quoting(self):
         """Test the fix for issue #383 (pydot 3.0.0)."""
         g = pydot.Graph("", graph_type="digraph")
