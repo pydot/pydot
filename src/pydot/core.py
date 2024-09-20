@@ -297,9 +297,9 @@ re_all_numeric = re.compile(r"^[0-9\.]+$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
 
-id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_\.]*$")
+id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_]*$")
 id_re_alpha_nums_with_ports = re.compile(
-    r'^[_a-zA-Z][a-zA-Z0-9_\.:"]*[a-zA-Z0-9_\."]+$'
+    r'^[_a-zA-Z][a-zA-Z0-9_:"]*[a-zA-Z0-9_"]+$'
 )
 id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
 
