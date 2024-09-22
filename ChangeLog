@@ -9,7 +9,20 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 3.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Added:
+- All `to_string()` methods now accept an `indent` keyword argument, which can be
+  either a number or a string. `indentation=4` will indent each level of the 
+  output with four spaces. `indentation="  "` will indent each level by that many 
+  spaces. Other whitespace is also valid, e.g. indent="\t" for tab indents. (#359)
+
+Changed:
+- Fixed quoting of identifiers with dots. (#419)
+- Fixed quoting of leading-numeral strings (strings starting with a number). (#411)
+- Fixed pickling/copying of Dot objects. (#403)
+- Improved handling of temporary files. Temporary files will be cleaned up in
+  all cases, even when exceptions are raised or things exit unexpectedly. (#394)
+- From now on, the license files will be included in the distributed 
+  release as expected. (#392)
 
 
 3.0.1 (2024-07-16)
