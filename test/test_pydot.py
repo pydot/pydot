@@ -21,9 +21,8 @@ import unittest
 from hashlib import sha256
 
 import chardet
-from parameterized import parameterized
-
 import pydot
+from parameterized import parameterized
 from pydot._vendor import tempfile
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
@@ -152,7 +151,8 @@ def _load_test_cases(casedir):
 
 
 def _compare_images(
-        fname: str, pydot: PydotRenderResult, gv: GVRenderResult) -> bool:
+    fname: str, pydot: PydotRenderResult, gv: GVRenderResult
+) -> bool:
     """Compare two RenderResult objects for the named test.
 
     If the images differ and a ``TEST_ERROR_DIR`` has been provided, create

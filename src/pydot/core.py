@@ -413,7 +413,7 @@ def quote_attr_if_necessary(s):
 def format_for_lookup(s: str) -> T.List[str]:
     """Return a list of the possible lookup forms of an identifier."""
     if re_dbl_quoted.match(s) or re_html.match(s):
-        return [s, ]
+        return [s]
     return [s, f'"{s}"']
 
 
@@ -1336,17 +1336,24 @@ class Graph(Common):
         # For example, ('<<i>html</i>>', 'abc') will be expanded to look for
         # ('<<i>html</i>>', '"abc"') as well, even though the HTML-like
         # string has no alternate quoted form.
-        edges = list(itertools.zip_longest(
-            src_names, dst_names,
-            fillvalue=src_names[0] if len(src_names) == 1 else dst_names[0]
-        ))
+        edges = list(
+            itertools.zip_longest(
+                src_names,
+                dst_names,
+                fillvalue=src_names[0]
+                if len(src_names) == 1
+                else dst_names[0],
+            )
+        )
 
         match = None
         for ep in edges:
             if ep in self.obj_dict["edges"]:
                 match = ep
-            elif (self.get_top_graph_type() == "graph" and
-                  tuple(reversed(ep)) in self.obj_dict["edges"]):
+            elif (
+                self.get_top_graph_type() == "graph"
+                and tuple(reversed(ep)) in self.obj_dict["edges"]
+            ):
                 match = tuple(reversed(ep))
             if match is not None:
                 break

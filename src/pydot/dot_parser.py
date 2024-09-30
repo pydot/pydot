@@ -361,12 +361,14 @@ def push_node_stmt(s, loc, toks):
     return n
 
 
-QUOTED_CHARS = [':', '"']
+QUOTED_CHARS = [":", '"']
+
+
 def possibly_unquote(s):
     if not s.str or not (s.str.startswith('"') and s.str.endswith('"')):
         return s
     qs: str = s.str[1:-1]
-    if qs.startswith('<') or qs.endswith('>'):
+    if qs.startswith("<") or qs.endswith(">"):
         return s
     if any(qs.find(c) >= 0 for c in QUOTED_CHARS):
         return s
@@ -406,9 +408,13 @@ def graph_definition():
             pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
         ).setName("identifier")
 
-        double_quoted_string = QuotedString(
-            '"', multiline=True, unquoteResults=False, escChar="\\"
-        ).set_results_name('str').set_parse_action(possibly_unquote)
+        double_quoted_string = (
+            QuotedString(
+                '"', multiline=True, unquoteResults=False, escChar="\\"
+            )
+            .set_results_name("str")
+            .set_parse_action(possibly_unquote)
+        )
 
         html_text = Forward()
         inner_html = OneOrMore(CharsNotIn("<>") | html_text)
