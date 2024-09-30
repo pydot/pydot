@@ -171,10 +171,7 @@ def _compare_images(
         src_filename = os.path.basename(gv.dot_file)
         gv_src_path = os.path.join(out_dir, src_filename)
         pydot_src_path = os.path.join(out_dir, f"pydot_{src_filename}")
-        with (
-            open(gv_src_path, "w", encoding="utf-8") as gs,
-            open(pydot_src_path, "w", encoding="utf-8") as ps
-        ):
+        with open(gv_src_path, "w") as gs, open(pydot_src_path, "w") as ps:
             ps.write(pydot.dot_src)
             gs.write(gv.dot_src)
     return False
