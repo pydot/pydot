@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+import typing as T
 
 import pydot
 import pydot.dot_parser
@@ -409,7 +410,7 @@ def quote_attr_if_necessary(s):
     return make_quoted(s)
 
 
-def format_for_lookup(s: str) -> list[str]:
+def format_for_lookup(s: str) -> T.List[str]:
     """Return a list of the possible lookup forms of an identifier."""
     if re_dbl_quoted.match(s) or re_html.match(s):
         return [s, ]
