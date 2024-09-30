@@ -361,13 +361,14 @@ def push_node_stmt(s, loc, toks):
     return n
 
 
+QUOTED_CHARS = [':', '"']
 def possibly_unquote(s):
     if not s.str or not (s.str.startswith('"') and s.str.endswith('"')):
         return s
     qs: str = s.str[1:-1]
     if qs.startswith('<') or qs.endswith('>'):
         return s
-    if ':' in qs or '"' in qs:
+    if any(qs.find(c) >= 0 for c in QUOTED_CHARS):
         return s
     if qs.isascii():
         return qs
