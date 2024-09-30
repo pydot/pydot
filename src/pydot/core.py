@@ -1326,8 +1326,8 @@ class Graph(Common):
         else:
             endpoints = (src_or_list, dst)
 
-        src_names = format_for_lookup(str(endpoints[0]))
-        dst_names = format_for_lookup(str(endpoints[1]))
+        src_eps = format_for_lookup(str(endpoints[0]))
+        dst_eps = format_for_lookup(str(endpoints[1]))
 
         # This insanity is all to create a list of possible unquoted and
         # quoted forms of the requested endpoints, trying both the unquoted
@@ -1338,11 +1338,9 @@ class Graph(Common):
         # string has no alternate quoted form.
         edges = list(
             itertools.zip_longest(
-                src_names,
-                dst_names,
-                fillvalue=src_names[0]
-                if len(src_names) == 1
-                else dst_names[0],
+                src_eps,
+                dst_eps,
+                fillvalue=src_eps[0] if len(src_eps) == 1 else dst_eps[0],
             )
         )
 
