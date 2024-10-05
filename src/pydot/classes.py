@@ -57,7 +57,7 @@ class FrozenDict(dict):
     def __new__(cls, *args, **kw):
         new = dict.__new__(cls)
         args_ = [cls._freeze_arg(arg) for arg in args]
-        dict.__init__(new, *args_, **kw)
+        dict.__init__(new, *args_, **cls._freeze_arg(kw))
         return new
 
     def __init__(self, *args, **kw):

@@ -17,9 +17,10 @@ def test_FrozenDict_create(objdict):
     assert isinstance(fd["nodes"]["3"], tuple)
     assert isinstance(fd["nodes"]["16"], tuple)
 
-    fd2 = FrozenDict(frozen=fd)
-    assert isinstance(fd2["frozen"], FrozenDict)
-    assert fd == fd2["frozen"]
+    fd2 = FrozenDict((("a", 1), ("b", 2)), obj_dict={"frozen": fd})
+    assert isinstance(fd2["obj_dict"], FrozenDict)
+    assert len(fd2) == 3
+    assert fd == fd2["obj_dict"]["frozen"]
 
 
 def test_FrozenDict_modify(objdict):
