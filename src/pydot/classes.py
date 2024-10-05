@@ -63,6 +63,14 @@ class FrozenDict(dict):
     def __init__(self, *args, **kw):
         pass
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return hash(self) == hash(other)
+        return NotImplemented
+
+    def __ne__(self, other):
+        return not self == other
+
     def __hash__(self):
         try:
             return self._cached_hash
