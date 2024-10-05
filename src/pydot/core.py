@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import warnings
 
 import pydot
 import pydot.dot_parser
@@ -127,6 +128,19 @@ DEFAULT_PROGRAMS = {
     "fdp",
     "sfdp",
 }
+
+
+class frozendict(FrozenDict):
+    """Deprecated alias for pydot.classes.FrozenDict."""
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            f"{self.__class__.__name__} is deprecated. "
+            "Use pydot.classes.FrozenDict instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(self, *args, **kwargs)
 
 
 def __generate_attribute_methods(Klass, attrs):
