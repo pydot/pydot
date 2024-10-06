@@ -34,6 +34,7 @@ from pyparsing import (
 )
 
 import pydot
+from pydot.classes import FrozenDict
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -132,7 +133,7 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
         parent_graph = g
 
     for key_name in ("edges",):
-        if isinstance(g, pydot.frozendict):
+        if isinstance(g, FrozenDict):
             item_dict = g
         else:
             item_dict = g.obj_dict
@@ -158,7 +159,7 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
                             (pydot.Graph, pydot.Subgraph, pydot.Cluster),
                         ):
                             vertex.set_parent_graph(parent_graph)
-                        if isinstance(vertex, pydot.frozendict):
+                        if isinstance(vertex, FrozenDict):
                             if vertex["parent_graph"] is g:
                                 pass
                             else:
@@ -300,7 +301,7 @@ def push_edge_stmt(s, loc, toks):
     e = []
 
     if isinstance(toks[0][0], pydot.Graph):
-        n_prev = pydot.frozendict(toks[0][0].obj_dict)
+        n_prev = FrozenDict(toks[0][0].obj_dict)
     else:
         n_prev = toks[0][0] + do_node_ports(toks[0])
 
@@ -311,9 +312,7 @@ def push_edge_stmt(s, loc, toks):
             e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
     elif isinstance(toks[2][0], pydot.Graph):
-        e.append(
-            pydot.Edge(n_prev, pydot.frozendict(toks[2][0].obj_dict), **attrs)
-        )
+        e.append(pydot.Edge(n_prev, FrozenDict(toks[2][0].obj_dict), **attrs))
 
     elif isinstance(toks[2][0], pydot.Node):
         node = toks[2][0]
