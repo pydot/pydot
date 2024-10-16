@@ -523,45 +523,6 @@ class Common:
     def __setstate__(self, state):
         self.obj_dict = state
 
-    def __get_attribute__(self, attr):
-        """Look for default attributes for this node"""
-
-        attr_val = self.obj_dict["attributes"].get(attr, None)
-        if attr_val is None:
-            # get the defaults for nodes/edges
-
-            default_node_name = self.obj_dict["type"]
-
-            # The defaults for graphs are set on a node named 'graph'
-            if default_node_name in ("subgraph", "digraph", "cluster"):
-                default_node_name = "graph"
-
-            g = self.get_parent_graph()
-            if g is not None:
-                defaults = g.get_node(default_node_name)
-            else:
-                return None
-
-            # Multiple defaults could be set by having repeated 'graph [...]'
-            # 'node [...]', 'edge [...]' statements. In such case, if the
-            # same attribute is set in different statements, only the first
-            # will be returned. In order to get all, one would call the
-            # get_*_defaults() methods and handle those. Or go node by node
-            # (of the ones specifying defaults) and modify the attributes
-            # individually.
-            #
-            if not isinstance(defaults, (list, tuple)):
-                defaults = [defaults]
-
-            for default in defaults:
-                attr_val = default.obj_dict["attributes"].get(attr, None)
-                if attr_val:
-                    return attr_val
-        else:
-            return attr_val
-
-        return None
-
     def set_parent_graph(self, parent_graph):
         self.obj_dict["parent_graph"] = parent_graph
 
