@@ -239,14 +239,10 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
     return stdout_data, stderr_data, process
 
 
-def make_quoted(s):
-    """Transform a string into a quoted string, escaping specials."""
-    replace = {
-        ord('"'): r"\"",
-        ord("\n"): r"\n",
-        ord("\r"): r"\r",
-    }
-    return rf'"{s.translate(replace)}"'
+def make_quoted(s: str) -> str:
+    """Transform a string into a quoted string, escaping internal quotes."""
+    out = s.replace('"', r'\"')
+    return f'"{out}"'
 
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
