@@ -262,7 +262,7 @@ id_re_alpha_nums_with_ports = re.compile(
 id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
 
 
-def any_needs_quotes(s):
+def any_needs_quotes(s: str) -> T.Optional[bool]:
     """Determine if a string needs to be quoted.
 
     Returns True, False, or None if the result is indeterminate.
@@ -287,7 +287,7 @@ def any_needs_quotes(s):
     return None
 
 
-def id_needs_quotes(s):
+def id_needs_quotes(s: str) -> bool:
     """Checks whether a string is a dot language ID.
 
     It will check whether the string is solely composed
@@ -324,7 +324,9 @@ def id_needs_quotes(s):
     return True
 
 
-def quote_id_if_necessary(s, unquoted_keywords=None):
+def quote_id_if_necessary(
+    s: str, unquoted_keywords: T.Optional[bool] = None
+) -> str:
     """Enclose identifier in quotes, if needed."""
     unquoted = [
         w.lower() for w in list(unquoted_keywords if unquoted_keywords else [])
@@ -348,7 +350,7 @@ def quote_id_if_necessary(s, unquoted_keywords=None):
     return s
 
 
-def quote_attr_if_necessary(s):
+def quote_attr_if_necessary(s: str) -> str:
     """Enclose attribute value in quotes, if needed."""
     if isinstance(s, bool):
         return str(s).lower()
