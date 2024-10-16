@@ -13,10 +13,12 @@ import re
 import subprocess
 import sys
 import typing as T
+import warnings
 
 import pydot
 import pydot.dot_parser
 from pydot._vendor import tempfile
+from pydot.classes import FrozenDict
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -130,6 +132,19 @@ DEFAULT_PROGRAMS = {
 }
 
 
+class frozendict(FrozenDict):
+    """Deprecated alias for pydot.classes.FrozenDict."""
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            f"{self.__class__.__name__} is deprecated. "
+            "Use pydot.classes.FrozenDict instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(self, *args, **kwargs)
+
+
 def __generate_attribute_methods(Klass, attrs):
     """Generate setter and getter methods for attributes."""
     for attr in attrs:
@@ -222,65 +237,6 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
     stdout_data, stderr_data = process.communicate()
 
     return stdout_data, stderr_data, process
-
-
-#
-# Extended version of ASPN's Python Cookbook Recipe:
-# Frozen dictionaries.
-# https://code.activestate.com/recipes/414283/
-#
-# This version freezes dictionaries used as values within dictionaries.
-#
-class frozendict(dict):
-    def _blocked_attribute(obj):
-        raise AttributeError("A frozendict cannot be modified.")
-
-    _blocked_attribute = property(_blocked_attribute)
-
-    __delitem__ = __setitem__ = clear = _blocked_attribute
-    pop = popitem = setdefault = update = _blocked_attribute
-
-    def __new__(cls, *args, **kw):
-        new = dict.__new__(cls)
-
-        args_ = []
-        for arg in args:
-            if isinstance(arg, dict):
-                arg = copy.copy(arg)
-                for k in arg:
-                    v = arg[k]
-                    if isinstance(v, frozendict):
-                        arg[k] = v
-                    elif isinstance(v, dict):
-                        arg[k] = frozendict(v)
-                    elif isinstance(v, list):
-                        v_ = []
-                        for elm in v:
-                            if isinstance(elm, dict):
-                                v_.append(frozendict(elm))
-                            else:
-                                v_.append(elm)
-                        arg[k] = tuple(v_)
-                args_.append(arg)
-            else:
-                args_.append(arg)
-
-        dict.__init__(new, *args_, **kw)
-        return new
-
-    def __init__(self, *args, **kw):
-        pass
-
-    def __hash__(self):
-        try:
-            return self._cached_hash
-        except AttributeError:
-            h = self._cached_hash = hash(tuple(sorted(self.items())))
-            return h
-
-    def __repr__(self):
-        dict_repr = dict.__repr__(self)
-        return f"frozendict({dict_repr})"
 
 
 def make_quoted(s):
@@ -928,7 +884,7 @@ class Edge(Common):
 
         indent_str = self.get_indent(indent, indent_level)
 
-        if isinstance(src, frozendict):
+        if isinstance(src, FrozenDict):
             sgraph = Subgraph(obj_dict=src)
             edge = [
                 sgraph.to_string(
@@ -945,7 +901,7 @@ class Edge(Common):
         else:
             edge.append("--")
 
-        if isinstance(dst, frozendict):
+        if isinstance(dst, FrozenDict):
             sgraph = Subgraph(obj_dict=dst)
             edge.append(
                 sgraph.to_string(
