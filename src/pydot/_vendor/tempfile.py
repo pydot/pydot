@@ -37,6 +37,7 @@ __all__ = [
 # Imports.
 
 import functools as _functools
+from typing import Any, Optional
 import warnings as _warnings
 import io as _io
 import os as _os
@@ -536,8 +537,8 @@ class _TemporaryFileWrapper:
 
 def NamedTemporaryFile(mode='w+b', buffering=-1, encoding=None,
                        newline=None, suffix=None, prefix=None,
-                       dir=None, delete=True, *, errors=None,
-                       delete_on_close=True):
+                       dir: Optional[str] = None, delete=True, *, errors=None,
+                       delete_on_close=True) -> Any:
     """Create and return a temporary file.
     Arguments:
     'prefix', 'suffix', 'dir' -- as for mkstemp.
@@ -936,7 +937,7 @@ class TemporaryDirectory:
     def __repr__(self):
         return "<{} {!r}>".format(self.__class__.__name__, self.name)
 
-    def __enter__(self):
+    def __enter__(self) -> str:
         return self.name
 
     def __exit__(self, exc, value, tb):
