@@ -13,8 +13,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 
 import logging
-from typing import Any, Dict, List, Union
-from typing import Optional as Optional_
+import typing as T
 
 from pyparsing import (
     CaselessLiteral,
@@ -69,7 +68,7 @@ class P_AttrList:
 
 
 class DefaultStatement(P_AttrList):
-    def __init__(self, default_type: str, attrs: Any) -> None:
+    def __init__(self, default_type: str, attrs: T.Any) -> None:
         self.default_type = default_type
         self.attrs = attrs
 
@@ -80,7 +79,7 @@ class DefaultStatement(P_AttrList):
 
 def push_top_graph_stmt(
     s: str, loc: int, toks: ParseResults
-) -> Union[List["pydot.Dot"], "pydot.Dot"]:
+) -> T.Union[T.List["pydot.Dot"], "pydot.Dot"]:
     attrs = {}
     top_graphs = []
     g: pydot.Dot = None  # type: ignore
@@ -134,7 +133,7 @@ def push_top_graph_stmt(
 
 
 def update_parent_graph_hierarchy(
-    g: Any, parent_graph: Any = None, level: int = 0
+    g: T.Any, parent_graph: T.Any = None, level: int = 0
 ) -> None:
     if parent_graph is None:
         parent_graph = g
@@ -175,7 +174,7 @@ def update_parent_graph_hierarchy(
                                 )
 
 
-def add_defaults(element: Any, defaults: Dict[Any, Any]) -> None:
+def add_defaults(element: T.Any, defaults: T.Dict[T.Any, T.Any]) -> None:
     d = element.__dict__
     for key, value in defaults.items():
         if not d.get(key):
@@ -183,11 +182,11 @@ def add_defaults(element: Any, defaults: Dict[Any, Any]) -> None:
 
 
 def add_elements(
-    g: Any,
-    toks: Union[ParseResults, List[Any]],
-    defaults_graph: Any = None,
-    defaults_node: Any = None,
-    defaults_edge: Any = None,
+    g: T.Any,
+    toks: T.Union[ParseResults, T.List[T.Any]],
+    defaults_graph: T.Any = None,
+    defaults_node: T.Any = None,
+    defaults_edge: T.Any = None,
 ) -> None:
     if defaults_graph is None:
         defaults_graph = {}
@@ -293,7 +292,7 @@ def push_attr_list(s: str, loc: int, toks: ParseResults) -> P_AttrList:
     return p
 
 
-def get_port(node: Any) -> Any:
+def get_port(node: T.Any) -> T.Any:
     if len(node) > 1:
         if isinstance(node[1], ParseResults):
             if len(node[1][0]) == 2:
@@ -303,7 +302,7 @@ def get_port(node: Any) -> Any:
     return None
 
 
-def do_node_ports(node: Any) -> str:
+def do_node_ports(node: T.Any) -> str:
     node_port = ""
     if len(node) > 1:
         node_port = "".join([str(a) + str(b) for a, b in node[1]])
@@ -311,7 +310,9 @@ def do_node_ports(node: Any) -> str:
     return node_port
 
 
-def push_edge_stmt(s: str, loc: int, toks: ParseResults) -> List["pydot.Edge"]:
+def push_edge_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> T.List["pydot.Edge"]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -513,7 +514,7 @@ def graph_definition() -> ParserElement:
     return graphparser
 
 
-def parse_dot_data(s: str) -> Optional_[List[ParseResults]]:
+def parse_dot_data(s: str) -> T.Optional[T.List[ParseResults]]:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
