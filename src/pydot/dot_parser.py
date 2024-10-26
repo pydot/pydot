@@ -36,7 +36,7 @@ from pyparsing import (
 )
 
 import pydot
-from pydot.classes import FrozenDict
+from pydot.classes import AttributeDict, FrozenDict
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -184,9 +184,9 @@ def add_defaults(element: T.Any, defaults: T.Dict[T.Any, T.Any]) -> None:
 def add_elements(
     g: T.Any,
     toks: T.Union[ParseResults, T.List[T.Any]],
-    defaults_graph: T.Any = None,
-    defaults_node: T.Any = None,
-    defaults_edge: T.Any = None,
+    defaults_graph: T.Optional[AttributeDict] = None,
+    defaults_node: T.Optional[AttributeDict] = None,
+    defaults_edge: T.Optional[AttributeDict] = None,
 ) -> None:
     if defaults_graph is None:
         defaults_graph = {}

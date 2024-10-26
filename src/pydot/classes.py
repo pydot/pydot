@@ -5,7 +5,9 @@
 """Frozen dictionaries."""
 
 import copy
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple, TypeAlias
+
+AttributeDict: TypeAlias = Dict[str, Any]
 
 
 class FrozenDict(dict):  # type: ignore

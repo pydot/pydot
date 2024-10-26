@@ -19,7 +19,7 @@ from pyparsing import ParseResults
 import pydot
 import pydot.dot_parser
 from pydot._vendor import tempfile
-from pydot.classes import FrozenDict
+from pydot.classes import AttributeDict, FrozenDict
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -548,11 +548,11 @@ class Common:
     this one.
     """
 
-    def __getstate__(self) -> Dict[str, Any]:
+    def __getstate__(self) -> AttributeDict:
         dict = copy.copy(self.obj_dict)
         return dict
 
-    def __setstate__(self, state: Dict[str, Any]) -> None:
+    def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
 
     def set_parent_graph(self, parent_graph: Optional["Common"]) -> None:
@@ -598,7 +598,7 @@ class Common:
         """
         return self.obj_dict["attributes"].get(name, None)
 
-    def get_attributes(self) -> Optional[Dict[str, Any]]:
+    def get_attributes(self) -> Optional[AttributeDict]:
         """Get attributes of the object"""
         return self.obj_dict["attributes"]  # type: ignore
 
@@ -661,7 +661,7 @@ class Node(Common):
     def __init__(
         self,
         name: str = "",
-        obj_dict: Optional[Dict[str, Any]] = None,
+        obj_dict: Optional[AttributeDict] = None,
         **attrs: Any,
     ) -> None:
         #
@@ -776,7 +776,7 @@ class Edge(Common):
         self,
         src: Any = "",
         dst: Any = "",
-        obj_dict: Optional[Dict[str, Any]] = None,
+        obj_dict: Optional[AttributeDict] = None,
         **attrs: Any,
     ) -> None:
         self.obj_dict = {}
@@ -953,7 +953,7 @@ class Graph(Common):
     def __init__(
         self,
         graph_name: str = "G",
-        obj_dict: Optional[Dict[str, Any]] = None,
+        obj_dict: Optional[AttributeDict] = None,
         graph_type: str = "digraph",
         strict: bool = False,
         suppress_disconnected: bool = False,
@@ -1552,7 +1552,7 @@ class Subgraph(Graph):
     def __init__(
         self,
         graph_name: str = "",
-        obj_dict: Optional[Dict[str, Any]] = None,
+        obj_dict: Optional[AttributeDict] = None,
         suppress_disconnected: bool = False,
         simplify: bool = False,
         **attrs: Any,
@@ -1605,7 +1605,7 @@ class Cluster(Graph):
     def __init__(
         self,
         graph_name: str = "subG",
-        obj_dict: Optional[Dict[str, Any]] = None,
+        obj_dict: Optional[AttributeDict] = None,
         suppress_disconnected: bool = False,
         simplify: bool = False,
         **attrs: Any,
@@ -1644,7 +1644,7 @@ class Dot(Graph):
         self.formats = OUTPUT_FORMATS
         self.prog = "dot"
 
-    def __getstate__(self) -> Dict[str, Any]:
+    def __getstate__(self) -> AttributeDict:
         state = {
             "obj_dict": copy.copy(self.obj_dict),
             "prog": self.prog,
@@ -1653,7 +1653,7 @@ class Dot(Graph):
         }
         return state
 
-    def __setstate__(self, state: Dict[str, Any]) -> None:
+    def __setstate__(self, state: AttributeDict) -> None:
         if "obj_dict" not in state:
             # Backwards compatibility for old picklings
             state = {"obj_dict": state}
