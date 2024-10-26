@@ -79,7 +79,7 @@ class DefaultStatement(P_AttrList):
 
 def push_top_graph_stmt(
     s: str, loc: int, toks: ParseResults
-) -> T.Union[T.List["pydot.Dot"], "pydot.Dot"]:
+) -> T.Union[T.List["pydot.core.Dot"], "pydot.core.Dot"]:
     attrs = {}
     top_graphs = []
     g: pydot.Dot = None  # type: ignore
@@ -244,7 +244,9 @@ def add_elements(
             raise ValueError(f"Unknown element statement: {element}")
 
 
-def push_graph_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.Subgraph":
+def push_graph_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> "pydot.core.Subgraph":
     g = pydot.Subgraph("")
     add_elements(g, toks)
     return g
@@ -252,7 +254,7 @@ def push_graph_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.Subgraph":
 
 def push_subgraph_stmt(
     s: str, loc: int, toks: ParseResults
-) -> "pydot.Subgraph":
+) -> "pydot.core.Subgraph":
     g = pydot.Subgraph("")
     for e in toks:
         if len(e) == 3:
@@ -312,7 +314,7 @@ def do_node_ports(node: T.Any) -> str:
 
 def push_edge_stmt(
     s: str, loc: int, toks: ParseResults
-) -> T.List["pydot.Edge"]:
+) -> T.List["pydot.core.Edge"]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -366,7 +368,7 @@ def push_edge_stmt(
     return e
 
 
-def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.Node":
+def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     if len(toks) == 2:
         attrs = toks[1].attrs
     else:
@@ -514,7 +516,7 @@ def graph_definition() -> ParserElement:
     return graphparser
 
 
-def parse_dot_data(s: str) -> T.Optional[T.List["pydot.Dot"]]:
+def parse_dot_data(s: str) -> T.Optional[T.List["pydot.core.Dot"]]:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
