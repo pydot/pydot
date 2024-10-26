@@ -384,7 +384,7 @@ def quote_attr_if_necessary(s: str) -> str:
     return make_quoted(s)
 
 
-def graph_from_dot_data(s: str) -> Optional[List["pydot.Dot"]]:
+def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
     """Load graphs from DOT description in string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
@@ -401,7 +401,7 @@ def graph_from_dot_data(s: str) -> Optional[List["pydot.Dot"]]:
 
 def graph_from_dot_file(
     path: Union[str, bytes], encoding: Optional[str] = None
-) -> Optional[List["pydot.Dot"]]:
+) -> Optional[List["Dot"]]:
     """Load graphs from DOT file at `path`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
@@ -422,7 +422,7 @@ def graph_from_dot_file(
 
 def graph_from_edges(
     edge_list: Sequence[Any], node_prefix: str = "", directed: bool = False
-) -> "pydot.Dot":
+) -> "Dot":
     """Creates a basic graph out of an edge list.
 
     The edge list has to be a list of tuples representing
