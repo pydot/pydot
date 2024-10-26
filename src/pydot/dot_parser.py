@@ -514,7 +514,7 @@ def graph_definition() -> ParserElement:
     return graphparser
 
 
-def parse_dot_data(s: str) -> T.Optional[T.List[ParseResults]]:
+def parse_dot_data(s: str) -> T.Optional[T.List["pydot.Dot"]]:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.

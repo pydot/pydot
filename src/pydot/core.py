@@ -384,7 +384,7 @@ def quote_attr_if_necessary(s: str) -> str:
     return make_quoted(s)
 
 
-def graph_from_dot_data(s: str) -> Optional[List[ParseResults]]:
+def graph_from_dot_data(s: str) -> Optional[List["pydot.Dot"]]:
     """Load graphs from DOT description in string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
@@ -401,7 +401,7 @@ def graph_from_dot_data(s: str) -> Optional[List[ParseResults]]:
 
 def graph_from_dot_file(
     path: Union[str, bytes], encoding: Optional[str] = None
-) -> Optional[List[ParseResults]]:
+) -> Optional[List["pydot.Dot"]]:
     """Load graphs from DOT file at `path`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
