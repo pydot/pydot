@@ -12,9 +12,7 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple, Type, Union
-
-from pyparsing import ParseResults
+from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union
 
 import pydot
 import pydot.dot_parser
