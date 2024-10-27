@@ -4,8 +4,9 @@
 
 """Unit testing of `pydot.classes`."""
 
-import pydot
 import pytest
+
+import pydot
 from pydot.classes import FrozenDict
 
 
