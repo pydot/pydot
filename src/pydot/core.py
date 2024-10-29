@@ -215,8 +215,11 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
     if arguments is None:
         arguments = []
 
-    if "creationflags" not in kwargs and hasattr(subprocess, 'CREATE_NO_WINDOW'):
-        # Only on Windows OS, specify that the new process shall not create a new window
+    if "creationflags" not in kwargs and hasattr(
+        subprocess, "CREATE_NO_WINDOW"
+    ):
+        # Only on Windows OS:
+        # specify that the new process shall not create a new window
         kwargs.update(creationflags=subprocess.CREATE_NO_WINDOW)
 
     env = {
