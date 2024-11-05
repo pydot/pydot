@@ -1460,7 +1460,7 @@ class Graph(Common):
                 sgraph_str = Subgraph(obj_dict=obj).to_string(
                     indent=indent, indent_level=indent_level + 1
                 )
-                graph.append(f"{sgraph_str}\n")
+                graph.append(f"{sgraph_str}")  # No newline, already present
 
         graph.append(f"{indent_str}}}")
         if not inline:
