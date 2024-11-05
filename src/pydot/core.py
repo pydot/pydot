@@ -557,7 +557,7 @@ class Common:
 
             set_'name'(value)
 
-        which are defined for all the existing attributes.
+        which are defined for standard graphviz attributes.
         """
         self.obj_dict["attributes"][name] = value
 
@@ -569,7 +569,7 @@ class Common:
 
             get_'name'()
 
-        which are defined for all the existing attributes.
+        which are defined for standard graphviz attributes.
         """
         return self.obj_dict["attributes"].get(name, None)
 
