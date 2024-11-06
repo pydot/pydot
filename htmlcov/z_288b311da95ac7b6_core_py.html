@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-01 21:23 +0000
+            created at 2024-11-06 07:49 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -641,7 +641,7 @@
     <p class="pln"><span class="n"><a id="t557" href="#t557">557</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t558" href="#t558">558</a></span><span class="t"><span class="str">            set_'name'(value)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t559" href="#t559">559</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t560" href="#t560">560</a></span><span class="t"><span class="str">        which are defined for all the existing attributes.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t560" href="#t560">560</a></span><span class="t"><span class="str">        which are defined for standard graphviz attributes.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t561" href="#t561">561</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t562" href="#t562">562</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">[</span><span class="str">"attributes"</span><span class="op">]</span><span class="op">[</span><span class="nam">name</span><span class="op">]</span> <span class="op">=</span> <span class="nam">value</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t563" href="#t563">563</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -653,7 +653,7 @@
     <p class="pln"><span class="n"><a id="t569" href="#t569">569</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t570" href="#t570">570</a></span><span class="t"><span class="str">            get_'name'()</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t571" href="#t571">571</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t572" href="#t572">572</a></span><span class="t"><span class="str">        which are defined for all the existing attributes.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t572" href="#t572">572</a></span><span class="t"><span class="str">        which are defined for standard graphviz attributes.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t573" href="#t573">573</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t574" href="#t574">574</a></span><span class="t">        <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">[</span><span class="str">"attributes"</span><span class="op">]</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">name</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t575" href="#t575">575</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1544,7 +1544,7 @@
     <p class="run"><span class="n"><a id="t1460" href="#t1460">1460</a></span><span class="t">                <span class="nam">sgraph_str</span> <span class="op">=</span> <span class="nam">Subgraph</span><span class="op">(</span><span class="nam">obj_dict</span><span class="op">=</span><span class="nam">obj</span><span class="op">)</span><span class="op">.</span><span class="nam">to_string</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1461" href="#t1461">1461</a></span><span class="t">                    <span class="nam">indent</span><span class="op">=</span><span class="nam">indent</span><span class="op">,</span> <span class="nam">indent_level</span><span class="op">=</span><span class="nam">indent_level</span> <span class="op">+</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1462" href="#t1462">1462</a></span><span class="t">                <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1463" href="#t1463">1463</a></span><span class="t">                <span class="nam">graph</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="fst">f"</span><span class="op">{</span><span class="nam">sgraph_str</span><span class="op">}</span><span class="fst">\n</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1463" href="#t1463">1463</a></span><span class="t">                <span class="nam">graph</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="fst">f"</span><span class="op">{</span><span class="nam">sgraph_str</span><span class="op">}</span><span class="fst">"</span><span class="op">)</span>  <span class="com"># No newline, already present</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1464" href="#t1464">1464</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1465" href="#t1465">1465</a></span><span class="t">        <span class="nam">graph</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="fst">f"</span><span class="op">{</span><span class="nam">indent_str</span><span class="op">}</span><span class="fst">}</span> <span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1466" href="#t1466">1466</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">inline</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1894,7 +1894,7 @@
             <a class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-01 21:23 +0000
+            created at 2024-11-06 07:49 +0000
         </p>
     </div>
 </footer>
