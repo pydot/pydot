@@ -557,7 +557,7 @@ class Common:
 
             set_'name'(value)
 
-        which are defined for all the existing attributes.
+        which are defined for standard graphviz attributes.
         """
         self.obj_dict["attributes"][name] = value
 
@@ -569,7 +569,7 @@ class Common:
 
             get_'name'()
 
-        which are defined for all the existing attributes.
+        which are defined for standard graphviz attributes.
         """
         return self.obj_dict["attributes"].get(name, None)
 
@@ -1460,7 +1460,7 @@ class Graph(Common):
                 sgraph_str = Subgraph(obj_dict=obj).to_string(
                     indent=indent, indent_level=indent_level + 1
                 )
-                graph.append(f"{sgraph_str}\n")
+                graph.append(f"{sgraph_str}")  # No newline, already present
 
         graph.append(f"{indent_str}}}")
         if not inline:
