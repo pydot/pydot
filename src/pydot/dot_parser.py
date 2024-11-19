@@ -13,6 +13,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 
 import logging
+import typing as T
 
 from pyparsing import (
     CaselessLiteral,
@@ -24,6 +25,7 @@ from pyparsing import (
     OneOrMore,
     Optional,
     ParseException,
+    ParserElement,
     ParseResults,
     QuotedString,
     Word,
@@ -34,7 +36,7 @@ from pyparsing import (
 )
 
 import pydot
-from pydot.classes import FrozenDict
+from pydot.classes import AttributeDict, FrozenDict
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -45,7 +47,7 @@ _logger.debug("pydot dot_parser module initializing")
 
 
 class P_AttrList:
-    def __init__(self, toks):
+    def __init__(self, toks: ParseResults) -> None:
         self.attrs = {}
         i = 0
 
@@ -60,25 +62,27 @@ class P_AttrList:
 
             self.attrs[attrname] = attrvalue
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name = self.__class__.__name__
         return f"{name}({self.attrs!r})"
 
 
 class DefaultStatement(P_AttrList):
-    def __init__(self, default_type, attrs):
+    def __init__(self, default_type: str, attrs: T.Any) -> None:
         self.default_type = default_type
         self.attrs = attrs
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name = self.__class__.__name__
         return f"{name}({self.default_type}, {self.attrs!r})"
 
 
-def push_top_graph_stmt(s, loc, toks):
+def push_top_graph_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> T.Union[T.List["pydot.core.Dot"], "pydot.core.Dot"]:
     attrs = {}
     top_graphs = []
-    g = None
+    g: pydot.Dot = None  # type: ignore
 
     for element in toks:
         if (
@@ -128,7 +132,9 @@ def push_top_graph_stmt(s, loc, toks):
     return top_graphs
 
 
-def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
+def update_parent_graph_hierarchy(
+    g: T.Any, parent_graph: T.Any = None, level: int = 0
+) -> None:
     if parent_graph is None:
         parent_graph = g
 
@@ -168,7 +174,7 @@ def update_parent_graph_hierarchy(g, parent_graph=None, level=0):
                                 )
 
 
-def add_defaults(element, defaults):
+def add_defaults(element: T.Any, defaults: T.Dict[T.Any, T.Any]) -> None:
     d = element.__dict__
     for key, value in defaults.items():
         if not d.get(key):
@@ -176,8 +182,12 @@ def add_defaults(element, defaults):
 
 
 def add_elements(
-    g, toks, defaults_graph=None, defaults_node=None, defaults_edge=None
-):
+    g: T.Any,
+    toks: T.Union[ParseResults, T.List[T.Any]],
+    defaults_graph: T.Optional[AttributeDict] = None,
+    defaults_node: T.Optional[AttributeDict] = None,
+    defaults_edge: T.Optional[AttributeDict] = None,
+) -> None:
     if defaults_graph is None:
         defaults_graph = {}
     if defaults_node is None:
@@ -201,7 +211,11 @@ def add_elements(
         elif isinstance(element, ParseResults):
             for e in element:
                 add_elements(
-                    g, [e], defaults_graph, defaults_node, defaults_edge
+                    g,
+                    [e],
+                    defaults_graph,
+                    defaults_node,
+                    defaults_edge,
                 )
 
         elif isinstance(element, DefaultStatement):
@@ -230,29 +244,35 @@ def add_elements(
             raise ValueError(f"Unknown element statement: {element}")
 
 
-def push_graph_stmt(s, loc, toks):
+def push_graph_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> "pydot.core.Subgraph":
     g = pydot.Subgraph("")
     add_elements(g, toks)
     return g
 
 
-def push_subgraph_stmt(s, loc, toks):
+def push_subgraph_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> "pydot.core.Subgraph":
     g = pydot.Subgraph("")
     for e in toks:
         if len(e) == 3:
             e[2].set_name(e[1])
             if e[0] == "subgraph":
                 e[2].obj_dict["show_keyword"] = True
-            return e[2]
+            return e[2]  # type: ignore
         else:
             if e[0] == "subgraph":
                 e[1].obj_dict["show_keyword"] = True
-            return e[1]
+            return e[1]  # type: ignore
 
     return g
 
 
-def push_default_stmt(s, loc, toks):
+def push_default_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> DefaultStatement:
     # The pydot class instances should be marked as
     # default statements to be inherited by actual
     # graphs, nodes and edges.
@@ -269,12 +289,12 @@ def push_default_stmt(s, loc, toks):
         raise ValueError(f"Unknown default statement: {toks}")
 
 
-def push_attr_list(s, loc, toks):
+def push_attr_list(s: str, loc: int, toks: ParseResults) -> P_AttrList:
     p = P_AttrList(toks)
     return p
 
 
-def get_port(node):
+def get_port(node: T.Any) -> T.Any:
     if len(node) > 1:
         if isinstance(node[1], ParseResults):
             if len(node[1][0]) == 2:
@@ -284,7 +304,7 @@ def get_port(node):
     return None
 
 
-def do_node_ports(node):
+def do_node_ports(node: T.Any) -> str:
     node_port = ""
     if len(node) > 1:
         node_port = "".join([str(a) + str(b) for a, b in node[1]])
@@ -292,7 +312,9 @@ def do_node_ports(node):
     return node_port
 
 
-def push_edge_stmt(s, loc, toks):
+def push_edge_stmt(
+    s: str, loc: int, toks: ParseResults
+) -> T.List["pydot.core.Edge"]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -317,8 +339,9 @@ def push_edge_stmt(s, loc, toks):
     elif isinstance(toks[2][0], pydot.Node):
         node = toks[2][0]
 
+        name_port: str
         if node.get_port() is not None:
-            name_port = node.get_name() + ":" + node.get_port()
+            name_port = node.get_name() + ":" + node.get_port()  # type: ignore
         else:
             name_port = node.get_name()
 
@@ -335,7 +358,7 @@ def push_edge_stmt(s, loc, toks):
             n_next_port = do_node_ports(n_next)
             e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
-            n_prev = n_next[0] + n_next_port
+            n_prev = n_next[0] + n_next_port  # type: ignore
     else:
         raise Exception(
             f"Edge target {toks[2][0]} with type {type(toks[2][0])}"
@@ -345,7 +368,7 @@ def push_edge_stmt(s, loc, toks):
     return e
 
 
-def push_node_stmt(s, loc, toks):
+def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     if len(toks) == 2:
         attrs = toks[1].attrs
     else:
@@ -363,7 +386,7 @@ def push_node_stmt(s, loc, toks):
 graphparser = None
 
 
-def graph_definition():
+def graph_definition() -> ParserElement:
     global graphparser
 
     if not graphparser:
@@ -493,7 +516,7 @@ def graph_definition():
     return graphparser
 
 
-def parse_dot_data(s):
+def parse_dot_data(s: str) -> T.Optional[T.List["pydot.core.Dot"]]:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
