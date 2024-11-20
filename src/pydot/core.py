@@ -1311,8 +1311,8 @@ class Graph(Common):
 
         match = None
         for ep in edges:
-            if ep in self.obj_dict["edges"]:
-                match = ep
+            if tuple(ep) in self.obj_dict["edges"]:
+                match = tuple(ep)
             elif (
                 self.get_top_graph_type() == "graph"
                 and tuple(reversed(ep)) in self.obj_dict["edges"]
@@ -1383,6 +1383,7 @@ class Graph(Common):
                     Subgraph(obj_dict=od)
                     for od in self.obj_dict["subgraphs"].get(n)
                 ]
+        return []
 
     def get_subgraphs(self) -> List["Subgraph"]:
         return self.get_subgraph_list()

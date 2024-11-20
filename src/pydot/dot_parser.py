@@ -386,7 +386,7 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
 QUOTED_CHARS = [":", '"']
 
 
-def possibly_unquote(s):
+def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
     if not s.str or not (s.str.startswith('"') and s.str.endswith('"')):
         return s
     qs: str = s.str[1:-1]
