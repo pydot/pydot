@@ -1130,7 +1130,9 @@ class Graph(Common):
         self.obj_dict["current_child_sequence"] += 1
         return seq
 
-    def find_default(self, name: str, element_type: str, seq_end: int = -1) -> Any:
+    def find_default(
+        self, name: str, element_type: str, seq_end: int = -1
+    ) -> Any:
         """Find the default value for attribute 'name' on 'element_type'.
 
         If 'seq_end' is set, use it to limit the range of sequence numbers
