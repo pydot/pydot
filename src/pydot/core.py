@@ -12,7 +12,7 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union
+from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union, cast
 
 import pydot
 import pydot.dot_parser
@@ -566,18 +566,17 @@ class Common:
     def get_parent_graph(self) -> Optional["Graph"]:
         return self.obj_dict.get("parent_graph", None)  # type: ignore
 
-    def get_top_graph_type(self) -> Optional[str]:
+    def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
         parent = self.get_parent_graph()
-        if parent is None:
-            return None
         while True and parent is not None:
             parent_ = parent.get_parent_graph()
             if parent_ == parent:
                 break
             parent = parent_
-
-        return parent.obj_dict["type"]  # type: ignore
+        if parent is None:
+            return default
+        return cast("str", parent.obj_dict.get("type", default))
 
     def set(self, name: str, value: Any) -> None:
         """Set an attribute value by name.
