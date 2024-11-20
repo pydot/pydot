@@ -21,8 +21,9 @@ import unittest
 from hashlib import sha256
 
 import chardet
-import pydot
 from parameterized import parameterized
+
+import pydot
 from pydot._vendor import tempfile
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)

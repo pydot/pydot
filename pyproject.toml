@@ -63,12 +63,14 @@ Changelog = "https://github.com/pydot/pydot/blob/main/ChangeLog"
 dev = [
   'chardet',
   'parameterized',
-  'ruff'
+  'ruff',
+  'mypy',
 ]
 tests = [
   'chardet',
   'parameterized',
   'ruff',
+  'mypy',
   'tox',
   'pytest',
   'pytest-cov',
@@ -84,3 +86,11 @@ exclude = [
 
 [tool.ruff.lint]
 select = ['E', 'F', 'W', 'I', 'UP', 'C4']
+
+[tool.mypy]
+strict = true
+files = "src"
+
+[[tool.mypy.overrides]]
+module = "pydot._vendor.tempfile"
+ignore_errors = true
