@@ -1154,7 +1154,7 @@ class Graph(Common):
         if element_type == "graph" and self.get(name) is not None:
             return self.get(name)
         parent = self.get_parent_graph()
-        if parent is not self:
+        if parent and parent is not self:
             return parent.find_default(
                 name, element_type, self.obj_dict["sequence"]
             )
