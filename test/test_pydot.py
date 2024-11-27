@@ -276,6 +276,12 @@ class TestGraphAPI(PydotTestCase):
         self.graph_directed.add_node(pydot.Node(1))
         self.assertEqual(self.graph_directed.get_nodes()[0].get_name(), "1")
 
+    def test_numeric_quoting(self):
+        num = pydot.Node("12", label=1.4, width=".75")
+        non = pydot.Node("1.2.3", label="1.4.0")
+        self.assertEqual(num.to_string(), "12 [label=1.4, width=.75];")
+        self.assertEqual(non.to_string(), '"1.2.3" [label="1.4.0"];')
+
     def test_quoted_node_id(self):
         self._reset_graphs()
         self.graph_directed.add_node(pydot.Node('"node"'))
