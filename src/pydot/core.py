@@ -12,7 +12,6 @@ import os
 import re
 import subprocess
 import sys
-import typing as T
 import warnings
 from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union
 
@@ -264,7 +263,7 @@ def call_graphviz(
 
 def make_quoted(s: str) -> str:
     """Transform a string into a quoted string, escaping internal quotes."""
-    out = s.replace('"', r'\"')
+    out = s.replace('"', r"\"")
     return f'"{out}"'
 
 
