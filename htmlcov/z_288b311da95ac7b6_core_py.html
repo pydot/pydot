@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-23 20:22 +0000
+            created at 2024-11-28 21:35 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -356,7 +356,7 @@
     <p class="pln"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t273" href="#t273">273</a></span><span class="t"><span class="nam">dot_keywords</span> <span class="op">=</span> <span class="op">[</span><span class="str">"graph"</span><span class="op">,</span> <span class="str">"subgraph"</span><span class="op">,</span> <span class="str">"digraph"</span><span class="op">,</span> <span class="str">"node"</span><span class="op">,</span> <span class="str">"edge"</span><span class="op">,</span> <span class="str">"strict"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t275" href="#t275">275</a></span><span class="t"><span class="nam">re_all_numeric</span> <span class="op">=</span> <span class="nam">re</span><span class="op">.</span><span class="nam">compile</span><span class="op">(</span><span class="str">r"^[0-9\.]+$"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t275" href="#t275">275</a></span><span class="t"><span class="nam">re_numeric</span> <span class="op">=</span> <span class="nam">re</span><span class="op">.</span><span class="nam">compile</span><span class="op">(</span><span class="str">r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t276" href="#t276">276</a></span><span class="t"><span class="nam">re_dbl_quoted</span> <span class="op">=</span> <span class="nam">re</span><span class="op">.</span><span class="nam">compile</span><span class="op">(</span><span class="str">r'^".*"$'</span><span class="op">,</span> <span class="nam">re</span><span class="op">.</span><span class="nam">S</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t"><span class="nam">re_html</span> <span class="op">=</span> <span class="nam">re</span><span class="op">.</span><span class="nam">compile</span><span class="op">(</span><span class="str">r"^&lt;.*>$"</span><span class="op">,</span> <span class="nam">re</span><span class="op">.</span><span class="nam">S</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t278" href="#t278">278</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -385,7 +385,7 @@
     <p class="run"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t">    <span class="key">if</span> <span class="nam">has_high_chars</span> <span class="key">and</span> <span class="key">not</span> <span class="nam">re_dbl_quoted</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="nam">s</span><span class="op">)</span> <span class="key">and</span> <span class="key">not</span> <span class="nam">re_html</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="nam">s</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t">        <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t">    <span class="key">for</span> <span class="nam">test_re</span> <span class="key">in</span> <span class="op">[</span><span class="nam">re_all_numeric</span><span class="op">,</span> <span class="nam">re_dbl_quoted</span><span class="op">,</span> <span class="nam">re_html</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t">    <span class="key">for</span> <span class="nam">test_re</span> <span class="key">in</span> <span class="op">[</span><span class="nam">re_numeric</span><span class="op">,</span> <span class="nam">re_dbl_quoted</span><span class="op">,</span> <span class="nam">re_html</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t">        <span class="key">if</span> <span class="nam">test_re</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="nam">s</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t">            <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1951,7 +1951,7 @@
             <a class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-23 20:22 +0000
+            created at 2024-11-28 21:35 +0000
         </p>
     </div>
 </footer>
