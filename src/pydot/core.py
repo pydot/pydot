@@ -293,7 +293,7 @@ def make_quoted(s):
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-re_all_numeric = re.compile(r"^[0-9\.]+$")
+re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
 
@@ -322,7 +322,7 @@ def any_needs_quotes(s):
     if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
         return True
 
-    for test_re in [re_all_numeric, re_dbl_quoted, re_html]:
+    for test_re in [re_numeric, re_dbl_quoted, re_html]:
         if test_re.match(s):
             return False
 
