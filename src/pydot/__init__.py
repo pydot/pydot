@@ -7,7 +7,7 @@
 import logging
 
 __author__ = "Ero Carrera"
-__version__ = "3.0.2"
+__version__ = "3.0.3dev0"
 __license__ = "MIT"
 
 
