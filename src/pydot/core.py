@@ -294,13 +294,13 @@ def any_needs_quotes(s: str) -> Optional[bool]:
     if s.isalnum():
         return s[0].isdigit()
 
-    has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
-    if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
-        return True
-
     for test_re in [re_numeric, re_dbl_quoted, re_html]:
         if test_re.match(s):
             return False
+
+    has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
+    if has_high_chars:
+        return True
 
     return None
 
