@@ -448,8 +448,7 @@ def graph_definition() -> ParserElement:
         ).setName("ID")
 
         port = (
-            Group(Group(":" + ID) + Group(":" + ID))
-            | Group(Group(":" + ID))
+            Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
         ).setName("port")
 
         node_id = ID + Optional(port)
@@ -468,9 +467,7 @@ def graph_definition() -> ParserElement:
         stmt_list = Forward()
 
         graph_stmt = Group(
-            Suppress("{")
-            + Optional(stmt_list)
-            + Suppress("}")
+            Suppress("{") + Optional(stmt_list) + Suppress("}")
         ).setName("graph_stmt")
 
         subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName(
@@ -484,9 +481,7 @@ def graph_definition() -> ParserElement:
         edgeRHS = OneOrMore(edgeop - edge_point)
         edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
-        node_stmt = (
-            node_id + Optional(attr_list)
-        ).setName("node_stmt")
+        node_stmt = (node_id + Optional(attr_list)).setName("node_stmt")
 
         assignment = (ID + "=" - ID).setName("assignment")
         stmt = (
