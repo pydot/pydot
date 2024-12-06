@@ -28,6 +28,7 @@ from pyparsing import (
     ParserElement,
     ParseResults,
     QuotedString,
+    Suppress,
     Word,
     WordStart,
     cStyleComment,
@@ -475,28 +476,24 @@ def graph_definition() -> ParserElement:
             "attr_stmt"
         )
 
-        edgeop = (Literal("--") | Literal("->")).setName("edgeop")
-
         stmt_list = Forward()
+
         graph_stmt = Group(
-            lbrace.suppress()
+            Suppress("{")
             + Optional(stmt_list)
-            + rbrace.suppress()
-            + Optional(semi.suppress())
+            + Suppress("}")
         ).setName("graph_stmt")
-
-        edge_point = Forward()
-
-        edgeRHS = OneOrMore(edgeop + edge_point)
-        edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
         subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName(
             "subgraph"
         )
 
-        edge_point << Group(subgraph | graph_stmt | node_id).setName(
+        edge_point = Group(subgraph | graph_stmt | node_id).setName(
             "edge_point"
         )
+        edgeop = (Literal("--") | Literal("->")).setName("edgeop")
+        edgeRHS = OneOrMore(edgeop - edge_point)
+        edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
         node_stmt = (
             node_id + Optional(attr_list) + Optional(semi.suppress())
