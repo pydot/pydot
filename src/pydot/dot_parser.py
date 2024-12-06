@@ -408,17 +408,6 @@ def graph_definition() -> ParserElement:
     global graphparser
 
     if not graphparser:
-        # punctuation
-        colon = Literal(":")
-        lbrace = Literal("{")
-        rbrace = Literal("}")
-        lbrack = Literal("[")
-        rbrack = Literal("]")
-        equals = Literal("=")
-        comma = Literal(",")
-        semi = Literal(";")
-        minus = Literal("-")
-
         # keywords
         strict_ = CaselessLiteral("strict")
         graph_ = CaselessLiteral("graph")
@@ -443,7 +432,7 @@ def graph_definition() -> ParserElement:
 
         html_text = Forward()
         inner_html = OneOrMore(CharsNotIn("<>") | html_text)
-        html_text << "<" + inner_html + ">"
+        html_text <<= "<" + inner_html + ">"
         html_text.setParseAction(lambda arr: "".join(arr))
 
         float_number = Combine(
@@ -459,8 +448,8 @@ def graph_definition() -> ParserElement:
         ).setName("ID")
 
         port = (
-            Group(Group(colon + ID) + Group(colon + ID))
-            | Group(Group(colon + ID))
+            Group(Group(":" + ID) + Group(":" + ID))
+            | Group(Group(":" + ID))
         ).setName("port")
 
         node_id = ID + Optional(port)
@@ -469,7 +458,7 @@ def graph_definition() -> ParserElement:
         ).setName("a_list")
 
         attr_list = OneOrMore(
-            lbrack.suppress() + Optional(a_list) + rbrack.suppress()
+            Suppress("[") + Optional(a_list) + Suppress("]")
         ).setName("attr_list")
 
         attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName(
@@ -496,7 +485,7 @@ def graph_definition() -> ParserElement:
         edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
         node_stmt = (
-            node_id + Optional(attr_list) + Optional(semi.suppress())
+            node_id + Optional(attr_list)
         ).setName("node_stmt")
 
         assignment = (ID + "=" - ID).setName("assignment")
@@ -508,7 +497,7 @@ def graph_definition() -> ParserElement:
             | graph_stmt
             | node_stmt
         ).setName("stmt")
-        stmt_list << OneOrMore(stmt + Optional(semi.suppress()))
+        stmt_list <<= OneOrMore(stmt + Optional(";").suppress())
 
         graphparser = OneOrMore(
             (
@@ -516,6 +505,7 @@ def graph_definition() -> ParserElement:
                 + Group(graph_ | digraph_)
                 + Optional(ID)
                 + graph_stmt
+                + Optional(";").suppress()
             ).setResultsName("graph")
         )
 
