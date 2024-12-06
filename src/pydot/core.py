@@ -1001,13 +1001,9 @@ class Graph(Common):
     def set_graph_defaults(self, **attrs: Any) -> None:
         self.add_node(Node("graph", **attrs))
 
-    def get_graph_defaults(self, **attrs: Any) -> Any:
+    def get_graph_defaults(self) -> Any:
         graph_nodes = self.get_node("graph")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_node_defaults(self, **attrs: Any) -> None:
         """Define default node attributes.
@@ -1017,24 +1013,16 @@ class Graph(Common):
         """
         self.add_node(Node("node", **attrs))
 
-    def get_node_defaults(self, **attrs: Any) -> Any:
+    def get_node_defaults(self) -> Any:
         graph_nodes = self.get_node("node")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_edge_defaults(self, **attrs: Any) -> None:
         self.add_node(Node("edge", **attrs))
 
-    def get_edge_defaults(self, **attrs: Any) -> Any:
+    def get_edge_defaults(self) -> Any:
         graph_nodes = self.get_node("edge")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_simplify(self, simplify: bool) -> None:
         """Set whether to simplify or not.
@@ -1075,7 +1063,7 @@ class Graph(Common):
         """
         self.obj_dict["strict"] = val
 
-    def get_strict(self, val: Any) -> Optional[bool]:
+    def get_strict(self) -> Optional[bool]:
         """Get graph's 'strict' mode (True, False).
 
         This option is only valid for top level graphs.
@@ -1093,7 +1081,7 @@ class Graph(Common):
         """
         self.obj_dict["suppress_disconnected"] = val
 
-    def get_suppress_disconnected(self, val: Any) -> Optional[bool]:
+    def get_suppress_disconnected(self) -> Optional[bool]:
         """Get if suppress disconnected is set.
 
         Refer to set_suppress_disconnected for more information.
