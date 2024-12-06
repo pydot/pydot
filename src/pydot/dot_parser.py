@@ -445,13 +445,17 @@ def graph_definition() -> ParserElement:
         html_text << "<" + inner_html + ">"
         html_text.setParseAction(lambda arr: "".join(arr))
 
-        ID = (identifier | html_text | double_quoted_string).setName("ID")
-
         float_number = Combine(
-            Optional(minus) + OneOrMore(Word(nums + "."))
-        ).setName("float_number")
+            Optional("-")
+            + (
+                "." - Word(nums)
+                | Word(nums) + Optional("." + Optional(Word(nums)))
+            )
+        ).set_name("float_number")
 
-        righthand_id = (float_number | ID).setName("righthand_id")
+        ID = (
+            html_text | double_quoted_string | float_number | identifier
+        ).setName("ID")
 
         port = (
             Group(Group(colon + ID) + Group(colon + ID))
@@ -460,7 +464,7 @@ def graph_definition() -> ParserElement:
 
         node_id = ID + Optional(port)
         a_list = OneOrMore(
-            ID + Optional(equals + righthand_id) + Optional(comma.suppress())
+            ID + Optional("=" - ID) + Optional(",").suppress()
         ).setName("a_list")
 
         attr_list = OneOrMore(
@@ -498,7 +502,7 @@ def graph_definition() -> ParserElement:
             node_id + Optional(attr_list) + Optional(semi.suppress())
         ).setName("node_stmt")
 
-        assignment = (ID + equals + righthand_id).setName("assignment")
+        assignment = (ID + "=" - ID).setName("assignment")
         stmt = (
             assignment
             | edge_stmt
