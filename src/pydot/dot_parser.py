@@ -29,6 +29,7 @@ from pyparsing import (
     ParseResults,
     QuotedString,
     Word,
+    WordStart,
     cStyleComment,
     nums,
     pyparsing_unicode,
@@ -426,9 +427,10 @@ def graph_definition() -> ParserElement:
         edge_ = CaselessLiteral("edge")
 
         # token definitions
-        identifier = Word(
-            pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
-        ).setName("identifier")
+        identifier = Combine(
+            WordStart(pyparsing_unicode.BasicMultilingualPlane.alphas + "_")
+            + Word(pyparsing_unicode.BasicMultilingualPlane.alphanums + "_")
+        ).set_name("identifier")
 
         double_quoted_string = (
             QuotedString(
