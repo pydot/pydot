@@ -554,8 +554,8 @@ class Common:
     """
 
     def __getstate__(self) -> AttributeDict:
-        dict = copy.copy(self.obj_dict)
-        return dict
+        _dict = copy.copy(self.obj_dict)
+        return _dict
 
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
