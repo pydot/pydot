@@ -269,7 +269,7 @@ def make_quoted(s: str) -> str:
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
+re_numeric = re.compile(r"^-?([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
 
