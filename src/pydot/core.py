@@ -13,7 +13,7 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union
+from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union, cast
 
 import pydot
 import pydot.dot_parser
@@ -269,7 +269,7 @@ def make_quoted(s: str) -> str:
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-re_all_numeric = re.compile(r"^[0-9\.]+$")
+re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
 
@@ -298,7 +298,7 @@ def any_needs_quotes(s: str) -> Optional[bool]:
     if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
         return True
 
-    for test_re in [re_all_numeric, re_dbl_quoted, re_html]:
+    for test_re in [re_numeric, re_dbl_quoted, re_html]:
         if test_re.match(s):
             return False
 
@@ -570,18 +570,17 @@ class Common:
     def get_parent_graph(self) -> Optional["Graph"]:
         return self.obj_dict.get("parent_graph", None)  # type: ignore
 
-    def get_top_graph_type(self) -> Optional[str]:
+    def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
         parent = self.get_parent_graph()
-        if parent is None:
-            return None
         while True and parent is not None:
             parent_ = parent.get_parent_graph()
             if parent_ == parent:
                 break
             parent = parent_
-
-        return parent.obj_dict["type"]  # type: ignore
+        if parent is None:
+            return default
+        return cast("str", parent.obj_dict.get("type", default))
 
     def set(self, name: str, value: Any) -> None:
         """Set an attribute value by name.
