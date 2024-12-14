@@ -67,10 +67,7 @@ dev = [
   'mypy',
 ]
 tests = [
-  'chardet',
-  'parameterized',
-  'ruff',
-  'mypy',
+  'pydot[dev]',
   'tox',
   'pytest',
   'pytest-cov',
