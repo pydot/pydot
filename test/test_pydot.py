@@ -312,6 +312,12 @@ class TestGraphAPI(PydotTestCase):
         self.assertEqual(
             self.graph_directed.get_nodes()[0].to_string(), "node [shape=box];"
         )
+    
+    def test_keyword_node_id_in_label(self):
+        self.graph_directed.add_node(pydot.Node("Node", label="Node"))
+        self.assertEqual(
+            self.graph_directed.get_nodes()[0].to_string(), 'Node [label="Node"];'
+        )
 
     def test_comma_separated_attribute_values_to_string(self):
         self._reset_graphs()
