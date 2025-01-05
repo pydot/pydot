@@ -345,7 +345,7 @@ def id_needs_quotes(s):
     # would use a reserved keyword as name. This function will return
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
-    if s in dot_keywords:
+    if s.lower() in dot_keywords:
         return False
 
     any_result = any_needs_quotes(s)
@@ -398,7 +398,7 @@ def quote_attr_if_necessary(s):
     if not isinstance(s, str):
         return s
 
-    if s in dot_keywords:
+    if s.lower() in dot_keywords:
         return make_quoted(s)
 
     any_result = any_needs_quotes(s)
