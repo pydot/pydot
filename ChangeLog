@@ -6,6 +6,12 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 (https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
 
 
+3.0.4 (2025-01-05)
+------------------
+
+- Fixed capitalized keywords in labels being unquoted. (#449, #450)
+
+
 3.0.3 (2024-11-30)
 ------------------
 
