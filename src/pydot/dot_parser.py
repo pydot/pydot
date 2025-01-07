@@ -28,6 +28,7 @@ from pyparsing import (
     ParserElement,
     ParseResults,
     QuotedString,
+    Token,
     Word,
     cStyleComment,
     nums,
@@ -382,6 +383,25 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     n = pydot.Node(str(node_name), **attrs)
     return n
 
+class HTML(Token):
+    def __init__(self):
+        super().__init__()
+
+    def parseImpl(self, instring, loc, do_actions=True):
+        start = loc
+        if not (loc < len(instring) and instring[loc] == '<'):
+            raise ParseException(instring, loc, "expected <", self)
+        open = 1
+        loc += 1
+        while loc < len(instring):
+            if instring[loc] == '<':
+                open += 1
+            elif instring[loc] == '>':
+                open -= 1
+            loc += 1
+            if open == 0:
+                return loc, instring[start:loc]
+        raise ParseException(instring, loc, "expected >", self)
 
 graphparser = None
 
@@ -418,12 +438,7 @@ def graph_definition() -> ParserElement:
             '"', multiline=True, unquoteResults=False, escChar="\\"
         )
 
-        html_text = Forward()
-        inner_html = OneOrMore(CharsNotIn("<>") | html_text)
-        html_text << "<" + inner_html + ">"
-        html_text.setParseAction(lambda arr: "".join(arr))
-
-        ID = (identifier | html_text | double_quoted_string).setName("ID")
+        ID = (identifier | HTML() | double_quoted_string).setName("ID")
 
         float_number = Combine(
             Optional(minus) + OneOrMore(Word(nums + "."))
