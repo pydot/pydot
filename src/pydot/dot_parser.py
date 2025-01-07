@@ -17,7 +17,6 @@ import typing as T
 
 from pyparsing import (
     CaselessLiteral,
-    CharsNotIn,
     Combine,
     Forward,
     Group,
@@ -383,25 +382,29 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     n = pydot.Node(str(node_name), **attrs)
     return n
 
-class HTML(Token):
-    def __init__(self):
-        super().__init__()
 
-    def parseImpl(self, instring, loc, do_actions=True):
+class HTML(Token):
+    def __init__(self) -> None:
+        super().__init__()  # type: ignore
+
+    def parseImpl(
+        self, instring: str, loc: int, do_actions: bool = True
+    ) -> T.Tuple[int, str]:
         start = loc
-        if not (loc < len(instring) and instring[loc] == '<'):
+        if not (loc < len(instring) and instring[loc] == "<"):
             raise ParseException(instring, loc, "expected <", self)
         open = 1
         loc += 1
         while loc < len(instring):
-            if instring[loc] == '<':
+            if instring[loc] == "<":
                 open += 1
-            elif instring[loc] == '>':
+            elif instring[loc] == ">":
                 open -= 1
             loc += 1
             if open == 0:
                 return loc, instring[start:loc]
         raise ParseException(instring, loc, "expected >", self)
+
 
 graphparser = None
 
