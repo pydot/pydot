@@ -1,2 +1,0 @@
-// https://github.com/pydot/pydot/issues/235
-graph G { b4 [label=<We are the knights who say <BR/># Ni>]; }
