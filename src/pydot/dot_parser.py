@@ -30,6 +30,7 @@ from pyparsing import (
     Token,
     Word,
     cStyleComment,
+    lineno,
     nums,
     pyparsing_unicode,
     restOfLine,
@@ -390,20 +391,20 @@ class HTML(Token):
     def parseImpl(
         self, instring: str, loc: int, do_actions: bool = True
     ) -> T.Tuple[int, str]:
-        start = loc
+        open_loc = loc
         if not (loc < len(instring) and instring[loc] == "<"):
             raise ParseException(instring, loc, "expected <", self)
-        open = 1
+        num_open = 1
         loc += 1
         while loc < len(instring):
             if instring[loc] == "<":
-                open += 1
+                num_open += 1
             elif instring[loc] == ">":
-                open -= 1
+                num_open -= 1
             loc += 1
-            if open == 0:
-                return loc, instring[start:loc]
-        raise ParseException(instring, loc, "expected >", self)
+            if num_open == 0:
+                return loc, instring[open_loc:loc]
+        raise ParseException(instring, loc, f"expected a > to match < at {lineno(open_loc, instring)}", self)
 
 
 graphparser = None
