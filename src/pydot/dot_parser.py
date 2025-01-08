@@ -30,7 +30,6 @@ from pyparsing import (
     Token,
     Word,
     cStyleComment,
-    lineno,
     nums,
     pyparsing_unicode,
     restOfLine,
@@ -404,7 +403,13 @@ class HTML(Token):
             loc += 1
             if num_open == 0:
                 return loc, instring[open_loc:loc]
-        raise ParseException(instring, loc, f"expected a > to match <, in the HTML string starting at {lineno(open_loc, instring)}", self)
+        raise ParseException(
+            instring,
+            loc,
+            "expected a > to match <, in the HTML string"
+            + "starting at {lineno(open_loc, instring)}",
+            self,
+        )
 
 
 graphparser = None
