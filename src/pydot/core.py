@@ -321,7 +321,7 @@ def id_needs_quotes(s: str) -> bool:
     # would use a reserved keyword as name. This function will return
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
-    if s in dot_keywords:
+    if s.lower() in dot_keywords:
         return False
 
     any_result = any_needs_quotes(s)
@@ -376,7 +376,7 @@ def quote_attr_if_necessary(s: str) -> str:
     if not isinstance(s, str):
         return s
 
-    if s in dot_keywords:
+    if s.lower() in dot_keywords:
         return make_quoted(s)
 
     any_result = any_needs_quotes(s)
@@ -557,9 +557,12 @@ class Common:
     this one.
     """
 
+    def __init__(self, obj_dict: Optional[AttributeDict] = None) -> None:
+        self.obj_dict: AttributeDict = obj_dict or {}
+
     def __getstate__(self) -> AttributeDict:
-        dict = copy.copy(self.obj_dict)
-        return dict
+        _dict = copy.copy(self.obj_dict)
+        return _dict
 
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
@@ -672,18 +675,8 @@ class Node(Common):
         obj_dict: Optional[AttributeDict] = None,
         **attrs: Any,
     ) -> None:
-        #
-        # Nodes will take attributes of
-        # all other types because the defaults
-        # for any GraphViz object are dealt with
-        # as if they were Node definitions
-        #
-        if obj_dict is not None:
-            self.obj_dict = obj_dict
-
-        else:
-            self.obj_dict = {}
-
+        super().__init__(obj_dict)
+        if obj_dict is None:
             # Copy the attributes
             #
             self.obj_dict["attributes"] = dict(attrs)
@@ -787,21 +780,18 @@ class Edge(Common):
         obj_dict: Optional[AttributeDict] = None,
         **attrs: Any,
     ) -> None:
-        self.obj_dict = {}
-        if isinstance(src, (Node, Subgraph, Cluster)):
-            src = src.get_name()
-        if isinstance(dst, (Node, Subgraph, Cluster)):
-            dst = dst.get_name()
-        points = (src, dst)
-        self.obj_dict["points"] = points
+        super().__init__(obj_dict)
         if obj_dict is None:
-            # Copy the attributes
+            if isinstance(src, (Node, Subgraph, Cluster)):
+                src = src.get_name()
+            if isinstance(dst, (Node, Subgraph, Cluster)):
+                dst = dst.get_name()
+            points = (src, dst)
+            self.obj_dict["points"] = points
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "edge"
             self.obj_dict["parent_graph"] = None
             self.obj_dict["sequence"] = None
-        else:
-            self.obj_dict = obj_dict
 
     def __str__(self) -> str:
         return self.to_string()
@@ -968,12 +958,8 @@ class Graph(Common):
         simplify: bool = False,
         **attrs: Any,
     ) -> None:
-        if obj_dict is not None:
-            self.obj_dict = obj_dict
-
-        else:
-            self.obj_dict = {}
-
+        super().__init__(obj_dict)
+        if obj_dict is None:
             self.obj_dict["attributes"] = dict(attrs)
 
             if graph_type not in ["graph", "digraph"]:
@@ -1005,13 +991,9 @@ class Graph(Common):
     def set_graph_defaults(self, **attrs: Any) -> None:
         self.add_node(Node("graph", **attrs))
 
-    def get_graph_defaults(self, **attrs: Any) -> Any:
+    def get_graph_defaults(self) -> Any:
         graph_nodes = self.get_node("graph")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_node_defaults(self, **attrs: Any) -> None:
         """Define default node attributes.
@@ -1021,24 +1003,16 @@ class Graph(Common):
         """
         self.add_node(Node("node", **attrs))
 
-    def get_node_defaults(self, **attrs: Any) -> Any:
+    def get_node_defaults(self) -> Any:
         graph_nodes = self.get_node("node")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_edge_defaults(self, **attrs: Any) -> None:
         self.add_node(Node("edge", **attrs))
 
-    def get_edge_defaults(self, **attrs: Any) -> Any:
+    def get_edge_defaults(self) -> Any:
         graph_nodes = self.get_node("edge")
-
-        if isinstance(graph_nodes, (list, tuple)):
-            return [node.get_attributes() for node in graph_nodes]
-
-        return graph_nodes.get_attributes()
+        return [node.get_attributes() for node in graph_nodes]
 
     def set_simplify(self, simplify: bool) -> None:
         """Set whether to simplify or not.
@@ -1079,7 +1053,7 @@ class Graph(Common):
         """
         self.obj_dict["strict"] = val
 
-    def get_strict(self, val: Any) -> Optional[bool]:
+    def get_strict(self) -> Optional[bool]:
         """Get graph's 'strict' mode (True, False).
 
         This option is only valid for top level graphs.
@@ -1097,7 +1071,7 @@ class Graph(Common):
         """
         self.obj_dict["suppress_disconnected"] = val
 
-    def get_suppress_disconnected(self, val: Any) -> Optional[bool]:
+    def get_suppress_disconnected(self) -> Optional[bool]:
         """Get if suppress disconnected is set.
 
         Refer to set_suppress_disconnected for more information.
@@ -1574,15 +1548,13 @@ class Subgraph(Graph):
         simplify: bool = False,
         **attrs: Any,
     ) -> None:
-        Graph.__init__(
-            self,
+        super().__init__(
             graph_name=graph_name,
             obj_dict=obj_dict,
             suppress_disconnected=suppress_disconnected,
             simplify=simplify,
             **attrs,
         )
-
         if obj_dict is None:
             self.obj_dict["type"] = "subgraph"
 
@@ -1627,15 +1599,13 @@ class Cluster(Graph):
         simplify: bool = False,
         **attrs: Any,
     ) -> None:
-        Graph.__init__(
-            self,
+        super().__init__(
             graph_name=graph_name,
             obj_dict=obj_dict,
             suppress_disconnected=suppress_disconnected,
             simplify=simplify,
             **attrs,
         )
-
         if obj_dict is None:
             self.obj_dict["type"] = "subgraph"
             self.obj_dict["name"] = quote_id_if_necessary(
@@ -1654,8 +1624,8 @@ class Dot(Graph):
     the base class 'Graph'.
     """
 
-    def __init__(self, *argsl: Any, **argsd: Any) -> None:
-        Graph.__init__(self, *argsl, **argsd)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
 
         self.shape_files: List[str] = []
         self.formats = OUTPUT_FORMATS

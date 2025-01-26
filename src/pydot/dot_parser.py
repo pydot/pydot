@@ -17,7 +17,6 @@ import typing as T
 
 from pyparsing import (
     CaselessLiteral,
-    CharsNotIn,
     Combine,
     Forward,
     Group,
@@ -29,6 +28,7 @@ from pyparsing import (
     ParseResults,
     QuotedString,
     Suppress,
+    Token,
     Word,
     WordStart,
     cStyleComment,
@@ -385,6 +385,35 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     return n
 
 
+ class HTML(Token):
+    def __init__(self) -> None:
+        super().__init__()  # type: ignore
+
+    def parseImpl(
+        self, instring: str, loc: int, do_actions: bool = True
+    ) -> T.Tuple[int, str]:
+        open_loc = loc
+        if not (loc < len(instring) and instring[loc] == "<"):
+            raise ParseException(instring, loc, "expected <", self)
+        num_open = 1
+        loc += 1
+        while loc < len(instring):
+            if instring[loc] == "<":
+                num_open += 1
+            elif instring[loc] == ">":
+                num_open -= 1
+            loc += 1
+            if num_open == 0:
+                return loc, instring[open_loc:loc]
+        raise ParseException(
+            instring,
+            loc,
+            "expected a > to match <, in the HTML string"
+            + "starting at {lineno(open_loc, instring)}",
+            self,
+        )
+
+
 QUOTED_CHARS = [":", '"']
 
 
@@ -400,7 +429,7 @@ def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
         return qs
     return s
 
-
+  
 graphparser = None
 
 
@@ -430,11 +459,6 @@ def graph_definition() -> ParserElement:
             .set_parse_action(possibly_unquote)
         )
 
-        html_text = Forward()
-        inner_html = OneOrMore(CharsNotIn("<>") | html_text)
-        html_text <<= "<" + inner_html + ">"
-        html_text.setParseAction(lambda arr: "".join(arr))
-
         float_number = Combine(
             Optional("-")
             + (
@@ -443,9 +467,7 @@ def graph_definition() -> ParserElement:
             )
         ).set_name("float_number")
 
-        ID = (
-            html_text | double_quoted_string | float_number | identifier
-        ).setName("ID")
+        ID = (HTML() | double_quoted_string | float_number | identifier).setName("ID")
 
         port = (
             Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))

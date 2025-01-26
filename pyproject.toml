@@ -60,17 +60,20 @@ Changelog = "https://github.com/pydot/pydot/blob/main/ChangeLog"
 "Bug Tracker" = "https://github.com/pydot/pydot/issues"
 
 [project.optional-dependencies]
-dev = [
-  'chardet',
-  'parameterized',
+lint = [
   'ruff',
+]
+types = [
   'mypy',
 ]
-tests = [
+dev = [
+  'pydot[lint]',
+  'pydot[types]',
   'chardet',
   'parameterized',
-  'ruff',
-  'mypy',
+]
+tests = [
+  'pydot[dev]',
   'tox',
   'pytest',
   'pytest-cov',
