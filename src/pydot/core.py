@@ -19,117 +19,18 @@ import pydot
 import pydot.dot_parser
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, FrozenDict
+from pydot.constants import (
+    CLUSTER_ATTRIBUTES,
+    DEFAULT_PROGRAMS,
+    DOT_KEYWORDS,
+    EDGE_ATTRIBUTES,
+    GRAPH_ATTRIBUTES,
+    NODE_ATTRIBUTES,
+    OUTPUT_FORMATS,
+)
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
-
-# fmt: off
-GRAPH_ATTRIBUTES = {
-    "Damping", "K", "URL", "aspect", "bb", "bgcolor",
-    "center", "charset", "clusterrank", "colorscheme", "comment", "compound",
-    "concentrate", "defaultdist", "dim", "dimen", "diredgeconstraints",
-    "dpi", "epsilon", "esep", "fontcolor", "fontname", "fontnames",
-    "fontpath", "fontsize", "id", "label", "labeljust", "labelloc",
-    "landscape", "layers", "layersep", "layout", "levels", "levelsgap",
-    "lheight", "lp", "lwidth", "margin", "maxiter", "mclimit", "mindist",
-    "mode", "model", "mosek", "nodesep", "nojustify", "normalize", "nslimit",
-    "nslimit1", "ordering", "orientation", "outputorder", "overlap",
-    "overlap_scaling", "pack", "packmode", "pad", "page", "pagedir",
-    "quadtree", "quantum", "rankdir", "ranksep", "ratio", "remincross",
-    "repulsiveforce", "resolution", "root", "rotate", "searchsize", "sep",
-    "showboxes", "size", "smoothing", "sortv", "splines", "start",
-    "stylesheet", "target", "truecolor", "viewport", "voro_margin",
-    # for subgraphs
-    "rank"
-}
-
-
-EDGE_ATTRIBUTES = {
-    "URL", "arrowhead", "arrowsize", "arrowtail",
-    "color", "colorscheme", "comment", "constraint", "decorate", "dir",
-    "edgeURL", "edgehref", "edgetarget", "edgetooltip", "fontcolor",
-    "fontname", "fontsize", "headURL", "headclip", "headhref", "headlabel",
-    "headport", "headtarget", "headtooltip", "href", "id", "label",
-    "labelURL", "labelangle", "labeldistance", "labelfloat", "labelfontcolor",
-    "labelfontname", "labelfontsize", "labelhref", "labeltarget",
-    "labeltooltip", "layer", "len", "lhead", "lp", "ltail", "minlen",
-    "nojustify", "penwidth", "pos", "samehead", "sametail", "showboxes",
-    "style", "tailURL", "tailclip", "tailhref", "taillabel", "tailport",
-    "tailtarget", "tailtooltip", "target", "tooltip", "weight",
-    "rank"
-}
-
-
-NODE_ATTRIBUTES = {
-    "URL", "color", "colorscheme", "comment",
-    "distortion", "fillcolor", "fixedsize", "fontcolor", "fontname",
-    "fontsize", "group", "height", "id", "image", "imagescale", "label",
-    "labelloc", "layer", "margin", "nojustify", "orientation", "penwidth",
-    "peripheries", "pin", "pos", "rects", "regular", "root", "samplepoints",
-    "shape", "shapefile", "showboxes", "sides", "skew", "sortv", "style",
-    "target", "tooltip", "vertices", "width", "z",
-    # The following are attributes dot2tex
-    "texlbl",  "texmode"
-}
-
-
-CLUSTER_ATTRIBUTES = {
-    "K", "URL", "bgcolor", "color", "colorscheme",
-    "fillcolor", "fontcolor", "fontname", "fontsize", "label", "labeljust",
-    "labelloc", "lheight", "lp", "lwidth", "nojustify", "pencolor",
-    "penwidth", "peripheries", "sortv", "style", "target", "tooltip"
-}
-# fmt: on
-
-
-OUTPUT_FORMATS = {
-    "canon",
-    "cmap",
-    "cmapx",
-    "cmapx_np",
-    "dia",
-    "dot",
-    "fig",
-    "gd",
-    "gd2",
-    "gif",
-    "hpgl",
-    "imap",
-    "imap_np",
-    "ismap",
-    "jpe",
-    "jpeg",
-    "jpg",
-    "mif",
-    "mp",
-    "pcl",
-    "pdf",
-    "pic",
-    "plain",
-    "plain-ext",
-    "png",
-    "ps",
-    "ps2",
-    "svg",
-    "svgz",
-    "vml",
-    "vmlz",
-    "vrml",
-    "vtx",
-    "wbmp",
-    "xdot",
-    "xlib",
-}
-
-
-DEFAULT_PROGRAMS = {
-    "dot",
-    "twopi",
-    "neato",
-    "circo",
-    "fdp",
-    "sfdp",
-}
 
 
 class frozendict(FrozenDict):
@@ -267,8 +168,6 @@ def make_quoted(s: str) -> str:
     return f'"{out}"'
 
 
-dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
-
 re_numeric = re.compile(r"^-?([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
@@ -321,7 +220,7 @@ def id_needs_quotes(s: str) -> bool:
     # would use a reserved keyword as name. This function will return
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return False
 
     any_result = any_needs_quotes(s)
@@ -359,7 +258,7 @@ def quote_id_if_necessary(
 
     if s.lower() in unquoted:
         return s
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return make_quoted(s)
 
     if id_needs_quotes(s):
