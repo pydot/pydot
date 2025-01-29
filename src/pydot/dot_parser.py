@@ -385,7 +385,7 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
     return n
 
 
- class HTML(Token):
+class HTML(Token):
     def __init__(self) -> None:
         super().__init__()  # type: ignore
 
