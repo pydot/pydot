@@ -39,6 +39,8 @@ from pyparsing import (
 
 import pydot
 from pydot.classes import AttributeDict, FrozenDict
+from pydot.constants import DOT_KEYWORDS
+
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -424,6 +426,8 @@ def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
     if qs.startswith("<") or qs.endswith(">"):
         return s
     if any(qs.find(c) >= 0 for c in QUOTED_CHARS):
+        return s
+    if qs.lower() in DOT_KEYWORDS:
         return s
     if qs.isascii():
         return qs

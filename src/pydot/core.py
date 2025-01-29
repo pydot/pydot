@@ -275,7 +275,7 @@ def quote_attr_if_necessary(s: str) -> str:
     if not isinstance(s, str):
         return s
 
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return make_quoted(s)
 
     any_result = any_needs_quotes(s)
