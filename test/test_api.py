@@ -276,7 +276,7 @@ def test_node_parenting() -> None:
     g.add_node(n)
     g.add_node(n2)
 
-    nodes = g.get_node('"node a"')
+    nodes = g.get_node("node a")
     for node in nodes:
         assert node.get_parent_graph() == g
 
