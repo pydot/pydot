@@ -10,7 +10,7 @@ import pydot.core
 
 
 @pytest.fixture
-def objdict() -> dict[str, T.Any]:
+def objdict() -> T.Dict[str, T.Any]:
     return {
         "attributes": {},
         "name": "G",
