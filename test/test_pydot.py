@@ -10,12 +10,8 @@
 # -test Common.set method
 
 import functools
-import importlib
 import os
-import pickle
-import string
 import sys
-import textwrap
 import unittest
 from hashlib import sha256
 
@@ -23,7 +19,6 @@ import chardet
 from parameterized import parameterized
 
 import pydot
-from pydot._vendor import tempfile
 
 TEST_ERROR_DIR = os.getenv("TEST_ERROR_DIR", None)
 
