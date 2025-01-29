@@ -2,11 +2,15 @@
 #
 # SPDX-License-Identifier: MIT
 
+import typing as T
+
 import pytest
+
+import pydot.core
 
 
 @pytest.fixture
-def objdict():
+def objdict() -> dict[str, T.Any]:
     return {
         "attributes": {},
         "name": "G",
@@ -38,3 +42,8 @@ def objdict():
             ],
         },
     }
+
+
+@pytest.fixture
+def graph_directed() -> pydot.core.Graph:
+    return pydot.core.Graph("testgraph", graph_type="digraph")
