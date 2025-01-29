@@ -4,9 +4,7 @@
 
 """Constants for the graphviz language."""
 
-DOT_KEYWORDS = [
-    "graph", "digraph", "strict", "edge", "node", "subgraph"
-]
+DOT_KEYWORDS = ["graph", "digraph", "strict", "edge", "node", "subgraph"]
 
 
 # fmt: off

@@ -41,7 +41,6 @@ import pydot
 from pydot.classes import AttributeDict, FrozenDict
 from pydot.constants import DOT_KEYWORDS
 
-
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
 
@@ -433,7 +432,7 @@ def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
         return qs
     return s
 
-  
+
 graphparser = None
 
 
@@ -471,7 +470,9 @@ def graph_definition() -> ParserElement:
             )
         ).set_name("float_number")
 
-        ID = (HTML() | double_quoted_string | float_number | identifier).setName("ID")
+        ID = (
+            HTML() | double_quoted_string | float_number | identifier
+        ).setName("ID")
 
         port = (
             Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
