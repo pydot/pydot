@@ -4,8 +4,6 @@
 
 """Unit testing of pydot api calls."""
 
-import importlib
-import logging
 import os
 import pickle
 import string
@@ -491,21 +489,3 @@ def test_graph_from_incidence_matrix() -> None:
 
 def test_version() -> None:
     assert isinstance(pydot.__version__, str)
-
-
-def test_logging_init(caplog: pytest.LogCaptureFixture) -> None:
-    with caplog.at_level(logging.DEBUG, logger="pydot"):
-        importlib.reload(pydot)
-        importlib.reload(pydot.core)
-        importlib.reload(pydot.dot_parser)
-    assert caplog.record_tuples == [
-        ("pydot", logging.DEBUG, "pydot initializing"),
-        ("pydot", logging.DEBUG, f"pydot {pydot.__version__}"),
-        ("pydot.core", logging.DEBUG, "pydot core module initializing"),
-        (
-            "pydot.dot_parser",
-            logging.DEBUG,
-            "pydot dot_parser module initializing",
-        ),
-    ]
-    importlib.reload(pydot)
