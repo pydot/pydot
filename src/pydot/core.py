@@ -782,7 +782,10 @@ class Edge(Common):
                 src = src.get_name()
             if isinstance(dst, (Node, Subgraph, Cluster)):
                 dst = dst.get_name()
-            points = (src, dst)
+            if isinstance(src, (list, tuple)):
+                points = src
+            else:
+                points = (src, dst)
             self.obj_dict["points"] = points
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "edge"
