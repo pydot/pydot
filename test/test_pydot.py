@@ -12,6 +12,7 @@
 import functools
 import os
 import sys
+import typing as T
 import unittest
 from hashlib import sha256
 
@@ -32,18 +33,69 @@ _test_root = os.path.dirname(os.path.abspath(__file__))
 class RenderResult:
     """Results object returned by Renderer methods."""
 
-    def __init__(self, data):
+    def __init__(self, data, dot_file=None, dot_src=None) -> None:
         self._data = data
+        self._dot_file: T.Optional[str] = dot_file
+        self._dot_src: T.Optional[str] = dot_src
 
     @property
     def data(self):
         """Get the raw image data for the result."""
         return self._data
 
+    @property
+    def dot_file(self):
+        """Get the graph data used to generate the file."""
+        return self._dot_file
+
+    @property
+    def dot_src(self):
+        if self._dot_src is None and self._dot_file is not None:
+            with open(self._dot_file, encoding="utf-8") as _in:
+                self._dot_src = _in.read()
+        return self._dot_src
+
     @functools.cached_property
     def checksum(self):
         """Get the sha256 checksum for the result."""
         return sha256(self.data).hexdigest()
+
+
+class GVRenderResult(RenderResult):
+    """Results object returned by Renderer methods.
+
+    Unlike RenderResult, GVRenderResult will always have a dot_file.
+    """
+
+    def __init__(self, data, dot_file: str) -> None:
+        super().__init__(data)
+        self._dot_file: str = dot_file
+
+    @property
+    def dot_file(self):
+        return self._dot_file
+
+    @property
+    def dot_src(self):
+        if self._dot_src is None:
+            with open(self._dot_file, encoding="utf-8") as _in:
+                self._dot_src = _in.read()
+        return self._dot_src
+
+
+class PydotRenderResult(RenderResult):
+    """Results object returned by Renderer methods.
+
+    Unlike RenderResult, PydotRenderResult will always have a dot_src.
+    """
+
+    def __init__(self, data, dot_src: str) -> None:
+        super().__init__(data)
+        self._dot_src: str = dot_src
+
+    @property
+    def dot_src(self):
+        return self._dot_src
 
 
 class Renderer:
@@ -59,7 +111,7 @@ class Renderer:
                 stdin=stdin,
             )
         assert process.returncode == 0, stderr_data
-        return RenderResult(stdout_data)
+        return GVRenderResult(stdout_data, filename)
 
     @classmethod
     def pydot(cls, filename, encoding):
@@ -71,7 +123,8 @@ class Renderer:
             jpe_data.extend(
                 g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
             )
-        return RenderResult(jpe_data)
+        src = "\n".join(g.to_string() for g in c)
+        return PydotRenderResult(jpe_data, src)
 
 
 def _load_test_cases(casedir):
@@ -93,7 +146,9 @@ def _load_test_cases(casedir):
     return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
 
 
-def _compare_images(fname: str, pydot: RenderResult, gv: RenderResult) -> bool:
+def _compare_images(
+    fname: str, pydot: PydotRenderResult, gv: GVRenderResult
+) -> bool:
     """Compare two RenderResult objects for the named test.
 
     If the images differ and a ``TEST_ERROR_DIR`` has been provided, create
@@ -109,6 +164,12 @@ def _compare_images(fname: str, pydot: RenderResult, gv: RenderResult) -> bool:
         with open(pydot_path, "wb") as p, open(gv_path, "wb") as g:
             p.write(pydot.data)
             g.write(gv.data)
+        src_filename = os.path.basename(gv.dot_file)
+        gv_src = os.path.join(out_dir, src_filename)
+        pd_src = os.path.join(out_dir, f"pydot_{src_filename}")
+        with open(gv_src, "w") as gs, open(pd_src, "w") as ps:
+            ps.write(pydot.dot_src)
+            gs.write(gv.dot_src)
     return False
 
 
@@ -149,7 +210,7 @@ class TestShapeFiles(PydotTestCase):
         g = graphs.pop()
         g.set_shape_files(pngs)
 
-        rendered = RenderResult(g.create(format="jpe"))
+        rendered = PydotRenderResult(g.create(format="jpe"), g.to_string())
         graphviz = Renderer.graphviz(dot_file, encoding="ascii")
         if not _compare_images("from-past-to-future", rendered, graphviz):
             raise AssertionError(
