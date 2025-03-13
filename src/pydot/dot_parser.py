@@ -32,6 +32,7 @@ from pyparsing import (
     Word,
     WordStart,
     cStyleComment,
+    lineno,
     nums,
     pyparsing_unicode,
     restOfLine,
@@ -78,6 +79,37 @@ class DefaultStatement(P_AttrList):
     def __repr__(self) -> str:
         name = self.__class__.__name__
         return f"{name}({self.default_type}, {self.attrs!r})"
+
+
+class HTML(Token):
+    """Parsing for HTML-like strings."""
+
+    def __init__(self) -> None:
+        super().__init__()  # type: ignore
+
+    def parseImpl(
+        self, instring: str, loc: int, do_actions: bool = True
+    ) -> T.Tuple[int, str]:
+        open_loc = loc
+        if not (loc < len(instring) and instring[loc] == "<"):
+            raise ParseException(instring, loc, "expected <", self)
+        num_open = 1
+        loc += 1
+        while loc < len(instring):
+            if instring[loc] == "<":
+                num_open += 1
+            elif instring[loc] == ">":
+                num_open -= 1
+            loc += 1
+            if num_open == 0:
+                return loc, instring[open_loc:loc]
+        raise ParseException(
+            instring,
+            loc,
+            "HTML: expected '>' to match '<' "
+            + f"on line {lineno(open_loc, instring)}",
+            self,
+        )
 
 
 def push_top_graph_stmt(
@@ -384,35 +416,6 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
 
     n = pydot.Node(str(node_name), **attrs)
     return n
-
-
-class HTML(Token):
-    def __init__(self) -> None:
-        super().__init__()  # type: ignore
-
-    def parseImpl(
-        self, instring: str, loc: int, do_actions: bool = True
-    ) -> T.Tuple[int, str]:
-        open_loc = loc
-        if not (loc < len(instring) and instring[loc] == "<"):
-            raise ParseException(instring, loc, "expected <", self)
-        num_open = 1
-        loc += 1
-        while loc < len(instring):
-            if instring[loc] == "<":
-                num_open += 1
-            elif instring[loc] == ">":
-                num_open -= 1
-            loc += 1
-            if num_open == 0:
-                return loc, instring[open_loc:loc]
-        raise ParseException(
-            instring,
-            loc,
-            "expected a > to match <, in the HTML string"
-            + "starting at {lineno(open_loc, instring)}",
-            self,
-        )
 
 
 QUOTED_CHARS = [":", '"']
