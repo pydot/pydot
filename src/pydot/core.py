@@ -6,6 +6,7 @@
 
 import copy
 import errno
+import itertools
 import logging
 import os
 import re
@@ -18,117 +19,18 @@ import pydot
 import pydot.dot_parser
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, FrozenDict
+from pydot.constants import (
+    CLUSTER_ATTRIBUTES,
+    DEFAULT_PROGRAMS,
+    DOT_KEYWORDS,
+    EDGE_ATTRIBUTES,
+    GRAPH_ATTRIBUTES,
+    NODE_ATTRIBUTES,
+    OUTPUT_FORMATS,
+)
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
-
-# fmt: off
-GRAPH_ATTRIBUTES = {
-    "Damping", "K", "URL", "aspect", "bb", "bgcolor",
-    "center", "charset", "clusterrank", "colorscheme", "comment", "compound",
-    "concentrate", "defaultdist", "dim", "dimen", "diredgeconstraints",
-    "dpi", "epsilon", "esep", "fontcolor", "fontname", "fontnames",
-    "fontpath", "fontsize", "id", "label", "labeljust", "labelloc",
-    "landscape", "layers", "layersep", "layout", "levels", "levelsgap",
-    "lheight", "lp", "lwidth", "margin", "maxiter", "mclimit", "mindist",
-    "mode", "model", "mosek", "nodesep", "nojustify", "normalize", "nslimit",
-    "nslimit1", "ordering", "orientation", "outputorder", "overlap",
-    "overlap_scaling", "pack", "packmode", "pad", "page", "pagedir",
-    "quadtree", "quantum", "rankdir", "ranksep", "ratio", "remincross",
-    "repulsiveforce", "resolution", "root", "rotate", "searchsize", "sep",
-    "showboxes", "size", "smoothing", "sortv", "splines", "start",
-    "stylesheet", "target", "truecolor", "viewport", "voro_margin",
-    # for subgraphs
-    "rank"
-}
-
-
-EDGE_ATTRIBUTES = {
-    "URL", "arrowhead", "arrowsize", "arrowtail",
-    "color", "colorscheme", "comment", "constraint", "decorate", "dir",
-    "edgeURL", "edgehref", "edgetarget", "edgetooltip", "fontcolor",
-    "fontname", "fontsize", "headURL", "headclip", "headhref", "headlabel",
-    "headport", "headtarget", "headtooltip", "href", "id", "label",
-    "labelURL", "labelangle", "labeldistance", "labelfloat", "labelfontcolor",
-    "labelfontname", "labelfontsize", "labelhref", "labeltarget",
-    "labeltooltip", "layer", "len", "lhead", "lp", "ltail", "minlen",
-    "nojustify", "penwidth", "pos", "samehead", "sametail", "showboxes",
-    "style", "tailURL", "tailclip", "tailhref", "taillabel", "tailport",
-    "tailtarget", "tailtooltip", "target", "tooltip", "weight",
-    "rank"
-}
-
-
-NODE_ATTRIBUTES = {
-    "URL", "color", "colorscheme", "comment",
-    "distortion", "fillcolor", "fixedsize", "fontcolor", "fontname",
-    "fontsize", "group", "height", "id", "image", "imagescale", "label",
-    "labelloc", "layer", "margin", "nojustify", "orientation", "penwidth",
-    "peripheries", "pin", "pos", "rects", "regular", "root", "samplepoints",
-    "shape", "shapefile", "showboxes", "sides", "skew", "sortv", "style",
-    "target", "tooltip", "vertices", "width", "z",
-    # The following are attributes dot2tex
-    "texlbl",  "texmode"
-}
-
-
-CLUSTER_ATTRIBUTES = {
-    "K", "URL", "bgcolor", "color", "colorscheme",
-    "fillcolor", "fontcolor", "fontname", "fontsize", "label", "labeljust",
-    "labelloc", "lheight", "lp", "lwidth", "nojustify", "pencolor",
-    "penwidth", "peripheries", "sortv", "style", "target", "tooltip"
-}
-# fmt: on
-
-
-OUTPUT_FORMATS = {
-    "canon",
-    "cmap",
-    "cmapx",
-    "cmapx_np",
-    "dia",
-    "dot",
-    "fig",
-    "gd",
-    "gd2",
-    "gif",
-    "hpgl",
-    "imap",
-    "imap_np",
-    "ismap",
-    "jpe",
-    "jpeg",
-    "jpg",
-    "mif",
-    "mp",
-    "pcl",
-    "pdf",
-    "pic",
-    "plain",
-    "plain-ext",
-    "png",
-    "ps",
-    "ps2",
-    "svg",
-    "svgz",
-    "vml",
-    "vmlz",
-    "vrml",
-    "vtx",
-    "wbmp",
-    "xdot",
-    "xlib",
-}
-
-
-DEFAULT_PROGRAMS = {
-    "dot",
-    "twopi",
-    "neato",
-    "circo",
-    "fdp",
-    "sfdp",
-}
 
 
 class frozendict(FrozenDict):
@@ -261,18 +163,12 @@ def call_graphviz(
 
 
 def make_quoted(s: str) -> str:
-    """Transform a string into a quoted string, escaping specials."""
-    replace = {
-        ord('"'): r"\"",
-        ord("\n"): r"\n",
-        ord("\r"): r"\r",
-    }
-    return rf'"{s.translate(replace)}"'
+    """Transform a string into a quoted string, escaping internal quotes."""
+    out = s.replace('"', r"\"")
+    return f'"{out}"'
 
 
-dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
-
-re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
+re_numeric = re.compile(r"^-?([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
 re_dbl_quoted = re.compile(r'^".*"$', re.S)
 re_html = re.compile(r"^<.*>$", re.S)
 
@@ -297,13 +193,13 @@ def any_needs_quotes(s: str) -> Optional[bool]:
     if s.isalnum():
         return s[0].isdigit()
 
-    has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
-    if has_high_chars and not re_dbl_quoted.match(s) and not re_html.match(s):
-        return True
-
     for test_re in [re_numeric, re_dbl_quoted, re_html]:
         if test_re.match(s):
             return False
+
+    has_high_chars = any(ord(c) > 0x7F or ord(c) == 0 for c in s)
+    if has_high_chars:
+        return True
 
     return None
 
@@ -324,7 +220,7 @@ def id_needs_quotes(s: str) -> bool:
     # would use a reserved keyword as name. This function will return
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return False
 
     any_result = any_needs_quotes(s)
@@ -362,7 +258,7 @@ def quote_id_if_necessary(
 
     if s.lower() in unquoted:
         return s
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return make_quoted(s)
 
     if id_needs_quotes(s):
@@ -379,7 +275,7 @@ def quote_attr_if_necessary(s: str) -> str:
     if not isinstance(s, str):
         return s
 
-    if s.lower() in dot_keywords:
+    if s.lower() in DOT_KEYWORDS:
         return make_quoted(s)
 
     any_result = any_needs_quotes(s)
@@ -387,6 +283,13 @@ def quote_attr_if_necessary(s: str) -> str:
         return s
 
     return make_quoted(s)
+
+
+def format_for_lookup(s: str) -> List[str]:
+    """Return a list of the possible lookup forms of an identifier."""
+    if re_dbl_quoted.match(s) or re_html.match(s):
+        return [s]
+    return [s, f'"{s}"']
 
 
 def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
@@ -1153,17 +1056,15 @@ class Graph(Common):
         Node instances is returned.
         An empty list is returned otherwise.
         """
-        match = []
-
-        if name in self.obj_dict["nodes"]:
-            match.extend(
-                [
-                    Node(obj_dict=obj_dict)
-                    for obj_dict in self.obj_dict["nodes"][name]
-                ]
-            )
-
-        return match
+        _id = None
+        for n in format_for_lookup(name):
+            if n in self.obj_dict["nodes"]:
+                _id = n
+                break
+        return [
+            Node(obj_dict=obj_dict)
+            for obj_dict in self.obj_dict["nodes"].get(_id, [])
+        ]
 
     def get_nodes(self) -> List[Node]:
         """Get the list of Node instances."""
@@ -1260,31 +1161,44 @@ class Graph(Common):
         An empty list is returned otherwise.
         """
         if isinstance(src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
+            endpoints = tuple(src_or_list)
         else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
+            endpoints = (src_or_list, dst)
 
-        match = []
+        src_eps = format_for_lookup(str(endpoints[0]))
+        dst_eps = format_for_lookup(str(endpoints[1]))
 
-        if edge_points in self.obj_dict["edges"] or (
-            self.get_top_graph_type() == "graph"
-            and edge_points_reverse in self.obj_dict["edges"]
-        ):
-            edges_obj_dict = self.obj_dict["edges"].get(
-                edge_points,
-                self.obj_dict["edges"].get(edge_points_reverse, None),
+        # This insanity is all to create a list of possible unquoted and
+        # quoted forms of the requested endpoints, trying both the unquoted
+        # and quoted form for each endpoint that has both.
+        #
+        # For example, ('<<i>html</i>>', 'abc') will be expanded to look for
+        # ('<<i>html</i>>', '"abc"') as well, even though the HTML-like
+        # string has no alternate quoted form.
+        edges = list(
+            itertools.zip_longest(
+                src_eps,
+                dst_eps,
+                fillvalue=src_eps[0] if len(src_eps) == 1 else dst_eps[0],
             )
+        )
 
-            for edge_obj_dict in edges_obj_dict:
-                match.append(
-                    Edge(
-                        edge_points[0], edge_points[1], obj_dict=edge_obj_dict
-                    )
-                )
+        match = None
+        for ep in edges:
+            if tuple(ep) in self.obj_dict["edges"]:
+                match = tuple(ep)
+            elif (
+                self.get_top_graph_type() == "graph"
+                and tuple(reversed(ep)) in self.obj_dict["edges"]
+            ):
+                match = tuple(reversed(ep))
+            if match is not None:
+                break
 
-        return match
+        return [
+            Edge(str(endpoints[0]), str(endpoints[1]), obj_dict=od)
+            for od in self.obj_dict["edges"].get(match, [])
+        ]
 
     def get_edges(self) -> List[Edge]:
         return self.get_edge_list()
@@ -1337,15 +1251,13 @@ class Graph(Common):
         Subgraph instances is returned.
         An empty list is returned otherwise.
         """
-        match = []
-
-        if name in self.obj_dict["subgraphs"]:
-            sgraphs_obj_dict = self.obj_dict["subgraphs"].get(name)
-
-            for obj_dict_list in sgraphs_obj_dict:
-                match.append(Subgraph(obj_dict=obj_dict_list))
-
-        return match
+        for n in format_for_lookup(name):
+            if n in self.obj_dict["subgraphs"]:
+                return [
+                    Subgraph(obj_dict=od)
+                    for od in self.obj_dict["subgraphs"].get(n)
+                ]
+        return []
 
     def get_subgraphs(self) -> List["Subgraph"]:
         return self.get_subgraph_list()
