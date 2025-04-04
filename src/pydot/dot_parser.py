@@ -280,17 +280,13 @@ def add_elements(
             raise ValueError(f"Unknown element statement: {element}")
 
 
-def push_graph_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> pydot.core.Subgraph:
+def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
     add_elements(g, toks)
     return g
 
 
-def push_subgraph_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> pydot.core.Subgraph:
+def push_subgraph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
     for e in toks:
         if len(e) == 3:
@@ -306,9 +302,7 @@ def push_subgraph_stmt(
     return g
 
 
-def push_default_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> DefaultStatement:
+def push_default_stmt(toks: ParseResults) -> DefaultStatement:
     # The pydot class instances should be marked as
     # default statements to be inherited by actual
     # graphs, nodes and edges.
@@ -325,7 +319,7 @@ def push_default_stmt(
         raise ValueError(f"Unknown default statement: {toks}")
 
 
-def push_attr_list(s: str, loc: int, toks: ParseResults) -> P_AttrList:
+def push_attr_list(toks: ParseResults) -> P_AttrList:
     p = P_AttrList(toks)
     return p
 
@@ -348,9 +342,7 @@ def do_node_ports(node: T.Any) -> str:
     return node_port
 
 
-def push_edge_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> T.List[pydot.core.Edge]:
+def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -406,7 +398,7 @@ def push_edge_stmt(
     return e
 
 
-def push_node_stmt(s: str, loc: int, toks: ParseResults) -> pydot.core.Node:
+def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
     if len(toks) == 2:
         attrs = toks[1].attrs
     else:
