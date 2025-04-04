@@ -544,3 +544,7 @@ def parse_dot_data(s: str) -> T.Optional[T.List[pydot.core.Dot]]:
         print(" " * (err.column - 1) + "^")
         print(err)
         return None
+
+
+# Backwards compatibility
+graphparser: ParserElement = GraphParser.parser
