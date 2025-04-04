@@ -15,7 +15,6 @@ import warnings
 from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union, cast
 
 import pydot
-import pydot.dot_parser
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, FrozenDict
 
@@ -401,6 +400,8 @@ def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
     @return: Graphs that result from parsing.
     @rtype: `list` of `pydot.Dot`
     """
+    import pydot.dot_parser
+
     return pydot.dot_parser.parse_dot_data(s)
 
 
