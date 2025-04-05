@@ -382,12 +382,17 @@ def test_id_storage_and_lookup() -> None:
 
     a_out = g.get_node("my node")[0]
     b_out = g.get_node('"node B"')[0]
-    assert g.get_node("node B") == []
+    b2_out = g.get_node("node B")[0]
     assert id(a_out.obj_dict) == id(a.obj_dict)
     assert id(b_out.obj_dict) == id(b.obj_dict)
+    assert id(b_out.obj_dict) == id(b2_out.obj_dict)
 
     e_out = g.get_edge("my node", '"node B"')[0]
+    e2_out = g.get_edge('"my node"', '"node B"')[0]
+    e3_out = g.get_edge("my node", "node B")[0]
     assert id(e_out.obj_dict) == id(e.obj_dict)
+    assert id(e2_out.obj_dict) == id(e.obj_dict)
+    assert id(e3_out.obj_dict) == id(e.obj_dict)
 
     sg = pydot.Subgraph("sub graph", graph_type="graph")
     sgA = pydot.Node("sg A")
