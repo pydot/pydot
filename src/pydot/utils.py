@@ -29,12 +29,14 @@ def possibly_unquoted(identifier: str) -> str:
     if not (identifier.startswith('"') and identifier.endswith('"')):
         return identifier
     unquoted: str = identifier[1:-1]
-    if any([
-        unquoted.startswith("<"),
-        unquoted.endswith(">"),
-        unquoted.lower() in DOT_KEYWORDS,
-        any(unquoted.find(c) >= 0 for c in ID_QUOTED_CHARS),
-    ]):
+    if any(
+        [
+            unquoted.startswith("<"),
+            unquoted.endswith(">"),
+            unquoted.lower() in DOT_KEYWORDS,
+            any(unquoted.find(c) >= 0 for c in ID_QUOTED_CHARS),
+        ]
+    ):
         return identifier
     if unquoted.isascii():
         return unquoted

@@ -179,7 +179,6 @@ class PydotTestCase(unittest.TestCase):
         self.graph_directed = pydot.Graph("testgraph", graph_type="digraph")
 
 
-
 class TestShapeFiles(PydotTestCase):
     shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 

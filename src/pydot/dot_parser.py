@@ -443,9 +443,7 @@ class GraphParser:
     ).set_name("identifier")
 
     double_quoted_string = (
-        QuotedString(
-            '"', multiline=True, unquoteResults=False, escChar="\\"
-        )
+        QuotedString('"', multiline=True, unquoteResults=False, escChar="\\")
         .set_results_name("str")
         .set_parse_action(handle_quotes)
     )
@@ -458,9 +456,9 @@ class GraphParser:
         )
     ).set_name("float_number")
 
-    ID = (
-        HTML() | double_quoted_string | float_number | identifier
-    ).setName("ID")
+    ID = (HTML() | double_quoted_string | float_number | identifier).setName(
+        "ID"
+    )
 
     port = (
         Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
@@ -485,13 +483,9 @@ class GraphParser:
         Suppress("{") + Optional(stmt_list) + Suppress("}")
     ).setName("graph_stmt")
 
-    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName(
-        "subgraph"
-    )
+    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
 
-    edge_point = Group(subgraph | graph_stmt | node_id).setName(
-        "edge_point"
-    )
+    edge_point = Group(subgraph | graph_stmt | node_id).setName("edge_point")
     edgeop = (Literal("--") | Literal("->")).setName("edgeop")
     edgeRHS = OneOrMore(edgeop - edge_point)
     edge_stmt = edge_point + edgeRHS + Optional(attr_list)
