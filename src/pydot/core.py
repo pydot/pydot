@@ -27,7 +27,6 @@ from pydot.constants import (
 )
 from pydot.utils import (
     format_for_lookup,
-    possibly_unquoted,
     quote_attr_if_necessary,
     quote_id_if_necessary,
 )
@@ -163,7 +162,6 @@ def call_graphviz(
     stdout_data, stderr_data = process.communicate()
 
     return stdout_data, stderr_data, process
-
 
 
 def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
@@ -1051,10 +1049,10 @@ class Graph(Common):
         # For example, ('<<i>html</i>>', 'abc') will be expanded to look for
         # ('<<i>html</i>>', '"abc"') as well, even though the HTML-like
         # string has no alternate quoted form.
-        edges = list(
+        edges = set(
             itertools.zip_longest(
-                src_eps,
-                dst_eps,
+                src_eps * 2,
+                dst_eps + list(reversed(dst_eps)),
                 fillvalue=src_eps[0] if len(src_eps) == 1 else dst_eps[0],
             )
         )
