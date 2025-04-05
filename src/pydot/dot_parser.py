@@ -40,7 +40,7 @@ from pyparsing import (
 
 import pydot.core
 from pydot.classes import AttributeDict, FrozenDict
-from pydot.constants import DOT_KEYWORDS
+from pydot.utils import possibly_unquoted
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -416,22 +416,13 @@ def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
     return n
 
 
-QUOTED_CHARS = [":", '"']
-
-
-def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
-    if not s.str or not (s.str.startswith('"') and s.str.endswith('"')):
+def handle_quotes(s: ParseResults) -> T.Union[str, ParseResults]:
+    if not s.str:
         return s
-    qs: str = s.str[1:-1]
-    if qs.startswith("<") or qs.endswith(">"):
+    out: str = possibly_unquoted(s.str)
+    if out == s.str:
         return s
-    if any(qs.find(c) >= 0 for c in QUOTED_CHARS):
-        return s
-    if qs.lower() in DOT_KEYWORDS:
-        return s
-    if qs.isascii():
-        return qs
-    return s
+    return out
 
 
 class GraphParser:
@@ -456,7 +447,7 @@ class GraphParser:
             '"', multiline=True, unquoteResults=False, escChar="\\"
         )
         .set_results_name("str")
-        .set_parse_action(possibly_unquote)
+        .set_parse_action(handle_quotes)
     )
 
     float_number = Combine(

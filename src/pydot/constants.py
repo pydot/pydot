@@ -6,6 +6,8 @@
 
 DOT_KEYWORDS = ["graph", "digraph", "strict", "edge", "node", "subgraph"]
 
+ID_QUOTED_CHARS = [":", '"']
+
 
 # fmt: off
 GRAPH_ATTRIBUTES = {
