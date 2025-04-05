@@ -1006,7 +1006,7 @@ class Graph(Common):
                 index = dst
             src, dst = src_or_list
         else:
-            src, dst = src_or_list, dst
+            src = src_or_list
 
         if isinstance(src, Node):
             src = src.get_name()
