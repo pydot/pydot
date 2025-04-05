@@ -38,7 +38,7 @@ from pyparsing import (
     restOfLine,
 )
 
-import pydot
+import pydot.core
 from pydot.classes import AttributeDict, FrozenDict
 from pydot.constants import DOT_KEYWORDS
 
@@ -85,7 +85,7 @@ class HTML(Token):
     """Parsing for HTML-like strings."""
 
     def __init__(self) -> None:
-        super().__init__()  # type: ignore
+        super().__init__()
 
     def parseImpl(
         self, instring: str, loc: int, do_actions: bool = True
@@ -114,10 +114,10 @@ class HTML(Token):
 
 def push_top_graph_stmt(
     s: str, loc: int, toks: ParseResults
-) -> T.Union[T.List["pydot.core.Dot"], "pydot.core.Dot"]:
+) -> T.Union[T.List[pydot.core.Dot], pydot.core.Dot]:
     attrs = {}
     top_graphs = []
-    g: pydot.Dot = None  # type: ignore
+    g: pydot.core.Dot = None  # type: ignore
 
     for element in toks:
         if (
@@ -133,7 +133,7 @@ def push_top_graph_stmt(
         elif element in ["graph", "digraph"]:
             attrs = {}
 
-            g = pydot.Dot(graph_type=element, **attrs)
+            g = pydot.core.Dot(graph_type=element, **attrs)
             attrs["type"] = element
 
             top_graphs.append(g)
@@ -141,7 +141,7 @@ def push_top_graph_stmt(
         elif isinstance(element, str):
             g.set_name(element)
 
-        elif isinstance(element, pydot.Subgraph):
+        elif isinstance(element, pydot.core.Subgraph):
             g.obj_dict["attributes"].update(element.obj_dict["attributes"])
             g.obj_dict["edges"].update(element.obj_dict["edges"])
             g.obj_dict["nodes"].update(element.obj_dict["nodes"])
@@ -197,7 +197,11 @@ def update_parent_graph_hierarchy(
                     for idx, vertex in enumerate(obj["points"]):
                         if isinstance(
                             vertex,
-                            (pydot.Graph, pydot.Subgraph, pydot.Cluster),
+                            (
+                                pydot.core.Graph,
+                                pydot.core.Subgraph,
+                                pydot.core.Cluster,
+                            ),
                         ):
                             vertex.set_parent_graph(parent_graph)
                         if isinstance(vertex, FrozenDict):
@@ -231,15 +235,15 @@ def add_elements(
         defaults_edge = {}
 
     for elm_idx, element in enumerate(toks):
-        if isinstance(element, (pydot.Subgraph, pydot.Cluster)):
+        if isinstance(element, (pydot.core.Subgraph, pydot.core.Cluster)):
             add_defaults(element, defaults_graph)
             g.add_subgraph(element)
 
-        elif isinstance(element, pydot.Node):
+        elif isinstance(element, pydot.core.Node):
             add_defaults(element, defaults_node)
             g.add_node(element)
 
-        elif isinstance(element, pydot.Edge):
+        elif isinstance(element, pydot.core.Edge):
             add_defaults(element, defaults_edge)
             g.add_edge(element)
 
@@ -255,15 +259,15 @@ def add_elements(
 
         elif isinstance(element, DefaultStatement):
             if element.default_type == "graph":
-                default_graph_attrs = pydot.Node("graph", **element.attrs)
+                default_graph_attrs = pydot.core.Node("graph", **element.attrs)
                 g.add_node(default_graph_attrs)
 
             elif element.default_type == "node":
-                default_node_attrs = pydot.Node("node", **element.attrs)
+                default_node_attrs = pydot.core.Node("node", **element.attrs)
                 g.add_node(default_node_attrs)
 
             elif element.default_type == "edge":
-                default_edge_attrs = pydot.Node("edge", **element.attrs)
+                default_edge_attrs = pydot.core.Node("edge", **element.attrs)
                 g.add_node(default_edge_attrs)
                 defaults_edge.update(element.attrs)
 
@@ -279,18 +283,14 @@ def add_elements(
             raise ValueError(f"Unknown element statement: {element}")
 
 
-def push_graph_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> "pydot.core.Subgraph":
-    g = pydot.Subgraph("")
+def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
+    g = pydot.core.Subgraph("")
     add_elements(g, toks)
     return g
 
 
-def push_subgraph_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> "pydot.core.Subgraph":
-    g = pydot.Subgraph("")
+def push_subgraph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
+    g = pydot.core.Subgraph("")
     for e in toks:
         if len(e) == 3:
             e[2].set_name(e[1])
@@ -305,9 +305,7 @@ def push_subgraph_stmt(
     return g
 
 
-def push_default_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> DefaultStatement:
+def push_default_stmt(toks: ParseResults) -> DefaultStatement:
     # The pydot class instances should be marked as
     # default statements to be inherited by actual
     # graphs, nodes and edges.
@@ -324,7 +322,7 @@ def push_default_stmt(
         raise ValueError(f"Unknown default statement: {toks}")
 
 
-def push_attr_list(s: str, loc: int, toks: ParseResults) -> P_AttrList:
+def push_attr_list(toks: ParseResults) -> P_AttrList:
     p = P_AttrList(toks)
     return p
 
@@ -347,9 +345,7 @@ def do_node_ports(node: T.Any) -> str:
     return node_port
 
 
-def push_edge_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> T.List["pydot.core.Edge"]:
+def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -357,7 +353,7 @@ def push_edge_stmt(
 
     e = []
 
-    if isinstance(toks[0][0], pydot.Graph):
+    if isinstance(toks[0][0], pydot.core.Graph):
         n_prev = FrozenDict(toks[0][0].obj_dict)
     else:
         n_prev = toks[0][0] + do_node_ports(toks[0])
@@ -366,12 +362,14 @@ def push_edge_stmt(
         n_next_list = [[n.get_name()] for n in toks[2][0]]
         for n_next in list(n_next_list):
             n_next_port = do_node_ports(n_next)
-            e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
+            e.append(pydot.core.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
-    elif isinstance(toks[2][0], pydot.Graph):
-        e.append(pydot.Edge(n_prev, FrozenDict(toks[2][0].obj_dict), **attrs))
+    elif isinstance(toks[2][0], pydot.core.Graph):
+        e.append(
+            pydot.core.Edge(n_prev, FrozenDict(toks[2][0].obj_dict), **attrs)
+        )
 
-    elif isinstance(toks[2][0], pydot.Node):
+    elif isinstance(toks[2][0], pydot.core.Node):
         node = toks[2][0]
 
         name_port: str
@@ -380,7 +378,7 @@ def push_edge_stmt(
         else:
             name_port = node.get_name()
 
-        e.append(pydot.Edge(n_prev, name_port, **attrs))
+        e.append(pydot.core.Edge(n_prev, name_port, **attrs))
 
     # if the target of this edge is the name of a node
     elif isinstance(toks[2][0], str):
@@ -391,7 +389,7 @@ def push_edge_stmt(
                 continue
 
             n_next_port = do_node_ports(n_next)
-            e.append(pydot.Edge(n_prev, n_next[0] + n_next_port, **attrs))
+            e.append(pydot.core.Edge(n_prev, n_next[0] + n_next_port, **attrs))
 
             n_prev = n_next[0] + n_next_port  # type: ignore
     else:
@@ -403,7 +401,7 @@ def push_edge_stmt(
     return e
 
 
-def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
+def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
     if len(toks) == 2:
         attrs = toks[1].attrs
     else:
@@ -414,7 +412,7 @@ def push_node_stmt(s: str, loc: int, toks: ParseResults) -> "pydot.core.Node":
         if len(node_name) > 0:
             node_name = node_name[0]
 
-    n = pydot.Node(str(node_name), **attrs)
+    n = pydot.core.Node(str(node_name), **attrs)
     return n
 
 
@@ -436,140 +434,133 @@ def possibly_unquote(s: ParseResults) -> T.Union[str, ParseResults]:
     return s
 
 
-graphparser = None
+class GraphParser:
+    """Pyparsing grammar for graphviz 'dot' syntax."""
 
+    # keywords
+    strict_ = CaselessLiteral("strict")
+    graph_ = CaselessLiteral("graph")
+    digraph_ = CaselessLiteral("digraph")
+    subgraph_ = CaselessLiteral("subgraph")
+    node_ = CaselessLiteral("node")
+    edge_ = CaselessLiteral("edge")
 
-def graph_definition() -> ParserElement:
-    global graphparser
+    # token definitions
+    identifier = Combine(
+        WordStart(pyparsing_unicode.BasicMultilingualPlane.alphas + "_")
+        + Word(pyparsing_unicode.BasicMultilingualPlane.alphanums + "_")
+    ).set_name("identifier")
 
-    if not graphparser:
-        # keywords
-        strict_ = CaselessLiteral("strict")
-        graph_ = CaselessLiteral("graph")
-        digraph_ = CaselessLiteral("digraph")
-        subgraph_ = CaselessLiteral("subgraph")
-        node_ = CaselessLiteral("node")
-        edge_ = CaselessLiteral("edge")
-
-        # token definitions
-        identifier = Combine(
-            WordStart(pyparsing_unicode.BasicMultilingualPlane.alphas + "_")
-            + Word(pyparsing_unicode.BasicMultilingualPlane.alphanums + "_")
-        ).set_name("identifier")
-
-        double_quoted_string = (
-            QuotedString(
-                '"', multiline=True, unquoteResults=False, escChar="\\"
-            )
-            .set_results_name("str")
-            .set_parse_action(possibly_unquote)
+    double_quoted_string = (
+        QuotedString(
+            '"', multiline=True, unquoteResults=False, escChar="\\"
         )
+        .set_results_name("str")
+        .set_parse_action(possibly_unquote)
+    )
 
-        float_number = Combine(
-            Optional("-")
-            + (
-                "." - Word(nums)
-                | Word(nums) + Optional("." + Optional(Word(nums)))
-            )
-        ).set_name("float_number")
-
-        ID = (
-            HTML() | double_quoted_string | float_number | identifier
-        ).setName("ID")
-
-        port = (
-            Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
-        ).setName("port")
-
-        node_id = ID + Optional(port)
-        a_list = OneOrMore(
-            ID + Optional("=" - ID) + Optional(",").suppress()
-        ).setName("a_list")
-
-        attr_list = OneOrMore(
-            Suppress("[") + Optional(a_list) + Suppress("]")
-        ).setName("attr_list")
-
-        attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName(
-            "attr_stmt"
+    float_number = Combine(
+        Optional("-")
+        + (
+            "." - Word(nums)
+            | Word(nums) + Optional("." + Optional(Word(nums)))
         )
+    ).set_name("float_number")
 
-        stmt_list = Forward()
+    ID = (
+        HTML() | double_quoted_string | float_number | identifier
+    ).setName("ID")
 
-        graph_stmt = Group(
-            Suppress("{") + Optional(stmt_list) + Suppress("}")
-        ).setName("graph_stmt")
+    port = (
+        Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
+    ).setName("port")
 
-        subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName(
-            "subgraph"
-        )
+    node_id = ID + Optional(port)
+    a_list = OneOrMore(
+        ID + Optional("=" - ID) + Optional(",").suppress()
+    ).setName("a_list")
 
-        edge_point = Group(subgraph | graph_stmt | node_id).setName(
-            "edge_point"
-        )
-        edgeop = (Literal("--") | Literal("->")).setName("edgeop")
-        edgeRHS = OneOrMore(edgeop - edge_point)
-        edge_stmt = edge_point + edgeRHS + Optional(attr_list)
+    attr_list = OneOrMore(
+        Suppress("[") + Optional(a_list) + Suppress("]")
+    ).setName("attr_list")
 
-        node_stmt = (node_id + Optional(attr_list)).setName("node_stmt")
+    attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName(
+        "attr_stmt"
+    )
 
-        assignment = (ID + "=" - ID).setName("assignment")
-        stmt = (
-            assignment
-            | edge_stmt
-            | attr_stmt
-            | subgraph
-            | graph_stmt
-            | node_stmt
-        ).setName("stmt")
-        stmt_list <<= OneOrMore(stmt + Optional(";").suppress())
+    stmt_list = Forward()
 
-        graphparser = OneOrMore(
-            (
-                Optional(strict_)
-                + Group(graph_ | digraph_)
-                + Optional(ID)
-                + graph_stmt
-                + Optional(";").suppress()
-            ).setResultsName("graph")
-        )
+    graph_stmt = Group(
+        Suppress("{") + Optional(stmt_list) + Suppress("}")
+    ).setName("graph_stmt")
 
-        singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
+    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName(
+        "subgraph"
+    )
 
-        # actions
+    edge_point = Group(subgraph | graph_stmt | node_id).setName(
+        "edge_point"
+    )
+    edgeop = (Literal("--") | Literal("->")).setName("edgeop")
+    edgeRHS = OneOrMore(edgeop - edge_point)
+    edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
-        graphparser.ignore(singleLineComment)
-        graphparser.ignore(cStyleComment)
+    node_stmt = (node_id + Optional(attr_list)).setName("node_stmt")
 
-        assignment.setParseAction(push_attr_list)
-        a_list.setParseAction(push_attr_list)
-        edge_stmt.setParseAction(push_edge_stmt)
-        node_stmt.setParseAction(push_node_stmt)
-        attr_stmt.setParseAction(push_default_stmt)
+    assignment = (ID + "=" - ID).setName("assignment")
+    stmt = (
+        assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt
+    ).setName("stmt")
+    stmt_list <<= OneOrMore(stmt + Optional(";").suppress())
 
-        subgraph.setParseAction(push_subgraph_stmt)
-        graph_stmt.setParseAction(push_graph_stmt)
-        graphparser.setParseAction(push_top_graph_stmt)
+    parser = OneOrMore(
+        (
+            Optional(strict_)
+            + Group(graph_ | digraph_)
+            + Optional(ID)
+            + graph_stmt
+            + Optional(";").suppress()
+        ).setResultsName("graph")
+    )
 
-    return graphparser
+    singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
+
+    # actions
+
+    parser.ignore(singleLineComment)
+    parser.ignore(cStyleComment)
+    parser.parse_with_tabs()
+
+    assignment.setParseAction(push_attr_list)
+    a_list.setParseAction(push_attr_list)
+    edge_stmt.setParseAction(push_edge_stmt)
+    node_stmt.setParseAction(push_node_stmt)
+    attr_stmt.setParseAction(push_default_stmt)
+
+    subgraph.setParseAction(push_subgraph_stmt)
+    graph_stmt.setParseAction(push_graph_stmt)
+    parser.setParseAction(push_top_graph_stmt)
 
 
-def parse_dot_data(s: str) -> T.Optional[T.List["pydot.core.Dot"]]:
+def parse_dot_data(s: str) -> T.Optional[T.List[pydot.core.Dot]]:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
     Use a lock if needed.
 
     @return: Graphs that result from parsing.
-    @rtype: `list` of `pydot.Dot`
+    @rtype: `list` of `pydot.core.Dot`
     """
     try:
-        graphparser = graph_definition()
-        graphparser.parseWithTabs()
-        tokens = graphparser.parseString(s)
+        graphparser = GraphParser.parser
+        tokens = graphparser.parse_string(s)
         return list(tokens)
     except ParseException as err:
         print(err.line)
         print(" " * (err.column - 1) + "^")
         print(err)
         return None
+
+
+# Backwards compatibility
+graphparser: ParserElement = GraphParser.parser
