@@ -45,15 +45,13 @@ class RenderResult:
 
     @property
     def dot_file(self):
-        """Get the graph data used to generate the file."""
-        return self._dot_file
+        """Get the source filepath used to generate the render."""
+        return NotImplemented
 
     @property
     def dot_src(self):
-        if self._dot_src is None and self._dot_file is not None:
-            with open(self._dot_file, encoding="utf-8") as _in:
-                self._dot_src = _in.read()
-        return self._dot_src
+        """Get the graph data used to generate the render."""
+        return NotImplemented
 
     @functools.cached_property
     def checksum(self):

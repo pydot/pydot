@@ -27,8 +27,10 @@ from pyparsing import (
     ParserElement,
     ParseResults,
     QuotedString,
+    Suppress,
     Token,
     Word,
+    WordStart,
     cStyleComment,
     lineno,
     nums,
@@ -38,6 +40,7 @@ from pyparsing import (
 
 import pydot.core
 from pydot.classes import AttributeDict, FrozenDict
+from pydot.utils import possibly_unquoted
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
@@ -413,19 +416,17 @@ def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
     return n
 
 
+def handle_quotes(s: ParseResults) -> T.Union[str, ParseResults]:
+    if not s.str:
+        return s
+    out: str = possibly_unquoted(s.str)
+    if out == s.str:
+        return s
+    return out
+
+
 class GraphParser:
     """Pyparsing grammar for graphviz 'dot' syntax."""
-
-    # punctuation
-    colon = Literal(":")
-    lbrace = Literal("{")
-    rbrace = Literal("}")
-    lbrack = Literal("[")
-    rbrack = Literal("]")
-    equals = Literal("=")
-    comma = Literal(",")
-    semi = Literal(";")
-    minus = Literal("-")
 
     # keywords
     strict_ = CaselessLiteral("strict")
@@ -436,67 +437,66 @@ class GraphParser:
     edge_ = CaselessLiteral("edge")
 
     # token definitions
-    identifier = Word(
-        pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
-    ).setName("identifier")
+    identifier = Combine(
+        WordStart(pyparsing_unicode.BasicMultilingualPlane.alphas + "_")
+        + Word(pyparsing_unicode.BasicMultilingualPlane.alphanums + "_")
+    ).set_name("identifier")
 
-    double_quoted_string = QuotedString(
-        '"', multiline=True, unquoteResults=False, escChar="\\"
+    double_quoted_string = (
+        QuotedString('"', multiline=True, unquoteResults=False, escChar="\\")
+        .set_results_name("str")
+        .set_parse_action(handle_quotes)
     )
 
-    ID = (identifier | HTML() | double_quoted_string).setName("ID")
-
     float_number = Combine(
-        Optional(minus) + OneOrMore(Word(nums + "."))
-    ).setName("float_number")
+        Optional("-")
+        + (
+            "." - Word(nums)
+            | Word(nums) + Optional("." + Optional(Word(nums)))
+        )
+    ).set_name("float_number")
 
-    righthand_id = (float_number | ID).setName("righthand_id")
+    ID = (HTML() | double_quoted_string | float_number | identifier).setName(
+        "ID"
+    )
 
     port = (
-        Group(Group(colon + ID) + Group(colon + ID)) | Group(Group(colon + ID))
+        Group(Group(":" + ID) + Group(":" + ID)) | Group(Group(":" + ID))
     ).setName("port")
 
     node_id = ID + Optional(port)
     a_list = OneOrMore(
-        ID + Optional(equals + righthand_id) + Optional(comma.suppress())
+        ID + Optional("=" - ID) + Optional(",").suppress()
     ).setName("a_list")
 
     attr_list = OneOrMore(
-        lbrack.suppress() + Optional(a_list) + rbrack.suppress()
+        Suppress("[") + Optional(a_list) + Suppress("]")
     ).setName("attr_list")
 
     attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName(
         "attr_stmt"
     )
 
-    edgeop = (Literal("--") | Literal("->")).setName("edgeop")
-
     stmt_list = Forward()
+
     graph_stmt = Group(
-        lbrace.suppress()
-        + Optional(stmt_list)
-        + rbrace.suppress()
-        + Optional(semi.suppress())
+        Suppress("{") + Optional(stmt_list) + Suppress("}")
     ).setName("graph_stmt")
-
-    edge_point = Forward()
-
-    edgeRHS = OneOrMore(edgeop + edge_point)
-    edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
     subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
 
-    edge_point << Group(subgraph | graph_stmt | node_id).setName("edge_point")
+    edge_point = Group(subgraph | graph_stmt | node_id).setName("edge_point")
+    edgeop = (Literal("--") | Literal("->")).setName("edgeop")
+    edgeRHS = OneOrMore(edgeop - edge_point)
+    edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
-    node_stmt = (
-        node_id + Optional(attr_list) + Optional(semi.suppress())
-    ).setName("node_stmt")
+    node_stmt = (node_id + Optional(attr_list)).setName("node_stmt")
 
-    assignment = (ID + equals + righthand_id).setName("assignment")
+    assignment = (ID + "=" - ID).setName("assignment")
     stmt = (
         assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt
     ).setName("stmt")
-    stmt_list << OneOrMore(stmt + Optional(semi.suppress()))
+    stmt_list <<= OneOrMore(stmt + Optional(";").suppress())
 
     parser = OneOrMore(
         (
@@ -504,6 +504,7 @@ class GraphParser:
             + Group(graph_ | digraph_)
             + Optional(ID)
             + graph_stmt
+            + Optional(";").suppress()
         ).setResultsName("graph")
     )
 
