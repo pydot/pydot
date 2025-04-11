@@ -1,0 +1,5 @@
+graph G {
+  a -- {b c} -- d [penwidth=5];
+  {e; f;} -- {x [color=blue]; y [color=green]; } [color=red];
+}
+
