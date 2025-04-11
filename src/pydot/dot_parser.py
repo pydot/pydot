@@ -29,6 +29,7 @@ from pyparsing import (
     QuotedString,
     Token,
     Word,
+    autoname_elements,
     cStyleComment,
     lineno,
     nums,
@@ -438,38 +439,34 @@ class GraphParser:
     # token definitions
     identifier = Word(
         pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
-    ).setName("identifier")
+    )
 
     double_quoted_string = QuotedString(
         '"', multiline=True, unquoteResults=False, escChar="\\"
     )
 
-    ID = (identifier | HTML() | double_quoted_string).setName("ID")
+    ID = identifier | HTML() | double_quoted_string
 
-    float_number = Combine(
-        Optional(minus) + OneOrMore(Word(nums + "."))
-    ).setName("float_number")
+    float_number = Combine(Optional(minus) + OneOrMore(Word(nums + ".")))
 
-    righthand_id = (float_number | ID).setName("righthand_id")
+    righthand_id = float_number | ID
 
-    port = (
-        Group(Group(colon + ID) + Group(colon + ID)) | Group(Group(colon + ID))
-    ).setName("port")
+    port = Group(Group(colon + ID) + Group(colon + ID)) | Group(
+        Group(colon + ID)
+    )
 
     node_id = ID + Optional(port)
     a_list = OneOrMore(
         ID + Optional(equals + righthand_id) + Optional(comma.suppress())
-    ).setName("a_list")
+    )
 
     attr_list = OneOrMore(
         lbrack.suppress() + Optional(a_list) + rbrack.suppress()
-    ).setName("attr_list")
-
-    attr_stmt = (Group(graph_ | node_ | edge_) + attr_list).setName(
-        "attr_stmt"
     )
 
-    edgeop = (Literal("--") | Literal("->")).setName("edgeop")
+    attr_stmt = Group(graph_ | node_ | edge_) + attr_list
+
+    edgeop = Literal("--") | Literal("->")
 
     stmt_list = Forward()
     graph_stmt = Group(
@@ -477,34 +474,31 @@ class GraphParser:
         + Optional(stmt_list)
         + rbrace.suppress()
         + Optional(semi.suppress())
-    ).setName("graph_stmt")
+    )
 
     edge_point = Forward()
 
     edgeRHS = OneOrMore(edgeop + edge_point)
     edge_stmt = edge_point + edgeRHS + Optional(attr_list)
 
-    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt).setName("subgraph")
+    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt)
 
-    edge_point << Group(subgraph | graph_stmt | node_id).setName("edge_point")
+    edge_point <<= Group(subgraph | graph_stmt | node_id)
 
-    node_stmt = (
-        node_id + Optional(attr_list) + Optional(semi.suppress())
-    ).setName("node_stmt")
+    node_stmt = node_id + Optional(attr_list) + Optional(semi.suppress())
 
-    assignment = (ID + equals + righthand_id).setName("assignment")
+    assignment = ID + equals + righthand_id
+
     stmt = (
         assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt
-    ).setName("stmt")
-    stmt_list << OneOrMore(stmt + Optional(semi.suppress()))
+    )
+    stmt_list <<= OneOrMore(stmt + Optional(semi.suppress()))
 
     parser = OneOrMore(
-        (
-            Optional(strict_)
-            + Group(graph_ | digraph_)
-            + Optional(ID)
-            + graph_stmt
-        ).setResultsName("graph")
+        Optional(strict_)
+        + Group(graph_ | digraph_)
+        + Optional(ID)
+        + graph_stmt
     )
 
     singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
@@ -524,6 +518,8 @@ class GraphParser:
     subgraph.setParseAction(push_subgraph_stmt)
     graph_stmt.setParseAction(push_graph_stmt)
     parser.setParseAction(push_top_graph_stmt)
+
+    autoname_elements()
 
 
 def parse_dot_data(s: str) -> T.Optional[T.List[pydot.core.Dot]]:
