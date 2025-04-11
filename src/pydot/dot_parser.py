@@ -18,6 +18,7 @@ import typing as T
 from pyparsing import (
     CaselessLiteral,
     Combine,
+    DelimitedList,
     Forward,
     Group,
     Literal,
@@ -351,50 +352,26 @@ def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
 
     e = []
 
-    if isinstance(toks[0][0], pydot.core.Graph):
-        n_prev = FrozenDict(toks[0][0].obj_dict)
-    else:
-        n_prev = toks[0][0] + do_node_ports(toks[0])
+    def make_endpoint(
+        ep: T.Union[pydot.core.Common, T.List[T.Any], str],
+    ) -> T.Union[FrozenDict, str]:
+        if isinstance(ep, (list, tuple)) and len(ep) == 1:
+            # This is a hack for the Group()ed edge_point definition
+            ep = ep[0]
+        if isinstance(ep, pydot.core.Subgraph):
+            ep.obj_dict["show_keyword"] = False
+            return FrozenDict(ep.obj_dict)
+        if isinstance(ep, (list, tuple)):
+            return str(ep[0]) + do_node_ports(ep)
+        return str(ep)
 
-    if isinstance(toks[2][0], ParseResults):
-        n_next_list = [[n.get_name()] for n in toks[2][0]]
-        for n_next in list(n_next_list):
-            n_next_port = do_node_ports(n_next)
-            e.append(pydot.core.Edge(n_prev, n_next[0] + n_next_port, **attrs))
+    endpoints = [t for t in toks.as_list() if not isinstance(t, P_AttrList)]
 
-    elif isinstance(toks[2][0], pydot.core.Graph):
-        e.append(
-            pydot.core.Edge(n_prev, FrozenDict(toks[2][0].obj_dict), **attrs)
-        )
-
-    elif isinstance(toks[2][0], pydot.core.Node):
-        node = toks[2][0]
-
-        name_port: str
-        if node.get_port() is not None:
-            name_port = node.get_name() + ":" + node.get_port()  # type: ignore
-        else:
-            name_port = node.get_name()
-
-        e.append(pydot.core.Edge(n_prev, name_port, **attrs))
-
-    # if the target of this edge is the name of a node
-    elif isinstance(toks[2][0], str):
-        for n_next in list(tuple(toks)[2::2]):
-            if isinstance(n_next, P_AttrList) or not isinstance(
-                n_next[0], str
-            ):
-                continue
-
-            n_next_port = do_node_ports(n_next)
-            e.append(pydot.core.Edge(n_prev, n_next[0] + n_next_port, **attrs))
-
-            n_prev = n_next[0] + n_next_port  # type: ignore
-    else:
-        raise Exception(
-            f"Edge target {toks[2][0]} with type {type(toks[2][0])}"
-            " unsupported."
-        )
+    n_prev = make_endpoint(endpoints[0])
+    for endpoint in endpoints[1:]:
+        n_next = make_endpoint(endpoint)
+        e.append(pydot.core.Edge(n_prev, n_next, **attrs))
+        n_prev = n_next
 
     return e
 
@@ -466,8 +443,6 @@ class GraphParser:
 
     attr_stmt = Group(graph_ | node_ | edge_) + attr_list
 
-    edgeop = Literal("--") | Literal("->")
-
     stmt_list = Forward()
     graph_stmt = Group(
         lbrace.suppress()
@@ -476,14 +451,13 @@ class GraphParser:
         + Optional(semi.suppress())
     )
 
-    edge_point = Forward()
-
-    edgeRHS = OneOrMore(edgeop + edge_point)
-    edge_stmt = edge_point + edgeRHS + Optional(attr_list)
-
     subgraph = Group(subgraph_ + Optional(ID) + graph_stmt)
 
-    edge_point <<= Group(subgraph | graph_stmt | node_id)
+    edgeop = Literal("--") | Literal("->")
+    edge_point = Group(subgraph | graph_stmt | node_id)
+    edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2) + Optional(
+        attr_list
+    )
 
     node_stmt = node_id + Optional(attr_list) + Optional(semi.suppress())
 
