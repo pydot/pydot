@@ -284,6 +284,7 @@ def add_elements(
 
 def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
+    g.obj_dict["show_keyword"] = False
     add_elements(g, toks)
     return g
 
@@ -359,7 +360,6 @@ def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
             # This is a hack for the Group()ed edge_point definition
             ep = ep[0]
         if isinstance(ep, pydot.core.Subgraph):
-            ep.obj_dict["show_keyword"] = False
             return FrozenDict(ep.obj_dict)
         if isinstance(ep, (list, tuple)):
             return str(ep[0]) + do_node_ports(ep)
