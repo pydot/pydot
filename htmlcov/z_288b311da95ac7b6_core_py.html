@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/pydot/core.py: 84%</title>
+    <title>Coverage for src/pydot/core.py: 85%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src/pydot/core.py</b>:
-            <span class="pc_cov">84%</span>
+            <span class="pc_cov">85%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -56,10 +56,10 @@
         </aside>
         <h2>
             <span class="text">653 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">566<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">87<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">567<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">86<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
-            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">30<span class="text"> partial</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">27<span class="text"> partial</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="z_288b311da95ac7b6_classes_py.html">&#xab; prev</a> &nbsp; &nbsp;
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-05 11:06 +0000
+            created at 2025-04-13 17:42 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -657,13 +657,13 @@
     <p class="run"><span class="n"><a id="t573" href="#t573">573</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_top_graph_type</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">default</span><span class="op">:</span> <span class="nam">str</span> <span class="op">=</span> <span class="str">"graph"</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t574" href="#t574">574</a></span><span class="t">        <span class="str">"""Find the topmost parent graph type for the current object."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t575" href="#t575">575</a></span><span class="t">        <span class="nam">parent</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_parent_graph</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t576" href="#t576">576</a></span><span class="t">        <span class="key">while</span> <span class="key">True</span> <span class="key">and</span> <span class="nam">parent</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">576&#x202F;&#x219B;&#x202F;581</span><span class="annotate long">line 576 didn't jump to line 581 because the condition on line 576 was always true</span></span></p>
+    <p class="run"><span class="n"><a id="t576" href="#t576">576</a></span><span class="t">        <span class="key">while</span> <span class="key">True</span> <span class="key">and</span> <span class="nam">parent</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t577" href="#t577">577</a></span><span class="t">            <span class="nam">parent_</span> <span class="op">=</span> <span class="nam">parent</span><span class="op">.</span><span class="nam">get_parent_graph</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="par run show_par"><span class="n"><a id="t578" href="#t578">578</a></span><span class="t">            <span class="key">if</span> <span class="nam">parent_</span> <span class="op">==</span> <span class="nam">parent</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">578&#x202F;&#x219B;&#x202F;580</span><span class="annotate long">line 578 didn't jump to line 580 because the condition on line 578 was always true</span></span></p>
     <p class="run"><span class="n"><a id="t579" href="#t579">579</a></span><span class="t">                <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t580" href="#t580">580</a></span><span class="t">            <span class="nam">parent</span> <span class="op">=</span> <span class="nam">parent_</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t581" href="#t581">581</a></span><span class="t">        <span class="key">if</span> <span class="nam">parent</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">581&#x202F;&#x219B;&#x202F;582</span><span class="annotate long">line 581 didn't jump to line 582 because the condition on line 581 was never true</span></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t582" href="#t582">582</a></span><span class="t">            <span class="key">return</span> <span class="nam">default</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t581" href="#t581">581</a></span><span class="t">        <span class="key">if</span> <span class="nam">parent</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t582" href="#t582">582</a></span><span class="t">            <span class="key">return</span> <span class="nam">default</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t583" href="#t583">583</a></span><span class="t">        <span class="key">return</span> <span class="nam">cast</span><span class="op">(</span><span class="str">"str"</span><span class="op">,</span> <span class="nam">parent</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"type"</span><span class="op">,</span> <span class="nam">default</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t584" href="#t584">584</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t585" href="#t585">585</a></span><span class="t">    <span class="key">def</span> <span class="nam">set</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">name</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">value</span><span class="op">:</span> <span class="nam">Any</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1493,7 +1493,7 @@
     <p class="mis show_mis"><span class="n"><a id="t1409" href="#t1409">1409</a></span><span class="t">            <span class="nam">first_line</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="str">"strict"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1410" href="#t1410">1410</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1411" href="#t1411">1411</a></span><span class="t">        <span class="nam">graph_type</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">[</span><span class="str">"type"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t1412" href="#t1412">1412</a></span><span class="t">        <span class="key">if</span> <span class="nam">graph_type</span> <span class="op">!=</span> <span class="str">"subgraph"</span> <span class="key">or</span> <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"show_keyword"</span><span class="op">,</span> <span class="key">True</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">1412&#x202F;&#x219B;&#x202F;1420</span><span class="annotate long">line 1412 didn't jump to line 1420 because the condition on line 1412 was always true</span></span></p>
+    <p class="run"><span class="n"><a id="t1412" href="#t1412">1412</a></span><span class="t">        <span class="key">if</span> <span class="nam">graph_type</span> <span class="op">!=</span> <span class="str">"subgraph"</span> <span class="key">or</span> <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"show_keyword"</span><span class="op">,</span> <span class="key">True</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1413" href="#t1413">1413</a></span><span class="t">            <span class="nam">first_line</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">graph_type</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1414" href="#t1414">1414</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1415" href="#t1415">1415</a></span><span class="t">            <span class="com"># Suppressing the keyword hides the name as well</span>&nbsp;</span><span class="r"></span></p>
@@ -1925,7 +1925,7 @@
             <a class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-05 11:06 +0000
+            created at 2025-04-13 17:42 +0000
         </p>
     </div>
 </footer>
