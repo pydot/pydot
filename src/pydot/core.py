@@ -606,6 +606,16 @@ class Common:
         """
         return self.obj_dict["attributes"].get(name, None)
 
+    def resolve(self, name: str) -> Any:
+        """Resolve an attribute value, with defaults applied.
+
+        If the attribute 'name' is directly set on the graph element,
+        return its value. Otherwise, walk up the hierarchy and look for
+        any relevant default values for that attribute; return the first
+        one found.
+        """
+        return self.get(name)
+
     def get_attributes(self) -> Optional[AttributeDict]:
         """Get attributes of the object"""
         return self.obj_dict["attributes"]  # type: ignore
@@ -710,6 +720,13 @@ class Node(Common):
         """Get the node's port."""
         return self.obj_dict["port"]  # type: ignore
 
+    def resolve(self, name: str) -> Any:
+        if self.get(name) is not None:
+            return self.get(name)
+        parent = self.get_parent_graph()
+        if parent is not None:
+            return parent.find_default(name, "node", self.obj_dict["sequence"])
+
     def add_style(self, style: str) -> None:
         styles = self.obj_dict["attributes"].get("style", None)
         if not styles and style:
@@ -803,6 +820,13 @@ class Edge(Common):
     def get_destination(self) -> Optional[str]:
         """Get the edge's destination node name."""
         return self.obj_dict["points"][1]  # type: ignore
+
+    def resolve(self, name: str) -> Any:
+        if self.get(name) is not None:
+            return self.get(name)
+        parent = self.get_parent_graph()
+        if parent is not None:
+            return parent.find_default(name, "edge", self.obj_dict["sequence"])
 
     def __hash__(self) -> int:
         return hash(hash(self.get_source()) + hash(self.get_destination()))
@@ -1082,6 +1106,43 @@ class Graph(Common):
         seq: int = self.obj_dict["current_child_sequence"]
         self.obj_dict["current_child_sequence"] += 1
         return seq
+
+    def find_default(
+        self, name: str, element_type: str, seq_end: int = -1
+    ) -> Any:
+        """Find the default value for attribute 'name' on 'element_type'.
+
+        If 'seq_end' is set, use it to limit the range of sequence numbers
+        considered. (Supports slice semantics, i.e. negative values are
+        offsets from the end of the available range.)"""
+        while seq_end < 0:
+            max = self.obj_dict["current_child_sequence"]
+            seq_end = max + 1 + seq_end
+
+        if element_type in ["node", "edge", "graph"]:
+            defaults = sorted(
+                filter(
+                    lambda e: e.obj_dict["sequence"] in range(0, seq_end + 1),
+                    self.get_node(element_type),
+                ),
+                key=lambda f: f.obj_dict["sequence"],
+            )
+            for d in reversed(defaults):
+                if d.get(name) is not None:
+                    return d.get(name)
+        if element_type == "graph" and self.get(name) is not None:
+            return self.get(name)
+        parent = self.get_parent_graph()
+        if parent and parent is not self:
+            return parent.find_default(
+                name, element_type, self.obj_dict["sequence"]
+            )
+        return None
+
+    def resolve(self, name: str) -> Any:
+        if self.get(name) is not None:
+            return self.get(name)
+        return self.find_default(name, "graph")
 
     def add_node(self, graph_node: Node) -> None:
         """Adds a node object to the graph.
