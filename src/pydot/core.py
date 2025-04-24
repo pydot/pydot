@@ -568,7 +568,7 @@ class Common:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Optional["Graph"]:
-        return self.obj_dict.get("parent_graph", None)  # type: ignore
+        return self.obj_dict.get("parent_graph", None)
 
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
@@ -1434,9 +1434,9 @@ class Graph(Common):
             edge_src_set, edge_dst_set = list(
                 zip(*[obj["points"] for obj in edge_obj_dicts])
             )
-            edge_src_set, edge_dst_set = set(edge_src_set), set(edge_dst_set)  # type: ignore
+            edge_src_set, edge_dst_set = set(edge_src_set), set(edge_dst_set)
         else:
-            edge_src_set, edge_dst_set = set(), set()  # type: ignore
+            edge_src_set, edge_dst_set = set(), set()
 
         node_obj_dicts = []
         for k in self.obj_dict["nodes"]:

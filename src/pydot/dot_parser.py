@@ -84,7 +84,7 @@ class HTML(Token):
     """Parsing for HTML-like strings."""
 
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__()  # type: ignore
 
     def parseImpl(
         self, instring: str, loc: int, do_actions: bool = True
