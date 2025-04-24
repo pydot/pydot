@@ -6,10 +6,41 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 (https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
 
 
-3.0.3 (unreleased)
+4.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Added:
+- Added initial type annotations. (#430)
+  There are still a lot of `Any`s, but Pydot now officially supports type annotations.
+- Added (fixed) complex edge parsing. (#467)
+  The parser now supports edges that contain subgraph endpoints.
+
+Changed:
+- Simplify `Common.get_top_graph_type` with a default. (#437)
+- Define parser elements in a separate `GraphParser` class. (#464)
+  It's a user-transparent change, but now it's easier to debug, test, and modify the parser.
+  See the related Pull Request for more information.
+- Improve return values and typing of setters and getters. (#470)
+
+Fixed:
+- Avoid subprocess window creation within `call_graphviz` on Windows. (#431)
+- Removed a blank line inserted after subgraphs in the `to_string()` output. (#434)
+- Fixed the issue where the parser breaks off lines at hash symbol following a HTML tag (#451)
+
+Removed:
+- Removed old, unused `Common.__get_attribute__`. (#426)
+
+
+3.0.4 (2025-01-05)
+------------------
+
+- Fixed capitalized keywords in labels being unquoted. (#449, #450)
+
+
+3.0.3 (2024-11-30)
+------------------
+
+- Fixed numeric quoting behavior. (#439)
 
 
 3.0.2 (2024-09-25)
