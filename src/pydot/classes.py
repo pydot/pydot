@@ -5,10 +5,7 @@
 """Frozen dictionaries."""
 
 import copy
-from typing import Any, Dict, Tuple
-
-# Backwards-compatible typing alias
-AttributeDict = Dict[str, Any]
+from typing import Any, Dict, Tuple, Union
 
 
 class FrozenDict(dict):  # type: ignore
@@ -85,3 +82,8 @@ class FrozenDict(dict):  # type: ignore
     def __repr__(self) -> str:
         dict_repr = dict.__repr__(self)
         return f"FrozenDict({dict_repr})"
+
+
+# Backwards-compatible typing alias
+AttributeDict = Dict[str, Any]
+EdgeEndpoint = Union[str, int, float, FrozenDict]

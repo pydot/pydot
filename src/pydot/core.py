@@ -17,7 +17,7 @@ from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union, cast
 
 import pydot
 from pydot._vendor import tempfile
-from pydot.classes import AttributeDict, FrozenDict
+from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -776,21 +776,37 @@ class Edge(Common):
 
     def __init__(
         self,
-        src: Any = "",
-        dst: Any = "",
+        src: Union["EdgeDefinition", Sequence["EdgeDefinition"]] = "",
+        dst: "EdgeDefinition" = "",
         obj_dict: Optional[AttributeDict] = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
         if obj_dict is None:
-            if isinstance(src, (Node, Subgraph, Cluster)):
-                src = src.get_name()
-            if isinstance(dst, (Node, Subgraph, Cluster)):
-                dst = dst.get_name()
             if isinstance(src, (list, tuple)):
-                points = src
+                _src, _dst = src[0:2]
             else:
-                points = (src, dst)
+                _src, _dst = src, dst
+
+            ep0: EdgeEndpoint
+            ep1: EdgeEndpoint
+
+            if isinstance(_src, (Node, Subgraph, Cluster)):
+                ep0 = str(_src.get_name())
+            elif isinstance(_src, (FrozenDict, int, float)):
+                ep0 = _src
+            else:
+                ep0 = str(_src)
+
+            if isinstance(_dst, (Node, Subgraph, Cluster)):
+                ep1 = str(_dst.get_name())
+            elif isinstance(_dst, (FrozenDict, int, float)):
+                ep1 = _dst
+            else:
+                ep1 = str(_dst)
+
+            points = (ep0, ep1)
+
             self.obj_dict["points"] = points
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "edge"
@@ -800,13 +816,19 @@ class Edge(Common):
     def __str__(self) -> str:
         return self.to_string()
 
-    def get_source(self) -> Optional[str]:
-        """Get the edges source node name."""
-        return self.obj_dict["points"][0]  # type: ignore
+    def _get_endpoint(self, position: int) -> EdgeEndpoint:
+        ep = self.obj_dict["points"][position]
+        if isinstance(ep, (FrozenDict, int, float)):
+            return ep
+        return str(ep)
 
-    def get_destination(self) -> Optional[str]:
-        """Get the edge's destination node name."""
-        return self.obj_dict["points"][1]  # type: ignore
+    def get_source(self) -> EdgeEndpoint:
+        """Get the edge's source endpoint."""
+        return self._get_endpoint(0)
+
+    def get_destination(self) -> EdgeEndpoint:
+        """Get the edge's destination endpoint."""
+        return self._get_endpoint(1)
 
     def __hash__(self) -> int:
         return hash(hash(self.get_source()) + hash(self.get_destination()))
@@ -847,32 +869,32 @@ class Edge(Common):
 
         return False
 
-    def parse_node_ref(self, node_str: Any) -> Any:
-        if not isinstance(node_str, str):
-            return node_str
+    def parse_node_ref(self, node_ref: EdgeEndpoint) -> EdgeEndpoint:
+        if not isinstance(node_ref, str):
+            return node_ref
 
-        if node_str.startswith('"') and node_str.endswith('"'):
-            return node_str
+        if node_ref.startswith('"') and node_ref.endswith('"'):
+            return node_ref
 
-        node_port_idx = node_str.rfind(":")
+        node_port_idx = node_ref.rfind(":")
 
         if (
             node_port_idx > 0
-            and node_str[0] == '"'
-            and node_str[node_port_idx - 1] == '"'
+            and node_ref[0] == '"'
+            and node_ref[node_port_idx - 1] == '"'
         ):
-            return node_str
+            return node_ref
 
         if node_port_idx > 0:
-            a = node_str[:node_port_idx]
-            b = node_str[node_port_idx + 1 :]
+            a = node_ref[:node_port_idx]
+            b = node_ref[node_port_idx + 1 :]
 
             node = quote_id_if_necessary(a)
             node += ":" + quote_id_if_necessary(b)
 
             return node
 
-        return quote_id_if_necessary(node_str)
+        return quote_id_if_necessary(node_ref)
 
     def to_string(self, indent: Any = "", indent_level: int = 1) -> str:
         """Return string representation of edge in DOT language."""
@@ -888,10 +910,8 @@ class Edge(Common):
                     indent=indent, indent_level=indent_level, inline=True
                 )
             ]
-        elif isinstance(src, int):
-            edge = [str(src)]
         else:
-            edge = [src]
+            edge = [str(src)]
 
         if self.get_top_graph_type() == "digraph":
             edge.append("->")
@@ -905,10 +925,8 @@ class Edge(Common):
                     indent=indent, indent_level=indent_level, inline=True
                 )
             )
-        elif isinstance(dst, int):
-            edge.append(str(dst))
         else:
-            edge.append(dst)
+            edge.append(str(dst))
 
         return f"{indent_str}{' '.join(edge)}{self.attrs_string(prefix=' ')};"
 
@@ -1834,3 +1852,7 @@ class Dot(Graph):
 
 
 __generate_format_methods(Dot)
+
+
+# Type alias for forward-referenced type
+EdgeDefinition = Union[EdgeEndpoint, Node, Subgraph, Cluster]
