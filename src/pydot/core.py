@@ -6,6 +6,7 @@
 
 import copy
 import errno
+import itertools
 import logging
 import os
 import re
@@ -1431,12 +1432,13 @@ class Graph(Common):
             edge_obj_dicts.extend(self.obj_dict["edges"][k])
 
         if edge_obj_dicts:
-            edge_src_set, edge_dst_set = list(
-                zip(*[obj["points"] for obj in edge_obj_dicts])
+            edge_ep_set = set(
+                itertools.chain.from_iterable(
+                    obj["points"] for obj in edge_obj_dicts
+                )
             )
-            edge_src_set, edge_dst_set = set(edge_src_set), set(edge_dst_set)  # type: ignore
         else:
-            edge_src_set, edge_dst_set = set(), set()  # type: ignore
+            edge_ep_set = set()
 
         node_obj_dicts = []
         for k in self.obj_dict["nodes"]:
@@ -1452,16 +1454,13 @@ class Graph(Common):
         ]
         obj_list.sort(key=lambda x: x[0])
 
+        skip_disconnected = self.obj_dict.get("suppress_disconnected", False)
         for idx, obj in obj_list:
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
 
-                if self.obj_dict.get("suppress_disconnected", False):
-                    if (
-                        node.get_name() not in edge_src_set
-                        and node.get_name() not in edge_dst_set
-                    ):
-                        continue
+                if skip_disconnected and node.get_name() not in edge_ep_set:
+                    continue
 
                 node_str = node.to_string(
                     indent=indent, indent_level=indent_level + 1
