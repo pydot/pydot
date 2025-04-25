@@ -41,6 +41,8 @@ def objdict() -> T.Dict[str, T.Any]:
                 }
             ],
         },
+        "edges": {},
+        "subgraphs": {},
     }
 
 

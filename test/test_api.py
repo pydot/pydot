@@ -8,6 +8,7 @@ import os
 import pickle
 import string
 import textwrap
+import typing as T
 
 import pytest
 
@@ -423,6 +424,29 @@ def test_dot_args() -> None:
         outfile = os.path.join(tmp_dir, "test.svg")
         g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
         assert os.path.exists(outfile)
+
+
+def test_suppress_disconnected() -> None:
+    g1 = pydot.graph_from_dot_data(
+        "graph G { a; b; a -- b; c; d; a -- c; b -- c; e; }"
+    )
+    assert g1 is not None
+    gr1 = g1[0]
+    g2 = pydot.graph_from_dot_data(
+        "graph G { a; b; a -- b; c; a -- c; b -- c; }"
+    )
+    assert g2 is not None
+    gr2 = g2[0]
+    gr1.set_suppress_disconnected(True)
+    assert gr1.to_string() == gr2.to_string()
+
+
+def test_strict(objdict: T.Dict[str, T.Any]) -> None:
+    g = pydot.Dot(obj_dict=objdict)
+    g.set_parent_graph(g)
+    g.set_strict(True)
+    s = g.to_string()
+    assert s == "strict graph G {\n3;\n16;\n}\n"
 
 
 def test_edge_equality_basics_3_same_points_not_not_equal() -> None:
