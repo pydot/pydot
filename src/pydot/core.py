@@ -574,7 +574,7 @@ class Common:
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
         parent = self.get_parent_graph()
-        while True and parent is not None:
+        while parent is not None:
             parent_ = parent.get_parent_graph()
             if parent_ == parent:
                 break
@@ -607,17 +607,20 @@ class Common:
         """
         return self.obj_dict["attributes"].get(name, None)
 
-    def get_attributes(self) -> Optional[AttributeDict]:
+    def get_attributes(self) -> AttributeDict:
         """Get attributes of the object"""
-        return self.obj_dict["attributes"]  # type: ignore
+        return cast(AttributeDict, self.obj_dict.get("attributes", {}))
 
-    def set_sequence(self, seq: Optional[int]) -> None:
+    def set_sequence(self, seq: int) -> None:
         """Set sequence"""
         self.obj_dict["sequence"] = seq
 
     def get_sequence(self) -> Optional[int]:
         """Get sequence"""
-        return self.obj_dict["sequence"]  # type: ignore
+        seq = self.obj_dict.get("sequence")
+        if seq is None:
+            return seq
+        return int(seq)
 
     @staticmethod
     def get_indent(indent: Any, indent_level: int) -> str:
@@ -1024,12 +1027,12 @@ class Graph(Common):
         """
         self.obj_dict["simplify"] = simplify
 
-    def get_simplify(self) -> Optional[bool]:
+    def get_simplify(self) -> bool:
         """Get whether to simplify or not.
 
         Refer to set_simplify for more information.
         """
-        return self.obj_dict["simplify"]  # type: ignore
+        return bool(self.obj_dict.get("simplify", False))
 
     def set_type(self, graph_type: str) -> None:
         """Set the graph's type, 'graph' or 'digraph'."""
@@ -1054,14 +1057,14 @@ class Graph(Common):
         """
         self.obj_dict["strict"] = val
 
-    def get_strict(self) -> Optional[bool]:
+    def get_strict(self) -> bool:
         """Get graph's 'strict' mode (True, False).
 
         This option is only valid for top level graphs.
         """
-        return self.obj_dict["strict"]  # type: ignore
+        return bool(self.obj_dict.get("strict", False))
 
-    def set_suppress_disconnected(self, val: str) -> None:
+    def set_suppress_disconnected(self, val: bool) -> None:
         """Suppress disconnected nodes in the output graph.
 
         This option will skip nodes in
@@ -1072,16 +1075,16 @@ class Graph(Common):
         """
         self.obj_dict["suppress_disconnected"] = val
 
-    def get_suppress_disconnected(self) -> Optional[bool]:
+    def get_suppress_disconnected(self) -> bool:
         """Get if suppress disconnected is set.
 
         Refer to set_suppress_disconnected for more information.
         """
-        return self.obj_dict["suppress_disconnected"]  # type: ignore
+        return bool(self.obj_dict.get("suppress_disconnected", False))
 
     def get_next_sequence_number(self) -> int:
-        seq: int = self.obj_dict["current_child_sequence"]
-        self.obj_dict["current_child_sequence"] += 1
+        seq: int = self.obj_dict.get("current_child_sequence", 1)
+        self.obj_dict["current_child_sequence"] = seq + 1
         return seq
 
     def add_node(self, graph_node: Node) -> None:
@@ -1404,9 +1407,7 @@ class Graph(Common):
 
         first_line = []
 
-        if self == self.get_parent_graph() and self.obj_dict.get(
-            "strict", False
-        ):
+        if self == self.get_parent_graph() and self.get_strict():
             first_line.append("strict")
 
         graph_type = self.obj_dict["type"]
@@ -1454,7 +1455,9 @@ class Graph(Common):
         ]
         obj_list.sort(key=lambda x: x[0])
 
-        skip_disconnected = self.obj_dict.get("suppress_disconnected", False)
+        skip_disconnected = self.get_suppress_disconnected()
+        simplify = self.get_simplify()
+
         for idx, obj in obj_list:
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
@@ -1470,7 +1473,7 @@ class Graph(Common):
             elif obj["type"] == "edge":
                 edge = Edge(obj_dict=obj)
 
-                if self.obj_dict.get("simplify", False) and edge in edges_done:
+                if simplify and edge in edges_done:
                     continue
 
                 edge_str = edge.to_string(
