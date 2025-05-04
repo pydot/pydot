@@ -7,7 +7,7 @@ include *.txt
 include LICENSES/*.txt
 include ChangeLog
 include REUSE.toml
-include py.typed
+include src/pydot/py.typed
 prune .github
 exclude .git*
 graft test
