@@ -10,7 +10,10 @@ build-backend = "setuptools.build_meta"
 name = 'pydot'
 description = "Python interface to Graphviz's Dot"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = [
+   'LICENSES/*',
+]
 requires-python = ">= 3.8"
 dependencies = [
   'pyparsing>=3.0.9'
@@ -30,7 +33,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
@@ -48,11 +50,6 @@ dynamic = [
 
 [tool.setuptools.dynamic]
 version = {attr = "pydot.__version__"}
-
-[tool.setuptools]
-license-files = [
-   'LICENSES/*',
-]
 
 [project.urls]
 Homepage = "https://github.com/pydot/pydot"
