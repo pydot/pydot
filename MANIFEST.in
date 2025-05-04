@@ -13,4 +13,4 @@ exclude .git*
 graft test
 prune test/from-past-to-future
 global-exclude test.svg
-
+exclude .coveragerc
