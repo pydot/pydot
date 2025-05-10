@@ -20,6 +20,7 @@ To see what Graphviz is capable of, check the [Graphviz Gallery](https://graphvi
 
 ## Dependencies
 
+- Python: The latest version of pydot supports Python 3.9+. It may work with Python 3.6-3.8, but we can't guarantee full support. If you're using one of these older versions, feel free to experiment, but we won't be able to address issues specific to them. Older versions of pydot are also an option.
 - [`pyparsing`][pyparsing]: used only for *loading* DOT files, installed automatically during `pydot` installation.
 - GraphViz: used to render graphs in a variety of formats, including PNG, SVG, PDF, and more.
   Should be installed separately, using your system's [package manager][pkg], something similar (e.g., [MacPorts][mac]), or from [its source][src].
