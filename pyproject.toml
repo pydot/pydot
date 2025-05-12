@@ -16,7 +16,7 @@ license-files = [
 ]
 requires-python = ">= 3.8"
 dependencies = [
-  'pyparsing>=3.0.9'
+  'pyparsing>=3.1.0'
 ]
 authors = [
   {name = "Ero Carrera", email = "ero.carrera@gmail.com"},
