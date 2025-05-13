@@ -15,7 +15,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 from __future__ import annotations
 
 import logging
-import typing as T
+from typing import Any
 
 from pyparsing import (
     CaselessLiteral,
@@ -73,7 +73,7 @@ class P_AttrList:
 
 
 class DefaultStatement(P_AttrList):
-    def __init__(self, default_type: str, attrs: T.Any) -> None:
+    def __init__(self, default_type: str, attrs: Any) -> None:
         self.default_type = default_type
         self.attrs = attrs
 
@@ -169,7 +169,7 @@ def push_top_graph_stmt(
 
 
 def update_parent_graph_hierarchy(
-    g: T.Any, parent_graph: T.Any = None, level: int = 0
+    g: Any, parent_graph: Any = None, level: int = 0
 ) -> None:
     if parent_graph is None:
         parent_graph = g
@@ -214,7 +214,7 @@ def update_parent_graph_hierarchy(
                                 )
 
 
-def add_defaults(element: T.Any, defaults: dict[T.Any, T.Any]) -> None:
+def add_defaults(element: Any, defaults: dict[Any, Any]) -> None:
     d = element.__dict__
     for key, value in defaults.items():
         if not d.get(key):
@@ -222,8 +222,8 @@ def add_defaults(element: T.Any, defaults: dict[T.Any, T.Any]) -> None:
 
 
 def add_elements(
-    g: T.Any,
-    toks: ParseResults | list[T.Any],
+    g: Any,
+    toks: ParseResults | list[Any],
     defaults_graph: AttributeDict | None = None,
     defaults_node: AttributeDict | None = None,
     defaults_edge: AttributeDict | None = None,
@@ -329,7 +329,7 @@ def push_attr_list(toks: ParseResults) -> P_AttrList:
     return p
 
 
-def get_port(node: T.Any) -> T.Any:
+def get_port(node: Any) -> Any:
     if len(node) > 1:
         if isinstance(node[1], ParseResults):
             if len(node[1][0]) == 2:
@@ -339,7 +339,7 @@ def get_port(node: T.Any) -> T.Any:
     return None
 
 
-def do_node_ports(node: T.Any) -> str:
+def do_node_ports(node: Any) -> str:
     node_port = ""
     if len(node) > 1:
         node_port = "".join([str(a) + str(b) for a, b in node[1]])
@@ -356,7 +356,7 @@ def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
     e = []
 
     def make_endpoint(
-        ep: pydot.core.Common | list[T.Any] | str,
+        ep: pydot.core.Common | list[Any] | str,
     ) -> FrozenDict | str:
         if isinstance(ep, (list, tuple)) and len(ep) == 1:
             # This is a hack for the Group()ed edge_point definition
