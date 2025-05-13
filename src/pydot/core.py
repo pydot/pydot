@@ -4,6 +4,8 @@
 
 """An interface to GraphViz."""
 
+from __future__ import annotations
+
 import copy
 import errno
 import itertools
@@ -13,7 +15,7 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, List, Optional, Sequence, Set, Tuple, Type, Union, cast
+from typing import Any, Sequence, Union, cast
 
 import pydot
 from pydot._vendor import tempfile
@@ -144,9 +146,7 @@ class frozendict(FrozenDict):
         super().__init__(self, *args, **kwargs)
 
 
-def __generate_attribute_methods(
-    Klass: Type["Common"], attrs: Set[str]
-) -> None:
+def __generate_attribute_methods(Klass: type[Common], attrs: set[str]) -> None:
     """Generate setter and getter methods for attributes."""
     for attr in attrs:
         # Generate all the Getter methods.
@@ -174,8 +174,8 @@ def __generate_format_methods(Klass: type) -> None:
         def __create_method(
             self: Any,
             f: str = frmt,
-            prog: Optional[str] = None,
-            encoding: Optional[str] = None,
+            prog: str | None = None,
+            encoding: str | None = None,
         ) -> Any:
             """Refer to docstring of method `create`."""
             return self.create(format=f, prog=prog, encoding=encoding)
@@ -188,8 +188,8 @@ def __generate_format_methods(Klass: type) -> None:
             self: Any,
             path: str,
             f: str = frmt,
-            prog: Optional[str] = None,
-            encoding: Optional[str] = None,
+            prog: str | None = None,
+            encoding: str | None = None,
         ) -> None:
             """Refer to docstring of method `write`."""
             self.write(path, format=f, prog=prog, encoding=encoding)
@@ -217,10 +217,10 @@ def get_executable_extension() -> str:
 
 def call_graphviz(
     program: str,
-    arguments: List[str],
-    working_dir: Union[str, bytes],
+    arguments: list[str],
+    working_dir: str | bytes,
     **kwargs: Any,
-) -> Tuple[str, str, "subprocess.Popen[str]"]:
+) -> tuple[str, str, subprocess.Popen[str]]:
     # explicitly inherit `$PATH`, on Windows too,
     # with `shell=False`
 
@@ -283,7 +283,7 @@ id_re_alpha_nums_with_ports = re.compile(
 id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
 
 
-def any_needs_quotes(s: str) -> Optional[bool]:
+def any_needs_quotes(s: str) -> bool | None:
     """Determine if a string needs to be quoted.
 
     Returns True, False, or None if the result is indeterminate.
@@ -346,7 +346,7 @@ def id_needs_quotes(s: str) -> bool:
 
 
 def quote_id_if_necessary(
-    s: str, unquoted_keywords: Optional[Sequence[str]] = None
+    s: str, unquoted_keywords: Sequence[str] | None = None
 ) -> str:
     """Enclose identifier in quotes, if needed."""
     unquoted = [
@@ -389,7 +389,7 @@ def quote_attr_if_necessary(s: str) -> str:
     return make_quoted(s)
 
 
-def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
+def graph_from_dot_data(s: str) -> list[Dot] | None:
     """Load graphs from DOT description in string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
@@ -407,8 +407,8 @@ def graph_from_dot_data(s: str) -> Optional[List["Dot"]]:
 
 
 def graph_from_dot_file(
-    path: Union[str, bytes], encoding: Optional[str] = None
-) -> Optional[List["Dot"]]:
+    path: str | bytes, encoding: str | None = None
+) -> list[Dot] | None:
     """Load graphs from DOT file at `path`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.
@@ -429,7 +429,7 @@ def graph_from_dot_file(
 
 def graph_from_edges(
     edge_list: Sequence[Any], node_prefix: str = "", directed: bool = False
-) -> "Dot":
+) -> Dot:
     """Creates a basic graph out of an edge list.
 
     The edge list has to be a list of tuples representing
@@ -467,7 +467,7 @@ def graph_from_adjacency_matrix(
     matrix: Sequence[Sequence[Any]],
     node_prefix: str = "",
     directed: bool = False,
-) -> "Dot":
+) -> Dot:
     """Creates a basic graph out of an adjacency matrix.
 
     The matrix has to be a list of rows of values
@@ -510,7 +510,7 @@ def graph_from_incidence_matrix(
     matrix: Sequence[Sequence[Any]],
     node_prefix: str = "",
     directed: bool = False,
-) -> "Dot":
+) -> Dot:
     """Creates a basic graph out of an incidence matrix.
 
     The matrix has to be a list of rows of values
@@ -555,7 +555,7 @@ class Common:
     this one.
     """
 
-    def __init__(self, obj_dict: Optional[AttributeDict] = None) -> None:
+    def __init__(self, obj_dict: AttributeDict | None = None) -> None:
         self.obj_dict: AttributeDict = obj_dict or {}
 
     def __getstate__(self) -> AttributeDict:
@@ -565,10 +565,10 @@ class Common:
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
 
-    def set_parent_graph(self, parent_graph: Optional["Common"]) -> None:
+    def set_parent_graph(self, parent_graph: Common | None) -> None:
         self.obj_dict["parent_graph"] = parent_graph
 
-    def get_parent_graph(self) -> Optional["Graph"]:
+    def get_parent_graph(self) -> Graph | None:
         return self.obj_dict.get("parent_graph", None)  # type: ignore
 
     def get_top_graph_type(self, default: str = "graph") -> str:
@@ -615,7 +615,7 @@ class Common:
         """Set sequence"""
         self.obj_dict["sequence"] = seq
 
-    def get_sequence(self) -> Optional[int]:
+    def get_sequence(self) -> int | None:
         """Get sequence"""
         seq = self.obj_dict.get("sequence")
         if seq is None:
@@ -639,7 +639,7 @@ class Common:
             return f"{key}={quote_attr_if_necessary(value)}"
         return key
 
-    def formatted_attr_list(self) -> List[str]:
+    def formatted_attr_list(self) -> list[str]:
         """Return a list of the class's attributes as formatted strings."""
         return [
             self._format_attr(k, v)
@@ -673,7 +673,7 @@ class Node(Common):
     def __init__(
         self,
         name: str = "",
-        obj_dict: Optional[AttributeDict] = None,
+        obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
@@ -702,7 +702,7 @@ class Node(Common):
     def __str__(self) -> str:
         return self.to_string()
 
-    def set_name(self, node_name: Optional[str]) -> None:
+    def set_name(self, node_name: str | None) -> None:
         """Set the node's name."""
         self.obj_dict["name"] = node_name
 
@@ -710,7 +710,7 @@ class Node(Common):
         """Get the node's name."""
         return self.obj_dict["name"]  # type: ignore
 
-    def get_port(self) -> Optional[str]:
+    def get_port(self) -> str | None:
         """Get the node's port."""
         return self.obj_dict["port"]  # type: ignore
 
@@ -776,9 +776,9 @@ class Edge(Common):
 
     def __init__(
         self,
-        src: Union["EdgeDefinition", Sequence["EdgeDefinition"]] = "",
-        dst: "EdgeDefinition" = "",
-        obj_dict: Optional[AttributeDict] = None,
+        src: EdgeDefinition | Sequence[EdgeDefinition] = "",
+        dst: EdgeDefinition = "",
+        obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
@@ -973,7 +973,7 @@ class Graph(Common):
     def __init__(
         self,
         graph_name: str = "G",
-        obj_dict: Optional[AttributeDict] = None,
+        obj_dict: AttributeDict | None = None,
         graph_type: str = "digraph",
         strict: bool = False,
         suppress_disconnected: bool = False,
@@ -1007,7 +1007,7 @@ class Graph(Common):
     def __str__(self) -> str:
         return self.to_string()
 
-    def get_graph_type(self) -> Optional[str]:
+    def get_graph_type(self) -> str | None:
         return self.obj_dict["type"]  # type: ignore
 
     def set_graph_defaults(self, **attrs: Any) -> None:
@@ -1056,7 +1056,7 @@ class Graph(Common):
         """Set the graph's type, 'graph' or 'digraph'."""
         self.obj_dict["type"] = graph_type
 
-    def get_type(self) -> Optional[str]:
+    def get_type(self) -> str | None:
         """Get the graph's type, 'graph' or 'digraph'."""
         return self.obj_dict["type"]  # type: ignore
 
@@ -1064,7 +1064,7 @@ class Graph(Common):
         """Set the graph's name."""
         self.obj_dict["name"] = graph_name
 
-    def get_name(self) -> Optional[str]:
+    def get_name(self) -> str | None:
         """Get the graph's name."""
         return self.obj_dict["name"]  # type: ignore
 
@@ -1134,9 +1134,7 @@ class Graph(Common):
 
         graph_node.set_sequence(self.get_next_sequence_number())
 
-    def del_node(
-        self, name: Union[str, Node], index: Optional[int] = None
-    ) -> bool:
+    def del_node(self, name: str | Node, index: int | None = None) -> bool:
         """Delete a node from the graph.
 
         Given a node's name all node(s) with that same name
@@ -1166,7 +1164,7 @@ class Graph(Common):
 
         return False
 
-    def get_node(self, name: str) -> List[Node]:
+    def get_node(self, name: str) -> list[Node]:
         """Retrieve a node from the graph.
 
         Given a node's name the corresponding Node
@@ -1188,17 +1186,17 @@ class Graph(Common):
 
         return match
 
-    def get_nodes(self) -> List[Node]:
+    def get_nodes(self) -> list[Node]:
         """Get the list of Node instances."""
         return self.get_node_list()
 
-    def get_node_list(self) -> List[Node]:
+    def get_node_list(self) -> list[Node]:
         """Get the list of Node instances.
 
         This method returns the list of Node instances
         composing the graph.
         """
-        node_objs: List[Node] = []
+        node_objs: list[Node] = []
 
         for node in self.obj_dict["nodes"]:
             obj_dict_list = self.obj_dict["nodes"][node]
@@ -1230,7 +1228,7 @@ class Graph(Common):
         graph_edge.set_parent_graph(self.get_parent_graph())
 
     def del_edge(
-        self, src_or_list: Any, dst: Any = None, index: Optional[int] = None
+        self, src_or_list: Any, dst: Any = None, index: int | None = None
     ) -> bool:
         """Delete an edge from the graph.
 
@@ -1272,7 +1270,7 @@ class Graph(Common):
 
         return False
 
-    def get_edge(self, src_or_list: Any, dst: Any = None) -> List[Edge]:
+    def get_edge(self, src_or_list: Any, dst: Any = None) -> list[Edge]:
         """Retrieved an edge from the graph.
 
         Given an edge's source and destination the corresponding
@@ -1309,10 +1307,10 @@ class Graph(Common):
 
         return match
 
-    def get_edges(self) -> List[Edge]:
+    def get_edges(self) -> list[Edge]:
         return self.get_edge_list()
 
-    def get_edge_list(self) -> List[Edge]:
+    def get_edge_list(self) -> list[Edge]:
         """Get the list of Edge instances.
 
         This method returns the list of Edge instances
@@ -1326,7 +1324,7 @@ class Graph(Common):
 
         return edge_objs
 
-    def add_subgraph(self, sgraph: "Subgraph") -> None:
+    def add_subgraph(self, sgraph: Subgraph) -> None:
         """Adds an subgraph object to the graph.
 
         It takes a subgraph object as its only argument and returns
@@ -1350,7 +1348,7 @@ class Graph(Common):
         sgraph.set_sequence(self.get_next_sequence_number())
         sgraph.set_parent_graph(self.get_parent_graph())
 
-    def get_subgraph(self, name: str) -> List["Subgraph"]:
+    def get_subgraph(self, name: str) -> list[Subgraph]:
         """Retrieved a subgraph from the graph.
 
         Given a subgraph's name the corresponding
@@ -1370,10 +1368,10 @@ class Graph(Common):
 
         return match
 
-    def get_subgraphs(self) -> List["Subgraph"]:
+    def get_subgraphs(self) -> list[Subgraph]:
         return self.get_subgraph_list()
 
-    def get_subgraph_list(self) -> List["Subgraph"]:
+    def get_subgraph_list(self) -> list[Subgraph]:
         """Get the list of Subgraph instances.
 
         This method returns the list of Subgraph instances
@@ -1389,7 +1387,7 @@ class Graph(Common):
 
         return sgraph_objs
 
-    def set_parent_graph(self, parent_graph: Optional[Common]) -> None:
+    def set_parent_graph(self, parent_graph: Common | None) -> None:
         self.obj_dict["parent_graph"] = parent_graph
 
         for k in self.obj_dict["nodes"]:
@@ -1554,7 +1552,7 @@ class Subgraph(Graph):
     def __init__(
         self,
         graph_name: str = "",
-        obj_dict: Optional[AttributeDict] = None,
+        obj_dict: AttributeDict | None = None,
         suppress_disconnected: bool = False,
         simplify: bool = False,
         **attrs: Any,
@@ -1605,7 +1603,7 @@ class Cluster(Graph):
     def __init__(
         self,
         graph_name: str = "subG",
-        obj_dict: Optional[AttributeDict] = None,
+        obj_dict: AttributeDict | None = None,
         suppress_disconnected: bool = False,
         simplify: bool = False,
         **attrs: Any,
@@ -1638,7 +1636,7 @@ class Dot(Graph):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.shape_files: List[str] = []
+        self.shape_files: list[str] = []
         self.formats = OUTPUT_FORMATS
         self.prog = "dot"
 
@@ -1660,7 +1658,7 @@ class Dot(Graph):
         self.shape_files = state.get("shape_files", [])
         self.formats = state.get("formats", OUTPUT_FORMATS)
 
-    def set_shape_files(self, file_paths: Union[str, Sequence[str]]) -> None:
+    def set_shape_files(self, file_paths: str | Sequence[str]) -> None:
         """Add the paths of the required image files.
 
         If the graph needs graphic objects to
@@ -1693,10 +1691,10 @@ class Dot(Graph):
 
     def write(
         self,
-        path: Union[str, bytes],
-        prog: Optional[str] = None,
+        path: str | bytes,
+        prog: str | None = None,
         format: str = "raw",
-        encoding: Optional[str] = None,
+        encoding: str | None = None,
     ) -> bool:
         """Writes a graph to a file.
 
@@ -1736,9 +1734,9 @@ class Dot(Graph):
 
     def create(
         self,
-        prog: Union[List[str], Tuple[str], Optional[str]] = None,
+        prog: list[str] | tuple[str] | str | None = None,
         format: str = "ps",
-        encoding: Optional[str] = None,
+        encoding: str | None = None,
     ) -> str:
         """Creates and returns a binary image for the graph.
 

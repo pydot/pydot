@@ -4,6 +4,8 @@
 
 """Exception classes for pydot."""
 
+from __future__ import annotations
+
 
 class PydotException(Exception):
     """Base class for exceptions in Pydot.
