@@ -12,8 +12,10 @@ Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
 """
 
+from __future__ import annotations
+
 import logging
-import typing as T
+from typing import Any
 
 from pyparsing import (
     CaselessLiteral,
@@ -71,7 +73,7 @@ class P_AttrList:
 
 
 class DefaultStatement(P_AttrList):
-    def __init__(self, default_type: str, attrs: T.Any) -> None:
+    def __init__(self, default_type: str, attrs: Any) -> None:
         self.default_type = default_type
         self.attrs = attrs
 
@@ -88,7 +90,7 @@ class HTML(Token):
 
     def parseImpl(
         self, instring: str, loc: int, do_actions: bool = True
-    ) -> T.Tuple[int, str]:
+    ) -> tuple[int, str]:
         open_loc = loc
         if not (loc < len(instring) and instring[loc] == "<"):
             raise ParseException(instring, loc, "expected <", self)
@@ -113,7 +115,7 @@ class HTML(Token):
 
 def push_top_graph_stmt(
     s: str, loc: int, toks: ParseResults
-) -> T.Union[T.List[pydot.core.Dot], pydot.core.Dot]:
+) -> list[pydot.core.Dot] | pydot.core.Dot:
     attrs = {}
     top_graphs = []
     g: pydot.core.Dot = None  # type: ignore
@@ -167,7 +169,7 @@ def push_top_graph_stmt(
 
 
 def update_parent_graph_hierarchy(
-    g: T.Any, parent_graph: T.Any = None, level: int = 0
+    g: Any, parent_graph: Any = None, level: int = 0
 ) -> None:
     if parent_graph is None:
         parent_graph = g
@@ -212,7 +214,7 @@ def update_parent_graph_hierarchy(
                                 )
 
 
-def add_defaults(element: T.Any, defaults: T.Dict[T.Any, T.Any]) -> None:
+def add_defaults(element: Any, defaults: dict[Any, Any]) -> None:
     d = element.__dict__
     for key, value in defaults.items():
         if not d.get(key):
@@ -220,11 +222,11 @@ def add_defaults(element: T.Any, defaults: T.Dict[T.Any, T.Any]) -> None:
 
 
 def add_elements(
-    g: T.Any,
-    toks: T.Union[ParseResults, T.List[T.Any]],
-    defaults_graph: T.Optional[AttributeDict] = None,
-    defaults_node: T.Optional[AttributeDict] = None,
-    defaults_edge: T.Optional[AttributeDict] = None,
+    g: Any,
+    toks: ParseResults | list[Any],
+    defaults_graph: AttributeDict | None = None,
+    defaults_node: AttributeDict | None = None,
+    defaults_edge: AttributeDict | None = None,
 ) -> None:
     if defaults_graph is None:
         defaults_graph = {}
@@ -327,7 +329,7 @@ def push_attr_list(toks: ParseResults) -> P_AttrList:
     return p
 
 
-def get_port(node: T.Any) -> T.Any:
+def get_port(node: Any) -> Any:
     if len(node) > 1:
         if isinstance(node[1], ParseResults):
             if len(node[1][0]) == 2:
@@ -337,7 +339,7 @@ def get_port(node: T.Any) -> T.Any:
     return None
 
 
-def do_node_ports(node: T.Any) -> str:
+def do_node_ports(node: Any) -> str:
     node_port = ""
     if len(node) > 1:
         node_port = "".join([str(a) + str(b) for a, b in node[1]])
@@ -345,7 +347,7 @@ def do_node_ports(node: T.Any) -> str:
     return node_port
 
 
-def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
+def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
     tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
     attrs = {}
     for a in tok_attrs:
@@ -354,8 +356,8 @@ def push_edge_stmt(toks: ParseResults) -> T.List[pydot.core.Edge]:
     e = []
 
     def make_endpoint(
-        ep: T.Union[pydot.core.Common, T.List[T.Any], str],
-    ) -> T.Union[FrozenDict, str]:
+        ep: pydot.core.Common | list[Any] | str,
+    ) -> FrozenDict | str:
         if isinstance(ep, (list, tuple)) and len(ep) == 1:
             # This is a hack for the Group()ed edge_point definition
             ep = ep[0]
@@ -496,7 +498,7 @@ class GraphParser:
     autoname_elements()
 
 
-def parse_dot_data(s: str) -> T.Optional[T.List[pydot.core.Dot]]:
+def parse_dot_data(s: str) -> list[pydot.core.Dot] | None:
     """Parse DOT description in (unicode) string `s`.
 
     This function is NOT thread-safe due to the internal use of `pyparsing`.

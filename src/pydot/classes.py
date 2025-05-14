@@ -4,8 +4,10 @@
 
 """Frozen dictionaries."""
 
+from __future__ import annotations
+
 import copy
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, Union
 
 
 class FrozenDict(dict):  # type: ignore
@@ -30,7 +32,7 @@ class FrozenDict(dict):  # type: ignore
     def pop(self, key: Any, default: Any = None) -> None:
         raise AttributeError(self._block_msg)
 
-    def popitem(self) -> Tuple[Any, Any]:
+    def popitem(self) -> tuple[Any, Any]:
         raise AttributeError(self._block_msg)
 
     def setdefault(self, key: Any, default: Any = None) -> None:
