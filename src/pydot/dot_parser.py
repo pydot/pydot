@@ -329,16 +329,6 @@ def push_attr_list(toks: ParseResults) -> P_AttrList:
     return p
 
 
-def get_port(node: Any) -> Any:
-    if len(node) > 1:
-        if isinstance(node[1], ParseResults):
-            if len(node[1][0]) == 2:
-                if node[1][0][0] == ":":
-                    return node[1][0][1]
-
-    return None
-
-
 def do_node_ports(node: Any) -> str:
     node_port = ""
     if len(node) > 1:
