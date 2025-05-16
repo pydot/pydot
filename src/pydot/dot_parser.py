@@ -153,7 +153,7 @@ def push_top_graph_stmt(
         elif isinstance(element, P_AttrList):
             attrs.update(element.attrs)
 
-        elif isinstance(element, (ParseResults, list)):
+        elif isinstance(element, ParseResults):
             add_elements(g, element)
 
         else:
