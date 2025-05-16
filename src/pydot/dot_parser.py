@@ -321,14 +321,6 @@ def push_attr_list(toks: ParseResults) -> P_AttrList:
     return p
 
 
-def do_node_ports(node: Any) -> str:
-    node_port = ""
-    if len(node) > 1:
-        node_port = "".join([str(a) + str(b) for a, b in node[1]])
-
-    return node_port
-
-
 def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
     endpoints = list(toks.endpoints)
     attrs = expand_attr_lists(toks.attr_l)
@@ -350,18 +342,9 @@ def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
 
 
 def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
-    if len(toks) == 2:
-        attrs = toks[1].attrs
-    else:
-        attrs = {}
-
-    node_name = toks[0]
-    if isinstance(node_name, list) or isinstance(node_name, tuple):
-        if len(node_name) > 0:
-            node_name = node_name[0]
-
-    n = pydot.core.Node(str(node_name), **attrs)
-    return n
+    node_name = toks.name
+    attrs = expand_attr_lists(toks.attr_l)
+    return pydot.core.Node(str(node_name), **attrs)
 
 
 class GraphParser:
@@ -401,17 +384,17 @@ class GraphParser:
 
     righthand_id = float_number | ID
 
-    port = Group(Group(colon + ID) + Group(colon + ID)) | Group(
-        Group(colon + ID)
-    )
-
-    node_id = ID + Optional(port)
+    node_id = DelimitedList(ID, delim=":", min=1, max=3, combine=True)
     a_list = OneOrMore(
         ID + Optional(equals + righthand_id) + Optional(comma.suppress())
     )
-
     attr_list = OneOrMore(
         lbrack.suppress() + Optional(a_list) + rbrack.suppress()
+    )
+    node_stmt = (
+        node_id("name")
+        + Optional(attr_list("attr_l"))
+        + Optional(semi.suppress())
     )
 
     default_type = graph_ | node_ | edge_
@@ -429,7 +412,6 @@ class GraphParser:
         subgraph_("keyword") + Optional(ID("id")) + graph_stmt("contents")
     )
 
-    node_stmt = node_id + Optional(attr_list) + Optional(semi.suppress())
     edgeop = Literal("--") | Literal("->")
     edge_point = subgraph | graph_stmt | node_id
     edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2)(
