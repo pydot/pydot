@@ -120,7 +120,7 @@ def push_top_graph_stmt(toks: ParseResults) -> list[pydot.core.Dot]:
         assert isinstance(result, ParseResults)
         gtype = result.gtype
         strict = "strict" in result
-        id_ = result.id or ""
+        id_ = str(result.id)
 
         g = pydot.core.Dot(id_, graph_type=gtype, strict=strict)
         g.set_parent_graph(g)
