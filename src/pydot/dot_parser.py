@@ -300,18 +300,13 @@ def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
 
 
 def push_subgraph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
-    g = pydot.core.Subgraph("")
-    for e in toks:
-        if len(e) == 3:
-            e[2].set_name(e[1])
-            if e[0] == "subgraph":
-                e[2].obj_dict["show_keyword"] = True
-            return e[2]  # type: ignore
-        else:
-            if e[0] == "subgraph":
-                e[1].obj_dict["show_keyword"] = True
-            return e[1]  # type: ignore
-
+    assert "keyword" in toks
+    id_ = str(toks.id)
+    show_kw = "keyword" in toks
+    g = pydot.core.Subgraph(id_)
+    g.obj_dict["show_keyword"] = show_kw
+    if isinstance(toks.contents, ParseResults):
+        add_elements(g, toks.contents)
     return g
 
 
@@ -441,12 +436,13 @@ class GraphParser:
         + Optional(semi.suppress())
     )
 
-    subgraph = Group(subgraph_ + Optional(ID) + graph_stmt)
 
     edgeop = Literal("--") | Literal("->")
     edge_point = Group(subgraph | graph_stmt | node_id)
     edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2) + Optional(
         attr_list
+    subgraph = (
+        subgraph_("keyword") + Optional(ID("id")) + graph_stmt("contents")
     )
 
     node_stmt = node_id + Optional(attr_list) + Optional(semi.suppress())
