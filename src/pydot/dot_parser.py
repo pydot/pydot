@@ -178,75 +178,25 @@ def update_parent_graph_hierarchy(g: pydot.core.Dot) -> None:
                     ep["parent_graph"].set_parent_graph(g)
 
 
-
-def add_defaults(element: Any, defaults: dict[Any, Any]) -> None:
-    d = element.__dict__
-    for key, value in defaults.items():
-        if not d.get(key):
-            d[key] = value
-
-
-def add_elements(
-    g: Any,
-    toks: ParseResults | list[Any],
-    defaults_graph: AttributeDict | None = None,
-    defaults_node: AttributeDict | None = None,
-    defaults_edge: AttributeDict | None = None,
-) -> None:
-    if defaults_graph is None:
-        defaults_graph = {}
-    if defaults_node is None:
-        defaults_node = {}
-    if defaults_edge is None:
-        defaults_edge = {}
-
-    for elm_idx, element in enumerate(toks):
+def add_elements(g: Any, toks: ParseResults) -> None:
+    for element in toks:
         if isinstance(element, (pydot.core.Subgraph, pydot.core.Cluster)):
-            add_defaults(element, defaults_graph)
             g.add_subgraph(element)
-
         elif isinstance(element, pydot.core.Node):
-            add_defaults(element, defaults_node)
             g.add_node(element)
-
         elif isinstance(element, pydot.core.Edge):
-            add_defaults(element, defaults_edge)
             g.add_edge(element)
-
         elif isinstance(element, ParseResults):
-            for e in element:
-                add_elements(
-                    g,
-                    [e],
-                    defaults_graph,
-                    defaults_node,
-                    defaults_edge,
-                )
-
+            add_elements(g, element)
         elif isinstance(element, DefaultStatement):
-            if element.default_type == "graph":
-                default_graph_attrs = pydot.core.Node("graph", **element.attrs)
-                g.add_node(default_graph_attrs)
-
-            elif element.default_type == "node":
-                default_node_attrs = pydot.core.Node("node", **element.attrs)
-                g.add_node(default_node_attrs)
-
-            elif element.default_type == "edge":
-                default_edge_attrs = pydot.core.Node("edge", **element.attrs)
-                g.add_node(default_edge_attrs)
-                defaults_edge.update(element.attrs)
-
-            else:
-                raise ValueError(
-                    f"Unknown DefaultStatement: {element.default_type}"
-                )
-
-        elif isinstance(element, P_AttrList):
+            default_node = pydot.core.Node(
+                element.default_type, **element.attrs
+            )
+            g.add_node(default_node)
+        else:
+            assert isinstance(element, P_AttrList)
             g.obj_dict["attributes"].update(element.attrs)
 
-        else:
-            raise ValueError(f"Unknown element statement: {element}")
 
 def expand_attr_lists(attr_l: Any) -> dict[str, Any]:
     if not isinstance(attr_l, ParseResults):
