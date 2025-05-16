@@ -168,50 +168,15 @@ def push_top_graph_stmt(
     return top_graphs
 
 
-def update_parent_graph_hierarchy(
-    g: Any, parent_graph: Any = None, level: int = 0
-) -> None:
-    if parent_graph is None:
-        parent_graph = g
+def update_parent_graph_hierarchy(g: pydot.core.Dot) -> None:
+    for edge_groups in g.obj_dict.get("edges", {}).values():
+        for edge in edge_groups:
+            assert isinstance(edge, dict)
+            endpoints = edge.get("points", [])
+            for ep in endpoints:
+                if isinstance(ep, FrozenDict):
+                    ep["parent_graph"].set_parent_graph(g)
 
-    for key_name in ("edges",):
-        if isinstance(g, FrozenDict):
-            item_dict = g
-        else:
-            item_dict = g.obj_dict
-
-        if key_name not in item_dict:
-            continue
-
-        for key, objs in item_dict[key_name].items():
-            for obj in objs:
-                if (
-                    "parent_graph" in obj
-                    and obj["parent_graph"].get_parent_graph() == g
-                ):
-                    if obj["parent_graph"] is g:
-                        pass
-                    else:
-                        obj["parent_graph"].set_parent_graph(parent_graph)
-
-                if key_name == "edges" and len(key) == 2:
-                    for idx, vertex in enumerate(obj["points"]):
-                        if isinstance(
-                            vertex,
-                            (
-                                pydot.core.Graph,
-                                pydot.core.Subgraph,
-                                pydot.core.Cluster,
-                            ),
-                        ):
-                            vertex.set_parent_graph(parent_graph)
-                        if isinstance(vertex, FrozenDict):
-                            if vertex["parent_graph"] is g:
-                                pass
-                            else:
-                                vertex["parent_graph"].set_parent_graph(
-                                    parent_graph
-                                )
 
 
 def add_defaults(element: Any, defaults: dict[Any, Any]) -> None:
