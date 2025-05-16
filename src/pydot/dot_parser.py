@@ -330,34 +330,23 @@ def do_node_ports(node: Any) -> str:
 
 
 def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
-    tok_attrs = [a for a in toks if isinstance(a, P_AttrList)]
-    attrs = {}
-    for a in tok_attrs:
-        attrs.update(a.attrs)
-
-    e = []
+    endpoints = list(toks.endpoints)
+    attrs = expand_attr_lists(toks.attr_l)
 
     def make_endpoint(
         ep: pydot.core.Common | list[Any] | str,
     ) -> FrozenDict | str:
-        if isinstance(ep, (list, tuple)) and len(ep) == 1:
-            # This is a hack for the Group()ed edge_point definition
-            ep = ep[0]
         if isinstance(ep, pydot.core.Subgraph):
             return FrozenDict(ep.obj_dict)
-        if isinstance(ep, (list, tuple)):
-            return str(ep[0]) + do_node_ports(ep)
         return str(ep)
 
-    endpoints = [t for t in toks.as_list() if not isinstance(t, P_AttrList)]
-
+    edges = []
     n_prev = make_endpoint(endpoints[0])
     for endpoint in endpoints[1:]:
         n_next = make_endpoint(endpoint)
-        e.append(pydot.core.Edge(n_prev, n_next, **attrs))
+        edges.append(pydot.core.Edge(n_prev, n_next, **attrs))
         n_prev = n_next
-
-    return e
+    return edges
 
 
 def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
@@ -436,16 +425,16 @@ class GraphParser:
         + Optional(semi.suppress())
     )
 
-
-    edgeop = Literal("--") | Literal("->")
-    edge_point = Group(subgraph | graph_stmt | node_id)
-    edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2) + Optional(
-        attr_list
     subgraph = (
         subgraph_("keyword") + Optional(ID("id")) + graph_stmt("contents")
     )
 
     node_stmt = node_id + Optional(attr_list) + Optional(semi.suppress())
+    edgeop = Literal("--") | Literal("->")
+    edge_point = subgraph | graph_stmt | node_id
+    edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2)(
+        "endpoints"
+    ) + Optional(attr_list("attr_l"))
 
     assignment = ID + equals + righthand_id
 
