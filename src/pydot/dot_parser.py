@@ -316,20 +316,9 @@ def push_subgraph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
 
 
 def push_default_stmt(toks: ParseResults) -> DefaultStatement:
-    # The pydot class instances should be marked as
-    # default statements to be inherited by actual
-    # graphs, nodes and edges.
-    #
-    default_type = toks[0][0]
-    if len(toks) > 1:
-        attrs = toks[1].attrs
-    else:
-        attrs = {}
-
-    if default_type in ["graph", "node", "edge"]:
-        return DefaultStatement(default_type, attrs)
-    else:
-        raise ValueError(f"Unknown default statement: {toks}")
+    default_type = toks.dtype
+    attrs = expand_attr_lists(toks.attr_l)
+    return DefaultStatement(str(default_type), attrs)
 
 
 def push_attr_list(toks: ParseResults) -> P_AttrList:
@@ -441,7 +430,8 @@ class GraphParser:
         lbrack.suppress() + Optional(a_list) + rbrack.suppress()
     )
 
-    attr_stmt = Group(graph_ | node_ | edge_) + attr_list
+    default_type = graph_ | node_ | edge_
+    default_stmt = default_type("dtype") + attr_list("attr_l")
 
     stmt_list = Forward()
     graph_stmt = Group(
@@ -464,7 +454,12 @@ class GraphParser:
     assignment = ID + equals + righthand_id
 
     stmt = (
-        assignment | edge_stmt | attr_stmt | subgraph | graph_stmt | node_stmt
+        assignment
+        | edge_stmt
+        | default_stmt
+        | subgraph
+        | graph_stmt
+        | node_stmt
     )
     stmt_list <<= OneOrMore(stmt + Optional(semi.suppress()))
 
@@ -487,7 +482,7 @@ class GraphParser:
     a_list.setParseAction(push_attr_list)
     edge_stmt.setParseAction(push_edge_stmt)
     node_stmt.setParseAction(push_node_stmt)
-    attr_stmt.setParseAction(push_default_stmt)
+    default_stmt.setParseAction(push_default_stmt)
 
     subgraph.setParseAction(push_subgraph_stmt)
     graph_stmt.setParseAction(push_graph_stmt)
