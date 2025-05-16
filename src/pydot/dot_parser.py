@@ -41,7 +41,7 @@ from pyparsing import (
 )
 
 import pydot.core
-from pydot.classes import AttributeDict, FrozenDict
+from pydot.classes import FrozenDict
 
 __author__ = ["Michael Krause", "Ero Carrera"]
 __license__ = "MIT"
