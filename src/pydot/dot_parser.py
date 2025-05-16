@@ -283,6 +283,14 @@ def add_elements(
         else:
             raise ValueError(f"Unknown element statement: {element}")
 
+def expand_attr_lists(attr_l: Any) -> dict[str, Any]:
+    if not isinstance(attr_l, ParseResults):
+        return {}
+    attrs = {}
+    for alist in attr_l:
+        attrs.update(alist.attrs)
+    return attrs
+
 
 def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
