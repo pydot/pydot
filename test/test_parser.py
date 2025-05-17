@@ -9,6 +9,7 @@ import textwrap
 import pyparsing as pp
 import pytest
 
+from pydot import dot_parser
 from pydot.dot_parser import HTML, GraphParser
 
 
@@ -56,3 +57,23 @@ def test_edge_subgraph_explicit() -> None:
         c;
         };""").strip()
     assert edge.to_string() == expected
+
+
+def test_strict_graph_parsing() -> None:
+    res = dot_parser.parse_dot_data("strict graph G { a; b; }")
+    assert isinstance(res, list)
+    assert len(res) == 1
+    graph = res[0]
+    assert graph.get_strict()
+    assert graph.to_string() == "strict graph G {\na;\nb;\n}\n"
+
+    res2 = dot_parser.parse_dot_data(
+        """
+        graph G { a; b; }
+        strict digraph H { c; d; }
+        """
+    )
+    assert isinstance(res2, list)
+    assert len(res2) == 2
+    assert not res2[0].get_strict()
+    assert res2[1].get_strict()
