@@ -59,6 +59,26 @@ def test_edge_subgraph_explicit() -> None:
     assert edge.to_string() == expected
 
 
+def test_AttrList_repr() -> None:
+    parser = GraphParser.attr_list("a_list")
+    res = parser.parse_string("[color=red, shape=square]")
+    assert isinstance(res, pp.ParseResults)
+    a_list = res.a_list
+    assert isinstance(a_list, pp.ParseResults)
+    assert len(a_list) == 1
+    repr_str = repr(a_list[0])
+    assert repr_str == "P_AttrList({'color': 'red', 'shape': 'square'})"
+
+
+def test_DefaultStatement_repr() -> None:
+    parser = GraphParser.default_stmt("defaults")
+    res = parser.parse_string("node [color=blue];")
+    assert isinstance(res, pp.ParseResults)
+    defaults = res.defaults
+    repr_str = repr(defaults)
+    assert repr_str == "DefaultStatement(node, {'color': 'blue'})"
+
+
 def test_strict_graph_parsing() -> None:
     res = dot_parser.parse_dot_data("strict graph G { a; b; }")
     assert isinstance(res, list)
