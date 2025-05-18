@@ -113,57 +113,21 @@ class HTML(Token):
         )
 
 
-def push_top_graph_stmt(
-    s: str, loc: int, toks: ParseResults
-) -> list[pydot.core.Dot] | pydot.core.Dot:
-    attrs = {}
+def push_top_graph_stmt(toks: ParseResults) -> list[pydot.core.Dot]:
     top_graphs = []
-    g: pydot.core.Dot = None  # type: ignore
 
-    for element in toks:
-        if (
-            isinstance(element, (ParseResults, tuple, list))
-            and len(element) == 1
-            and isinstance(element[0], str)
-        ):
-            element = element[0]
+    for result in toks.graphs:
+        assert isinstance(result, ParseResults)
+        gtype = result.gtype
+        strict = "strict" in result
+        id_ = str(result.id)
 
-        if element == "strict":
-            attrs["strict"] = True
-
-        elif element in ["graph", "digraph"]:
-            attrs = {}
-
-            g = pydot.core.Dot(graph_type=element, **attrs)
-            attrs["type"] = element
-
-            top_graphs.append(g)
-
-        elif isinstance(element, str):
-            g.set_name(element)
-
-        elif isinstance(element, pydot.core.Subgraph):
-            g.obj_dict["attributes"].update(element.obj_dict["attributes"])
-            g.obj_dict["edges"].update(element.obj_dict["edges"])
-            g.obj_dict["nodes"].update(element.obj_dict["nodes"])
-            g.obj_dict["subgraphs"].update(element.obj_dict["subgraphs"])
-
-            g.set_parent_graph(g)
-
-        elif isinstance(element, P_AttrList):
-            attrs.update(element.attrs)
-
-        elif isinstance(element, ParseResults):
-            add_elements(g, element)
-
-        else:
-            raise ValueError(f"Unknown element statement: {element}")
-
-    for g in top_graphs:
+        g = pydot.core.Dot(id_, graph_type=gtype, strict=strict)
+        g.set_parent_graph(g)
+        if isinstance(result.contents, ParseResults):
+            add_elements(g, result.contents)
         update_parent_graph_hierarchy(g)
-
-    if len(top_graphs) == 1:
-        return top_graphs[0]
+        top_graphs.append(g)
 
     return top_graphs
 
@@ -345,12 +309,15 @@ class GraphParser:
     )
     stmt_list <<= OneOrMore(stmt + Optional(semi.suppress()))
 
+    graph_type = digraph_ | graph_
     parser = OneOrMore(
-        Optional(strict_)
-        + Group(graph_ | digraph_)
-        + Optional(ID)
-        + graph_stmt
-    )
+        Group(
+            Optional(strict_("strict"))
+            + graph_type("gtype")
+            + Optional(ID("id"))
+            + graph_stmt("contents")
+        )
+    ).set_results_name("graphs")
 
     singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
 
