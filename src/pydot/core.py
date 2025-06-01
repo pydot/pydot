@@ -1175,7 +1175,6 @@ class Graph(Common):
         An empty list is returned otherwise.
         """
         match = []
-
         if name in self.obj_dict["nodes"]:
             match.extend(
                 [
@@ -1183,6 +1182,14 @@ class Graph(Common):
                     for obj_dict in self.obj_dict["nodes"][name]
                 ]
             )
+        else:
+            for key, node_list in self.obj_dict["nodes"].items():
+                if "\\\n" in key:
+                    normalized_key = key.replace("\\\n", "")
+                    if normalized_key == name:
+                        match.extend(
+                            Node(obj_dict=obj_dict) for obj_dict in node_list
+                        )
 
         return match
 
