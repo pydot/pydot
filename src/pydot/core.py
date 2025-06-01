@@ -1184,8 +1184,10 @@ class Graph(Common):
             )
         else:
             for key, node_list in self.obj_dict["nodes"].items():
-                if "\\\n" in key:
-                    normalized_key = key.replace("\\\n", "")
+                if "\\\n" or "\\\r\n" in key:
+                    normalized_key = key.replace("\\\n", "").replace(
+                        "\\\r\n", ""
+                    )
                     if normalized_key == name:
                         match.extend(
                             Node(obj_dict=obj_dict) for obj_dict in node_list
