@@ -1184,7 +1184,7 @@ class Graph(Common):
             )
         else:
             for key, node_list in self.obj_dict["nodes"].items():
-                if "\\\n" or "\\\r\n" in key:
+                if "\\\n" in key or "\\\r\n" in key:
                     normalized_key = key.replace("\\\n", "").replace(
                         "\\\r\n", ""
                     )
