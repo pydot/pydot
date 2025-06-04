@@ -569,7 +569,7 @@ class Common:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
-        return self.obj_dict.get("parent_graph", None)  # type: ignore
+        return self.obj_dict.get("parent_graph", None)
 
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
@@ -1175,7 +1175,6 @@ class Graph(Common):
         An empty list is returned otherwise.
         """
         match = []
-
         if name in self.obj_dict["nodes"]:
             match.extend(
                 [
@@ -1183,6 +1182,16 @@ class Graph(Common):
                     for obj_dict in self.obj_dict["nodes"][name]
                 ]
             )
+        else:
+            for key, node_list in self.obj_dict["nodes"].items():
+                if "\\\n" in key or "\\\r\n" in key:
+                    normalized_key = key.replace("\\\n", "").replace(
+                        "\\\r\n", ""
+                    )
+                    if normalized_key == name:
+                        match.extend(
+                            Node(obj_dict=obj_dict) for obj_dict in node_list
+                        )
 
         return match
 

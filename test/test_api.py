@@ -426,6 +426,31 @@ def test_dot_args() -> None:
         assert os.path.exists(outfile)
 
 
+def test_long_node_names() -> None:
+    """Test that get_node() finds nodes by their standard name
+    if they were split by a newline (issue 483).
+    """
+    # A long name is needed because then graphviz will split it
+    long_name = "=10chars= " * 14
+    g = pydot.Dot()
+    node = pydot.Node(long_name)
+    g.add_node(node)
+    # Recreate this graph through create_dot
+    # so that graphviz has a chance to split the name
+    g_str = g.create_dot().decode()
+    new_g = pydot.graph_from_dot_data(g_str)[0]
+    unsplit_name = pydot.quote_id_if_necessary(long_name)
+    split_name = new_g.get_nodes()[2].get_name()
+    assert "\n" not in unsplit_name
+    assert "\n" in split_name
+    # The node should still be found by its unsplit name and split name
+    found_by_unsplit = new_g.get_node(unsplit_name)
+    found_by_split = new_g.get_node(split_name)
+    assert len(found_by_unsplit) == 1
+    assert len(found_by_split) == 1
+    assert id(found_by_unsplit[0].obj_dict) == id(found_by_split[0].obj_dict)
+
+
 def test_suppress_disconnected() -> None:
     g1 = pydot.graph_from_dot_data(
         "graph G { a; b; a -- b; c; d; a -- c; b -- c; e; }"
