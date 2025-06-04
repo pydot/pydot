@@ -439,9 +439,16 @@ def test_long_node_names() -> None:
     # so that graphviz has a chance to split the name
     g_str = g.create_dot().decode()
     new_g = pydot.graph_from_dot_data(g_str)[0]
-    # The node should still be found by its unsplit name
-    assert len(new_g.get_node(pydot.quote_id_if_necessary(long_name))) == 1
-    assert len(new_g.get_node(new_g.get_nodes()[0].get_name())) == 1
+    unsplit_name = pydot.quote_id_if_necessary(long_name)
+    split_name = new_g.get_nodes()[2].get_name()
+    assert "\n" not in unsplit_name
+    assert "\n" in split_name
+    # The node should still be found by its unsplit name and split name
+    found_by_unsplit = new_g.get_node(unsplit_name)
+    found_by_split = new_g.get_node(split_name)
+    assert len(found_by_unsplit) == 1
+    assert len(found_by_split) == 1
+    assert id(found_by_unsplit[0].obj_dict) == id(found_by_split[0].obj_dict)
 
 
 def test_suppress_disconnected() -> None:
