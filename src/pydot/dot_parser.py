@@ -175,8 +175,7 @@ def push_dbl_quoted(toks: ParseResults) -> str:
     assert "dbl_quoted" in toks and isinstance(toks.dbl_quoted, str)
     s = toks.dbl_quoted
     # Remove backslash line-continuations
-    if "\\\n" in s or "\\\r\n" in s:
-        s = s.replace("\\\r\n", "").replace("\\\n", "")
+    s = s.replace("\\\r\n", "").replace("\\\n", "")
     return s
 
 
