@@ -569,7 +569,7 @@ class Common:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
-        return self.obj_dict.get("parent_graph", None)  # type: ignore
+        return self.obj_dict.get("parent_graph", None)
 
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
