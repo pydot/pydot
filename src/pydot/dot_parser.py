@@ -36,8 +36,8 @@ from pyparsing import (
     cStyleComment,
     lineno,
     nums,
-    pyparsing_unicode,
     restOfLine,
+    unicode,
 )
 
 import pydot.core
@@ -180,6 +180,28 @@ def push_dbl_quoted(toks: ParseResults) -> str:
     return s
 
 
+def push_ID(toks: ParseResults) -> str:
+    """Join multiple string pieces into a single ID string."""
+    if "concat" in toks:
+        out = "".join(s[1:-1] for s in toks.concat)
+        return f'"{out}"'
+    if "dbl_quoted" in toks:
+        return str(toks.dbl_quoted)
+    if "ident" in toks:
+        return str(toks.ident)
+    # (by process of elimination, HTML)
+    assert "html" in toks and isinstance(toks.html, str)
+    return toks.html
+
+
+def push_node_id(toks: ParseResults) -> str:
+    out = []
+    for group in toks:
+        assert "id_part" in group
+        out.append(str(group.id_part))
+    return ":".join(out)
+
+
 def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
     g.obj_dict["show_keyword"] = False
@@ -258,25 +280,33 @@ class GraphParser:
     edge_ = CaselessLiteral("edge")
 
     # token definitions
-    identifier = Word(
-        pyparsing_unicode.BasicMultilingualPlane.alphanums + "_."
+    identifier = Word(unicode.BasicMultilingualPlane.alphanums + "_.")
+
+    double_quoted = (
+        QuotedString('"', multiline=True, unquote_results=False, esc_char="\\")
+        .set_results_name("dbl_quoted")
+        .set_parse_action(push_dbl_quoted)
     )
 
-    double_quoted_string = QuotedString(
-        '"', multiline=True, unquote_results=False, esc_char="\\"
+    concat_string = DelimitedList(
+        double_quoted, delim="+", min=2, combine=False
     )
 
     ID = (
-        identifier
-        | HTML()
-        | double_quoted_string("dbl_quoted").set_parse_action(push_dbl_quoted)
-    )
+        concat_string("concat")
+        | double_quoted
+        | identifier("ident")
+        | HTML().set_results_name("html")
+    ).set_parse_action(push_ID)
 
     float_number = Combine(Optional(minus) + OneOrMore(Word(nums + ".")))
 
     righthand_id = float_number | ID
 
-    node_id = DelimitedList(ID, delim=":", min=1, max=3, combine=True)
+    node_id = DelimitedList(
+        Group(ID("id_part")), delim=":", min=1, max=3, combine=False
+    ).set_parse_action(push_node_id)
+
     a_list = OneOrMore(
         ID + Optional(equals + righthand_id) + Optional(comma.suppress())
     )
@@ -363,8 +393,7 @@ def parse_dot_data(s: str) -> list[pydot.core.Dot] | None:
     @rtype: `list` of `pydot.core.Dot`
     """
     try:
-        graphparser = GraphParser.parser
-        tokens = graphparser.parse_string(s)
+        tokens = GraphParser.parser.parse_string(s)
         return list(tokens)
     except ParseException as err:
         print(err.line)
