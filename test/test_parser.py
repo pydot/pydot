@@ -97,3 +97,23 @@ def test_strict_graph_parsing() -> None:
     assert len(res2) == 2
     assert not res2[0].get_strict()
     assert res2[1].get_strict()
+
+
+def test_backslash_continuations() -> None:
+    src = textwrap.dedent(r"""
+        graph G {
+            "my very long node \
+        name" [color=red];
+            "my indented and wrapped \
+            node name" [shape=square];
+            "my node name containing \ backslash";
+        }""")
+    res = dot_parser.parse_dot_data(src)
+    assert isinstance(res, list)
+    assert len(res) == 1
+    graph = res[0]
+    nodes = graph.get_nodes()
+    assert len(nodes) == 3
+    assert nodes[0].get_name() == '"my very long node name"'
+    assert nodes[1].get_name() == '"my indented and wrapped     node name"'
+    assert nodes[2].get_name() == '"my node name containing \\ backslash"'

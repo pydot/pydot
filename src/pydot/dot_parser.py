@@ -171,6 +171,15 @@ def expand_attr_lists(attr_l: Any) -> dict[str, Any]:
     return attrs
 
 
+def push_dbl_quoted(toks: ParseResults) -> str:
+    assert "dbl_quoted" in toks and isinstance(toks.dbl_quoted, str)
+    s = toks.dbl_quoted
+    # Remove backslash line-continuations
+    if "\\" in s:
+        s = s.replace("\\\r\n", "").replace("\\\n", "")
+    return s
+
+
 def push_graph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     g = pydot.core.Subgraph("")
     g.obj_dict["show_keyword"] = False
@@ -254,10 +263,14 @@ class GraphParser:
     )
 
     double_quoted_string = QuotedString(
-        '"', multiline=True, unquoteResults=False, escChar="\\"
+        '"', multiline=True, unquote_results=False, esc_char="\\"
     )
 
-    ID = identifier | HTML() | double_quoted_string
+    ID = (
+        identifier
+        | HTML()
+        | double_quoted_string("dbl_quoted").set_parse_action(push_dbl_quoted)
+    )
 
     float_number = Combine(Optional(minus) + OneOrMore(Word(nums + ".")))
 
