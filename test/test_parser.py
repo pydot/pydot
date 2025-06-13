@@ -117,3 +117,39 @@ def test_backslash_continuations() -> None:
     assert nodes[0].get_name() == '"my very long node name"'
     assert nodes[1].get_name() == '"my indented and wrapped     node name"'
     assert nodes[2].get_name() == '"my node name containing \\ backslash"'
+
+
+def test_plus_concatenation() -> None:
+    src = textwrap.dedent(r"""
+        digraph G {
+            "my" + "concatenated" + "name";
+            "myconcatenated" + " with " + "ports" [color="r" + "ed"];
+            "my\
+        concatenated" + " with ports":p45:sw -> "my\
+        concatenated\
+        name":ne [penwidth=5, arrows="b" + "o" + "t" + "h"];
+        "con" + "catenated" [label="this is a long\
+        long label" + " that just goes on \
+        and on and on"];
+        }""")
+    res = dot_parser.parse_dot_data(src)
+    assert isinstance(res, list)
+    assert len(res) == 1
+    graph = res[0]
+    nodes = graph.get_nodes()
+    edges = graph.get_edges()
+
+    assert len(nodes) == 3
+    assert nodes[0].get_name() == '"myconcatenatedname"'
+    assert nodes[1].get_name() == '"myconcatenated with ports"'
+    assert nodes[1].get("color") == '"red"'
+    assert nodes[2].get_name() == '"concatenated"'
+    assert nodes[2].get("label") == (
+        '"this is a longlong label that just goes on and on and on"'
+    )
+
+    assert len(edges) == 1
+    edge = edges[0]
+    assert edge.get_source() == f"{nodes[1].get_name()}:p45:sw"
+    assert edge.get_destination() == '"myconcatenatedname":ne'
+    assert edge.get("arrows") == '"both"'

@@ -1,0 +1,15 @@
+
+digraph G {
+    "concatenated" + "name" [color="bl" + "ue"];
+    "concatenated with " + "ports" [color="or\
+an" + "ge"];
+    "concatenated" + " with ports":p45:sw -> "\
+concatenated\
+name":ne [penwidth=5, arrows="b" + "o" + "t" + "h"];
+    "con" + "catenated" [label="this is a long" +
+    "long label" + " that just goes on \
+and on and on"];
+    "con" +
+    "catenated" -> "back\
+slashed" [shape=square];
+}
