@@ -346,7 +346,7 @@ def id_needs_quotes(s: str) -> bool:
 
 
 def quote_id_if_necessary(
-    s: str, unquoted_keywords: Sequence[str] | None = None
+    s: str, *, unquoted_keywords: Sequence[str] | None = None
 ) -> str:
     """Enclose identifier in quotes, if needed."""
     unquoted = [
@@ -673,6 +673,7 @@ class Node(Common):
     def __init__(
         self,
         name: str = "",
+        *,
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
@@ -725,7 +726,7 @@ class Node(Common):
         self.obj_dict["attributes"]["style"] = ",".join(styles)
 
     def to_string(
-        self, indent: str | int | float = "", indent_level: int = 1
+        self, *, indent: str | int | float = "", indent_level: int = 1
     ) -> str:
         """Return string representation of node in DOT language."""
         indent_str = self.get_indent(indent, indent_level)
@@ -780,6 +781,7 @@ class Edge(Common):
         self,
         src: EdgeDefinition | Sequence[EdgeDefinition] = "",
         dst: EdgeDefinition = "",
+        *,
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
@@ -899,7 +901,7 @@ class Edge(Common):
         return quote_id_if_necessary(node_ref)
 
     def to_string(
-        self, indent: str | int | float = "", indent_level: int = 1
+        self, *, indent: str | int | float = "", indent_level: int = 1
     ) -> str:
         """Return string representation of edge in DOT language."""
         src = self.parse_node_ref(self.get_source())
@@ -977,11 +979,12 @@ class Graph(Common):
     def __init__(
         self,
         graph_name: str = "G",
-        obj_dict: AttributeDict | None = None,
         graph_type: str = "digraph",
+        *,
         strict: bool = False,
         suppress_disconnected: bool = False,
         simplify: bool = False,
+        obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
@@ -1138,7 +1141,7 @@ class Graph(Common):
 
         graph_node.set_sequence(self.get_next_sequence_number())
 
-    def del_node(self, name: str | Node, index: int | None = None) -> bool:
+    def del_node(self, name: str | Node, *, index: int | None = None) -> bool:
         """Delete a node from the graph.
 
         Given a node's name all node(s) with that same name
@@ -1232,7 +1235,7 @@ class Graph(Common):
         graph_edge.set_parent_graph(self.get_parent_graph())
 
     def del_edge(
-        self, src_or_list: Any, dst: Any = None, index: int | None = None
+        self, src_or_list: Any, dst: Any = None, *, index: int | None = None
     ) -> bool:
         """Delete an edge from the graph.
 
@@ -1411,6 +1414,7 @@ class Graph(Common):
 
     def to_string(
         self,
+        *,
         indent: str | int | float = "",
         indent_level: int = 0,
         inline: bool = False,
@@ -1559,9 +1563,10 @@ class Subgraph(Graph):
     def __init__(
         self,
         graph_name: str = "",
-        obj_dict: AttributeDict | None = None,
-        suppress_disconnected: bool = False,
+        *,
         simplify: bool = False,
+        suppress_disconnected: bool = False,
+        obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(
@@ -1610,9 +1615,10 @@ class Cluster(Graph):
     def __init__(
         self,
         graph_name: str = "subG",
-        obj_dict: AttributeDict | None = None,
+        *,
         suppress_disconnected: bool = False,
         simplify: bool = False,
+        obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(
@@ -1699,8 +1705,9 @@ class Dot(Graph):
     def write(
         self,
         path: str | bytes,
-        prog: str | None = None,
+        *,
         format: str = "raw",
+        prog: str | None = None,
         encoding: str | None = None,
     ) -> bool:
         """Writes a graph to a file.
@@ -1734,15 +1741,16 @@ class Dot(Graph):
             with open(path, mode="w", encoding=encoding) as f:
                 f.write(s)
         else:
-            s = self.create(prog, format, encoding=encoding)
+            s = self.create(format, prog=prog, encoding=encoding)
             with open(path, mode="wb") as f:
                 f.write(s)  # type: ignore
         return True
 
     def create(
         self,
-        prog: list[str] | tuple[str] | str | None = None,
         format: str = "ps",
+        *,
+        prog: list[str] | tuple[str] | str | None = None,
         encoding: str | None = None,
     ) -> str:
         """Creates and returns a binary image for the graph.
