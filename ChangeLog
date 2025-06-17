@@ -9,7 +9,12 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 4.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixed:
+- Updated pyparsing to `>=3.1.0`. Required for pydot to function correctly. (#477)
+- Parser: Fixed 'strict' handling. (#480)
+  The parser wasn't capturing the 'strict' keyword when parsing dot data. Now it does.
+- Parser: Support backslash continuation in quoted IDs. (#487)
+- Parser: Support +-concatenated quoted strings. (#490)
 
 
 4.0.0 (2025-05-04)
