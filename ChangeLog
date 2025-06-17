@@ -6,7 +6,7 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 (https://www.python.org/dev/peps/pep-0440/#semantic-versioning).
 
 
-4.0.1 (unreleased)
+4.0.1 (2025-06-17)
 ------------------
 
 Fixed:
