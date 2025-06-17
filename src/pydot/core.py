@@ -623,7 +623,7 @@ class Common:
         return int(seq)
 
     @staticmethod
-    def get_indent(indent: Any, indent_level: int) -> str:
+    def get_indent(indent: str | int | float, indent_level: int) -> str:
         if isinstance(indent, (int, float)):
             indent_str = " " * int(indent)
         else:
@@ -724,7 +724,9 @@ class Node(Common):
 
         self.obj_dict["attributes"]["style"] = ",".join(styles)
 
-    def to_string(self, indent: Any = "", indent_level: int = 1) -> str:
+    def to_string(
+        self, indent: str | int | float = "", indent_level: int = 1
+    ) -> str:
         """Return string representation of node in DOT language."""
         indent_str = self.get_indent(indent, indent_level)
 
@@ -896,7 +898,9 @@ class Edge(Common):
 
         return quote_id_if_necessary(node_ref)
 
-    def to_string(self, indent: Any = "", indent_level: int = 1) -> str:
+    def to_string(
+        self, indent: str | int | float = "", indent_level: int = 1
+    ) -> str:
         """Return string representation of edge in DOT language."""
         src = self.parse_node_ref(self.get_source())
         dst = self.parse_node_ref(self.get_destination())
@@ -1406,7 +1410,10 @@ class Graph(Common):
                 Graph(obj_dict=obj).set_parent_graph(parent_graph)
 
     def to_string(
-        self, indent: Any = "", indent_level: int = 0, inline: bool = False
+        self,
+        indent: str | int | float = "",
+        indent_level: int = 0,
+        inline: bool = False,
     ) -> str:
         """Return string representation of graph in DOT language.
 
