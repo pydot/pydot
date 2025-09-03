@@ -48,7 +48,7 @@ jobs:
           - system: {os: ubuntu, can-fail: true}
             python-version: "3.13t"
 
-    # Work arond tox-gh missing support for freethreaded variants
+    # Work around tox-gh missing support for freethreaded variants
     env:
       TOX_GH_MAJOR_MINOR: ${{ matrix.python-version }}
 
