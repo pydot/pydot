@@ -47,6 +47,10 @@ jobs:
         include:
           - system: {os: ubuntu, can-fail: true}
             python-version: "3.13t"
+          - system: {os: windows, can-fail: true}
+            python-version: "3.13t"
+          - system: {os: macos, can-fail: true}
+            python-version: "3.13t"
 
     # Work around tox-gh missing support for freethreaded variants
     env:
