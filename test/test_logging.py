@@ -12,6 +12,7 @@ import pytest
 import pydot
 
 
+@pytest.mark.thread_unsafe(reason="Adjusts module-wide configs")
 def test_logging_init(caplog: pytest.LogCaptureFixture) -> None:
     with caplog.at_level(logging.DEBUG, logger="pydot"):
         importlib.reload(pydot)

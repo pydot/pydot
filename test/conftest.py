@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import copy
 import typing as T
 
 import pytest
@@ -11,7 +12,7 @@ import pydot.core
 
 @pytest.fixture
 def objdict() -> T.Dict[str, T.Any]:
-    return {
+    obj = {
         "attributes": {},
         "name": "G",
         "type": "graph",
@@ -44,6 +45,7 @@ def objdict() -> T.Dict[str, T.Any]:
         "edges": {},
         "subgraphs": {},
     }
+    return copy.deepcopy(obj)
 
 
 @pytest.fixture
