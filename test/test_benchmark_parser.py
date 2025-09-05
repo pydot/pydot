@@ -67,7 +67,10 @@ def test_multiple_parsing(benchmark, latin1_graph_files) -> None:
 
     def parse_multiple(_dir) -> int:
         for i, dotfile in enumerate(_dir.iterdir()):
-            if dotfile.name in latin1_graph_files:
+            if (
+                not dotfile.name.endswith(".dot")
+                or dotfile.name in latin1_graph_files
+            ):
                 continue
             dot_src = read_dot_src(dotfile)
             res = parse_dot_data(dot_src)
