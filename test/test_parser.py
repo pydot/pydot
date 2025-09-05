@@ -33,7 +33,7 @@ def test_HTML_invalid() -> None:
 
 def test_edge_subgraph_anon() -> None:
     """Test parsing of an edge with an anonymous subgraph endpoint."""
-    parser = GraphParser.edge_stmt
+    parser = GraphParser().edge_stmt
     res = parser.parse_string("""a -- { b; c; }""")
     assert len(res) == 1
     edge = res[0]
@@ -47,7 +47,7 @@ def test_edge_subgraph_anon() -> None:
 
 def test_edge_subgraph_explicit() -> None:
     """Test parsing of an edge with an explicit subgraph endpoint."""
-    parser = GraphParser.edge_stmt
+    parser = GraphParser().edge_stmt
     res = parser.parse_string("""a -- subgraph XY { b; c; }""")
     assert len(res) == 1
     edge = res[0]
@@ -60,7 +60,7 @@ def test_edge_subgraph_explicit() -> None:
 
 
 def test_AttrList_repr() -> None:
-    parser = GraphParser.attr_list("a_list")
+    parser = GraphParser().attr_list("a_list")
     res = parser.parse_string("[color=red, shape=square]")
     assert isinstance(res, pp.ParseResults)
     a_list = res.a_list
@@ -71,7 +71,7 @@ def test_AttrList_repr() -> None:
 
 
 def test_DefaultStatement_repr() -> None:
-    parser = GraphParser.default_stmt("defaults")
+    parser = GraphParser().default_stmt("defaults")
     res = parser.parse_string("node [color=blue];")
     assert isinstance(res, pp.ParseResults)
     defaults = res.defaults
