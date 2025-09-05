@@ -13,7 +13,7 @@ _test_root = Path(__file__).parent
 
 
 def read_dot_src(dot_file: Path) -> str:
-    with dot_file.open("rt") as infile:
+    with dot_file.open(encoding="utf-8") as infile:
         return infile.read()
 
 
