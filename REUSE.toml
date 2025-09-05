@@ -8,7 +8,7 @@ SPDX-PackageSupplier = "Łukasz <lukaszlapinski7@gmail.com>"
 SPDX-PackageDownloadLocation = "https://github.com/pydot/pydot"
 
 [[annotations]]
-path = ["test/graphs/**", "test/my_tests/**", "test/from-past-to-future/**"]
+path = ["test/graphs/**", "test/my_tests/**", "test/from-past-to-future/**", "test/graphs_disabled/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "pydot contributors"
 SPDX-License-Identifier = "MIT"
