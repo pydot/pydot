@@ -56,8 +56,8 @@ def graph_directed() -> pydot.core.Graph:
 @pytest.fixture
 def latin1_graph_files() -> set[str]:
     return {
-        'b34.dot',
-        'b56.dot',
-        'b60.dot',
-        'Latin1.dot',
+        "b34.dot",
+        "b56.dot",
+        "b60.dot",
+        "Latin1.dot",
     }

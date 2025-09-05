@@ -21,11 +21,14 @@ def read_dot_src(dot_file: Path) -> str:
     group="small",
     min_rounds=5,
 )
-@pytest.mark.parametrize("dot_file", [
-    'b57.dot',
-    'b71.dot',
-    'b94.dot',
-])
+@pytest.mark.parametrize(
+    "dot_file",
+    [
+        "b57.dot",
+        "b71.dot",
+        "b94.dot",
+    ],
+)
 def test_parsing_small(dot_file: str, benchmark) -> None:
     dot = _test_root / "graphs" / dot_file
     dot_src = read_dot_src(dot)
@@ -33,23 +36,25 @@ def test_parsing_small(dot_file: str, benchmark) -> None:
     assert isinstance(res, list)
     assert isinstance(res[0], pydot.core.Dot)
 
- 
+
 @pytest.mark.benchmark(
     group="big",
     min_rounds=2,
 )
-@pytest.mark.parametrize("dot_file", [
-    'b29.dot',
-    'b69.dot',
-    'b102.dot',
-])
+@pytest.mark.parametrize(
+    "dot_file",
+    [
+        "b29.dot",
+        "b69.dot",
+        "b102.dot",
+    ],
+)
 def test_parsing_big(dot_file: str, benchmark) -> None:
     dot = _test_root / "graphs" / dot_file
     dot_src = read_dot_src(dot)
     res = benchmark(parse_dot_data, dot_src)
     assert isinstance(res, list)
     assert isinstance(res[0], pydot.core.Dot)
-
 
 
 @pytest.mark.benchmark(
@@ -68,7 +73,7 @@ def test_multiple_parsing(benchmark, latin1_graph_files) -> None:
             res = parse_dot_data(dot_src)
             assert isinstance(res, list)
             assert isinstance(res[0], pydot.core.Dot)
-        return i+1
+        return i + 1
 
     count = benchmark(parse_multiple, dotfile_dir)
     assert count == len(set(dotfile_dir.iterdir()))
