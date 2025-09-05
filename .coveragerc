@@ -17,6 +17,7 @@ source_pkgs =
   pydot
 omit =
   **/_vendor/*
+  test/test_benchmark_parser.py
 
 [report]
 omit =

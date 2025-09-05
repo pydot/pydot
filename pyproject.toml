@@ -73,7 +73,9 @@ tests = [
   'pydot[dev]',
   'tox',
   'pytest',
+  'pytest-benchmark',
   'pytest-cov',
+  'pytest-run-parallel[psutil]',
   'pytest-xdist[psutil]',
 ]
 release = ['zest.releaser[recommended]']
