@@ -155,3 +155,20 @@ def test_plus_concatenation() -> None:
     assert edge.get_source() == f"{nodes[1].get_name()}:p45:sw"
     assert edge.get_destination() == '"myconcatenatedname":ne'
     assert edge.get("arrows") == '"both"'
+
+
+def test_bad_parse(capsys) -> None:
+    src = textwrap.dedent(r"""
+        graph G {
+            a -- b;
+            {{[{foo:bar:baz}]}}};
+        }""")
+    expected = textwrap.dedent("""
+        {{[{foo:bar:baz}]}}};
+        ^
+    Expected rbrace, found '{'  (at char 27), (line:4, col:5)
+    """).strip()
+    res = dot_parser.parse_dot_data(src)
+    assert res is None
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected
