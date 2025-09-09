@@ -15,6 +15,7 @@ import typing as T
 import pytest
 
 import pydot
+import pydot.exceptions
 from pydot._vendor import tempfile
 
 
@@ -426,6 +427,14 @@ def test_dot_args() -> None:
         outfile = os.path.join(tmp_dir, "test.svg")
         g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
         assert os.path.exists(outfile)
+
+
+def test_bad_graph_type() -> None:
+    with pytest.raises(pydot.exceptions.Error) as e:
+        pydot.Graph("G", graph_type="round")
+    assert str(e.value) == (
+        'Invalid type "round".' + " Accepted graph types are: graph, digraph"
+    )
 
 
 def test_suppress_disconnected() -> None:
