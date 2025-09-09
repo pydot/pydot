@@ -136,28 +136,28 @@ def _load_test_cases(casedir: str) -> list[tuple[str, str, str]]:
 
 
 def _compare_images(
-    fname: str, pydot: PydotRenderResult, gv: GVRenderResult
+    fname: str, pd: PydotRenderResult, gv: GVRenderResult
 ) -> bool:
     """Compare two RenderResult objects for the named test.
 
     If the images differ and a ``TEST_ERROR_DIR`` has been provided, create
     a subdir for the test and dump both images there for examination."""
-    if pydot.checksum == gv.checksum:
+    if pd.checksum == gv.checksum:
         return True
     if TEST_ERROR_DIR is not None:  # pragma: no cover
         dirname = fname.replace(".", "_")
         out_dir = os.path.join(os.path.normpath(TEST_ERROR_DIR), dirname)
         os.makedirs(out_dir)
-        pydot_path = os.path.join(out_dir, "err_pydot.jpeg")
+        pd_path = os.path.join(out_dir, "err_pydot.jpeg")
         gv_path = os.path.join(out_dir, "err_graphviz.jpeg")
-        with open(pydot_path, "wb") as p, open(gv_path, "wb") as g:
-            p.write(pydot.data)
+        with open(pd_path, "wb") as p, open(gv_path, "wb") as g:
+            p.write(pd.data)
             g.write(gv.data)
         src_filename = os.path.basename(gv.dot_file)
         gv_src = os.path.join(out_dir, src_filename)
         pd_src = os.path.join(out_dir, f"pydot_{src_filename}")
         with open(gv_src, "w") as gs, open(pd_src, "w") as ps:
-            ps.write(pydot.dot_src)
+            ps.write(pd.dot_src)
             gs.write(gv.dot_src)
     return False  # pragma: no cover
 
