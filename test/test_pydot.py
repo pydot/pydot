@@ -4,10 +4,7 @@
 
 """Unit testing of `pydot`."""
 
-# TODO:
-# -test graph generation APIs (from adjacency, etc..)
-# -test del_node, del_edge methods
-# -test Common.set method
+from __future__ import annotations
 
 import functools
 import os
@@ -40,8 +37,8 @@ class RenderResult:
         dot_src: str | None = None,
     ) -> None:
         self._data = data
-        self._dot_file: T.Optional[str] = dot_file
-        self._dot_src: T.Optional[str] = dot_src
+        self._dot_file: str | None = dot_file
+        self._dot_src: str | None = dot_src
 
     @property
     def data(self) -> bytes:

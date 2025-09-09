@@ -4,6 +4,8 @@
 
 """Unit testing of `pydot.classes`."""
 
+from __future__ import annotations
+
 import pytest
 
 import pydot

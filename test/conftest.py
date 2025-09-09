@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2024 pydot contributors
 #
 # SPDX-License-Identifier: MIT
+from __future__ import annotations
 
 import typing as T
 
@@ -10,7 +11,7 @@ import pydot.core
 
 
 @pytest.fixture
-def objdict() -> T.Dict[str, T.Any]:
+def objdict() -> dict[str, T.Any]:
     return {
         "attributes": {},
         "name": "G",

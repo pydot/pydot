@@ -4,6 +4,8 @@
 
 """Unit testing of pydot api calls."""
 
+from __future__ import annotations
+
 import os
 import pickle
 import string
@@ -441,7 +443,7 @@ def test_suppress_disconnected() -> None:
     assert gr1.to_string() == gr2.to_string()
 
 
-def test_strict(objdict: T.Dict[str, T.Any]) -> None:
+def test_strict(objdict: dict[str, T.Any]) -> None:
     g = pydot.Dot(obj_dict=objdict)
     g.set_parent_graph(g)
     g.set_strict(True)

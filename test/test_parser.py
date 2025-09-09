@@ -4,6 +4,8 @@
 
 """Unit testing of individual dot_parser classes."""
 
+from __future__ import annotations
+
 import textwrap
 
 import pyparsing as pp
