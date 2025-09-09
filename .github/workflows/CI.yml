@@ -9,14 +9,18 @@ on:
     branches: ["main"]
     paths-ignore:
       - "**/README.md"
-      - "LICENSE"
+      - ".gitignore"
       - "ChangeLog"
+      - "LICENSES/**"
+      - "REUSE.toml"
   pull_request:
     branches: ["*"]
     paths-ignore:
       - "**/README.md"
-      - "LICENSE"
+      - ".gitignore"
       - "ChangeLog"
+      - "LICENSES/**"
+      - "REUSE.toml"
   workflow_dispatch:
 
 concurrency:
