@@ -172,11 +172,11 @@ def __generate_format_methods(Klass: type) -> None:
     for frmt in OUTPUT_FORMATS:
 
         def __create_method(
-            self: Any,
+            self: Dot,
             f: str = frmt,
             prog: str | None = None,
             encoding: str | None = None,
-        ) -> Any:
+        ) -> bytes:
             """Refer to docstring of method `create`."""
             return self.create(format=f, prog=prog, encoding=encoding)
 
@@ -185,7 +185,7 @@ def __generate_format_methods(Klass: type) -> None:
     for frmt in OUTPUT_FORMATS ^ {"raw"}:
 
         def __write_method(
-            self: Any,
+            self: Dot,
             path: str,
             f: str = frmt,
             prog: str | None = None,
@@ -220,10 +220,7 @@ def call_graphviz(
     arguments: list[str],
     working_dir: str | bytes,
     **kwargs: Any,
-) -> tuple[str, str, subprocess.Popen[str]]:
-    # explicitly inherit `$PATH`, on Windows too,
-    # with `shell=False`
-
+) -> tuple[bytes, bytes, subprocess.Popen[bytes]]:
     if program in DEFAULT_PROGRAMS:
         extension = get_executable_extension()
         program += extension
@@ -238,6 +235,8 @@ def call_graphviz(
         # specify that the new process shall not create a new window
         kwargs.update(creationflags=subprocess.CREATE_NO_WINDOW)
 
+    # explicitly inherit `$PATH`, on Windows too,
+    # with `shell=False`
     env = {
         "PATH": os.environ.get("PATH", ""),
         "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
@@ -246,7 +245,12 @@ def call_graphviz(
 
     program_with_args = [program] + arguments
 
-    process = subprocess.Popen(
+    if sys.version_info < (3, 9):
+        my_popen = subprocess.Popen
+    else:
+        my_popen = subprocess.Popen[bytes]
+
+    process = my_popen(
         program_with_args,
         env=env,
         cwd=working_dir,
@@ -569,7 +573,7 @@ class Common:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
-        return self.obj_dict.get("parent_graph", None)
+        return cast("Graph", self.obj_dict.get("parent_graph", None))
 
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
@@ -887,7 +891,7 @@ class Edge(Common):
 
         if node_port_idx > 0:
             a = node_ref[:node_port_idx]
-            b = node_ref[node_port_idx + 1 :]
+            b = node_ref[(node_port_idx + 1) :]
 
             node = quote_id_if_necessary(a)
             node += ":" + quote_id_if_necessary(b)
@@ -1727,9 +1731,9 @@ class Dot(Graph):
             with open(path, mode="w", encoding=encoding) as f:
                 f.write(s)
         else:
-            s = self.create(prog, format, encoding=encoding)
+            b = self.create(prog, format, encoding=encoding)
             with open(path, mode="wb") as f:
-                f.write(s)  # type: ignore
+                f.write(b)
         return True
 
     def create(
@@ -1737,7 +1741,7 @@ class Dot(Graph):
         prog: list[str] | tuple[str] | str | None = None,
         format: str = "ps",
         encoding: str | None = None,
-    ) -> str:
+    ) -> bytes:
         """Creates and returns a binary image for the graph.
 
         create will write the graph to a tempworary dot file in the
@@ -1838,7 +1842,9 @@ class Dot(Graph):
             code = process.returncode
             print(
                 f'"{prog}" with args {arguments} returned code: {code}\n\n'
-                f"stdout, stderr:\n {stdout_data}\n{stderr_data}\n"
+                f"stdout, stderr:\n"
+                f" {stdout_data.decode('utf-8')}\n"
+                f" {stderr_data.decode('utf-8')}\n"
             )
 
         assert process.returncode == 0, (
