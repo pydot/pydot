@@ -40,8 +40,8 @@ jobs:
       matrix:
         system:
           - {os: ubuntu, can-fail: false}
-          - {os: windows, can-fail: true}
-          - {os: macos, can-fail: true}
+          - {os: windows, can-fail: false}
+          - {os: macos, can-fail: false}
         python-version:
           - "3.13"
           - "3.12"
