@@ -127,7 +127,7 @@ jobs:
       - name: "Install coverage.py"
         run: python -m pip install coverage
       - name: "Download coverage-data artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: coverage-data-*
           merge-multiple: true
@@ -137,13 +137,13 @@ jobs:
       #   run: coverage report
       - name: "Coverage comment"
         id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@v3
+        uses: py-cov-action/python-coverage-comment-action@406af558b29115de58cfab8a2d103867142c0332 # v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           MERGE_COVERAGE_FILES: true
           ANNOTATE_MISSING_LINES: true
       - name: "Store PR comment for secure workflow"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
         with:
           name: python-coverage-comment-action
