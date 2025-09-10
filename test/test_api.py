@@ -153,6 +153,16 @@ def test_get_subgraph() -> None:
     assert sout.get_name() == "sub"
 
 
+def test_cluster_casting() -> None:
+    c = pydot.Cluster("sg")
+    assert c.get_type() == "subgraph"
+    assert c.get_name() == "cluster_sg"
+    sg = pydot.Graph("sg")
+    sg_c = pydot.Cluster(obj_dict=sg.obj_dict)
+    assert sg_c.get_type() == "digraph"
+    assert sg_c.get_name() == "sg"
+
+
 def test_graph_defaults() -> None:
     g = pydot.Graph()
     g.set_graph_defaults(rank="TB", color="red")
