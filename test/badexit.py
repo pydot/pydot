@@ -7,4 +7,4 @@ import sys
 
 if __name__ == "__main__":
     print("I'm a failure.", file=sys.stderr)
-    sys.exit(-1)
+    sys.exit(1)

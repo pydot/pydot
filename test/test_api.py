@@ -417,7 +417,7 @@ def test_subprocess_bad_exit() -> None:
     (out, err, proc) = pydot.call_graphviz("python", [script], ".")
     assert isinstance(out, bytes)
     assert isinstance(err, bytes)
-    assert proc.returncode == 255
+    assert proc.returncode == 1
     assert err == b"I'm a failure.\n"
 
 
