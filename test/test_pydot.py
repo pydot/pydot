@@ -159,15 +159,7 @@ def _compare_images(
     return False  # pragma: no cover
 
 
-class PydotTestCase(unittest.TestCase):
-    def setUp(self) -> None:
-        self._reset_graphs()
-
-    def _reset_graphs(self) -> None:
-        self.graph_directed = pydot.Graph("testgraph", graph_type="digraph")
-
-
-class TestShapeFiles(PydotTestCase):
+class TestShapeFiles(unittest.TestCase):
     shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
     # image files are omitted from sdist
@@ -206,7 +198,7 @@ class TestShapeFiles(PydotTestCase):
             )
 
 
-class RenderedTestCase(PydotTestCase):
+class RenderedTestCase(unittest.TestCase):
     def _render_and_compare_dot_file(self, fdir: str, fname: str) -> None:
         # files that confuse `chardet`
         encodings = {"Latin1.dot": "latin-1"}
