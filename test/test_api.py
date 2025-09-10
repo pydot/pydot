@@ -51,7 +51,7 @@ def test_create_simple_graph_with_node() -> None:
 
 def test_boolean_attribute() -> None:
     n = pydot.Node("n", color=True)
-    assert str(n) == 'n [color=true];'
+    assert str(n) == "n [color=true];"
 
 
 def test_attribute_with_implicit_value() -> None:
@@ -286,7 +286,7 @@ def test_numeric_node_id(graph_directed: pydot.Graph) -> None:
 def test_boolean_node_id() -> None:
     n = pydot.Node("n", color="blue")
     n.set_name(True)
-    assert str(n) == 'true [color=blue];'
+    assert str(n) == "true [color=blue];"
 
 
 def test_numeric_quoting() -> None:
@@ -352,12 +352,12 @@ def test_broken_port_handling() -> None:
 
 @pytest.mark.xfail(reason="We use bad regexps to parse numbers")
 def test_broken_negatives() -> None:
-    assert str(pydot.Node(-2)) == '-2;'
+    assert str(pydot.Node(-2)) == "-2;"
 
 
 @pytest.mark.xfail(reason="We use bad regexps to parse numbers")
 def test_broken_negatives_2() -> None:
-    assert str(pydot.Node("a", penwidth="-2")) == 'a [penwidth=-2];'
+    assert str(pydot.Node("a", penwidth="-2")) == "a [penwidth=-2];"
 
 
 @pytest.mark.xfail(reason="Our quoting can be broken by set_name")
@@ -381,28 +381,21 @@ def test_comma_separated_attribute_values_to_string(
 
 def test_attribute_values_quoting(graph_directed: pydot.Graph) -> None:
     n1 = pydot.Node(
-            "n1",
-            length=1.234, 
-            size="2.345",
-            taste=None,
-        )
-    n2 = pydot.Node(
-            "n2",
-            radius="9,876",
-            graph="strict",
-            silence=""
-        )
+        "n1",
+        length=1.234,
+        size="2.345",
+        taste=None,
+    )
+    n2 = pydot.Node("n2", radius="9,876", graph="strict", silence="")
     expected = {
-        "n1": 'n1 [length=1.234, size=2.345, taste];',
-        "n2": 'n2 [radius="9,876", graph="strict", silence=""];'
+        "n1": "n1 [length=1.234, size=2.345, taste];",
+        "n2": 'n2 [radius="9,876", graph="strict", silence=""];',
     }
 
     graph_directed.add_node(n1)
     graph_directed.add_node(n2)
     nodes = graph_directed.get_nodes()
-    for nout in filter(
-        lambda n: n.get_name() in ["n1", "n2"], nodes
-    ):
+    for nout in filter(lambda n: n.get_name() in ["n1", "n2"], nodes):
         assert str(nout) == expected[nout.get_name()]
 
 
@@ -421,8 +414,7 @@ def test_executable_not_found_exception() -> None:
 
 def test_subprocess_bad_exit() -> None:
     script = Path(__file__).parent / "badexit.py"
-    (out, err, proc) = pydot.call_graphviz(
-        "python", [script], '.')
+    (out, err, proc) = pydot.call_graphviz("python", [script], ".")
     assert isinstance(out, bytes)
     assert isinstance(err, bytes)
     assert proc.returncode == 255
@@ -432,12 +424,12 @@ def test_subprocess_bad_exit() -> None:
 def test_dot_bad_input() -> None:
     class MyDot(pydot.Dot):
         def to_string(self, indent="", indent_level=0) -> str:
-            return 'graph G { {{[{red=blue}]}}; }'
-    
+            return "graph G { {{[{red=blue}]}}; }"
+
     g = MyDot("G")
     with pytest.raises(AssertionError) as e:
         g.create(format="svg")
-    assert 'returned code: 1' in str(e)
+    assert "returned code: 1" in str(e)
 
 
 def test_graph_add_node_argument_type(graph_directed: pydot.Graph) -> None:
@@ -620,7 +612,7 @@ def test_generated_setter_getters() -> None:
     assert nout.get_shape() == "box"
     assert nout.get_penwidth() == 2
 
-    expected = 'graph G {\nA [shape=box, penwidth=2];\n}\n'
+    expected = "graph G {\nA [shape=box, penwidth=2];\n}\n"
     assert g.to_string() == expected
 
 
@@ -629,7 +621,7 @@ def test_generated_create_write() -> None:
     g.add_node(pydot.Node("N"))
     svg = g.create_svg()
     assert isinstance(svg, bytes)
-    assert svg.startswith(b'<?xml version')
+    assert svg.startswith(b"<?xml version")
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
         outfile = os.path.join(tmp_dir, "write.svg")
         g.write_svg(outfile)
@@ -810,4 +802,4 @@ def test_version() -> None:
 
 def test_call_graphviz() -> None:
     with pytest.raises(FileNotFoundError):
-        pydot.call_graphviz("__dotnotexist", None, '.')
+        pydot.call_graphviz("__dotnotexist", None, ".")

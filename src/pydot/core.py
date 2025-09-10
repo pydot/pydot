@@ -584,7 +584,7 @@ class Common:
             parent_ = parent.get_parent_graph()
             if parent_ == parent:  # pragma: no branch
                 break
-            # Currently every added element gets re-parented to 
+            # Currently every added element gets re-parented to
             # the topmost graph of the current hierarchy (which
             # is also its own parent) every time subgraphs are
             # joined, so most of this loop is unreachable. The
