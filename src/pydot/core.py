@@ -246,7 +246,7 @@ def call_graphviz(
     program_with_args = [program] + arguments
 
     if sys.version_info < (3, 9):
-        my_popen = subprocess.Popen
+        my_popen = subprocess.Popen  # pragma: no cover
     else:
         my_popen = subprocess.Popen[bytes]
 
@@ -329,7 +329,8 @@ def id_needs_quotes(s: str) -> bool:
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
     if s.lower() in dot_keywords:
-        return False
+        # Our callers shield us from ever reaching here, fortunately
+        return False  # pragma: no cover
 
     any_result = any_needs_quotes(s)
     if any_result is not None:
@@ -361,7 +362,8 @@ def quote_id_if_necessary(
         return str(s).lower()
     if not isinstance(s, str):
         return s
-    if not s:
+    if not s:  # pragma: no cover
+        # should never happen
         return s
 
     if s.lower() in unquoted:
@@ -580,9 +582,14 @@ class Common:
         parent = self.get_parent_graph()
         while parent is not None:
             parent_ = parent.get_parent_graph()
-            if parent_ == parent:
+            if parent_ == parent:  # pragma: no branch
                 break
-            parent = parent_
+            # Currently every added element gets re-parented to 
+            # the topmost graph of the current hierarchy (which
+            # is also its own parent) every time subgraphs are
+            # joined, so most of this loop is unreachable. The
+            # first get_parent_graph() returns THE parent graph.
+            parent = parent_  # pragma: no cover
         if parent is None:
             return default
         return cast("str", parent.obj_dict.get("type", default))
@@ -623,7 +630,8 @@ class Common:
         """Get sequence"""
         seq = self.obj_dict.get("sequence")
         if seq is None:
-            return seq
+            # Should never happen
+            return seq  # pragma: no cover
         return int(seq)
 
     @staticmethod
@@ -1656,7 +1664,7 @@ class Dot(Graph):
     def __setstate__(self, state: AttributeDict) -> None:
         if "obj_dict" not in state:
             # Backwards compatibility for old picklings
-            state = {"obj_dict": state}
+            state = {"obj_dict": state}  # pragma: no cover
         self.obj_dict = state.get("obj_dict", {})
         self.prog = state.get("prog", "dot")
         self.shape_files = state.get("shape_files", [])
@@ -1836,7 +1844,7 @@ class Dot(Graph):
                     args[1] = f'"{prog}" not found in path.'  # type: ignore
                     raise OSError(*args)
                 else:
-                    raise
+                    raise  # pragma: no cover
 
         if process.returncode != 0:
             code = process.returncode
