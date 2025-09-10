@@ -652,6 +652,28 @@ def test_graph_from_incidence_matrix() -> None:
     assert s == "graph G { 1 -- 2; 2 -- 3; }"
 
 
+def test_graph_from_edges() -> None:
+    g = pydot.graph_from_edges([
+        ("a", "b"),
+        ("b", "c"),
+        ("c", 1),
+        (1, 2),
+    ], "node_")
+    c_to_1 = g.get_edge("node_c", "node_1")[0]
+    assert c_to_1.get_source() == "node_c"
+    assert c_to_1.get_destination() == "node_1"
+
+    expected = textwrap.dedent("""
+        graph G {
+        node_a -- node_b;
+        node_b -- node_c;
+        node_c -- node_1;
+        node_1 -- node_2;
+        }
+        """).strip()
+    assert g.to_string().strip() == expected
+
+
 def test_version() -> None:
     assert isinstance(pydot.__version__, str)
 
