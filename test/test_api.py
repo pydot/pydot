@@ -342,6 +342,31 @@ def test_keywords_with_ports() -> None:
     assert n.get_name() == "graph"
     assert n.get_port() == ":edge"
 
+
+@pytest.mark.xfail(reason="The port logic is a broken mess")
+def test_broken_port_handling() -> None:
+    n = pydot.Node("edge:12", color="red")
+    e = pydot.Edge(n, "strict:node")
+    assert str(e) == '"edge":12 -- "strict":"node";'
+
+
+@pytest.mark.xfail(reason="We use bad regexps to parse numbers")
+def test_broken_negatives() -> None:
+    assert str(pydot.Node(-2)) == '-2;'
+
+
+@pytest.mark.xfail(reason="We use bad regexps to parse numbers")
+def test_broken_negatives_2() -> None:
+    assert str(pydot.Node("a", penwidth="-2")) == 'a [penwidth=-2];'
+
+
+@pytest.mark.xfail(reason="Our quoting can be broken by set_name")
+def test_set_name_breakage() -> None:
+    n = pydot.Node("n:strict")
+    n.set_name("graph")
+    assert str(n) == '"graph";'
+
+
 def test_comma_separated_attribute_values_to_string(
     graph_directed: pydot.Graph,
 ) -> None:
