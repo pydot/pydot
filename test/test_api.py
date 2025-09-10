@@ -11,6 +11,7 @@ import pickle
 import string
 import textwrap
 import typing as T
+from pathlib import Path
 
 import pytest
 
@@ -311,6 +312,27 @@ def test_executable_not_found_exception() -> None:
     graph = pydot.Dot("graphname", graph_type="digraph")
     with pytest.raises(FileNotFoundError):
         graph.create(prog="dothehe")
+
+
+def test_subprocess_bad_exit() -> None:
+    script = Path(__file__).parent / "badexit.py"
+    (out, err, proc) = pydot.call_graphviz(
+        "python", [script], '.')
+    assert isinstance(out, bytes)
+    assert isinstance(err, bytes)
+    assert proc.returncode == 255
+    assert err == b"I'm a failure.\n"
+
+
+def test_dot_bad_input() -> None:
+    class MyDot(pydot.Dot):
+        def to_string(self, indent="", indent_level=0) -> str:
+            return 'graph G { {{[{red=blue}]}}; }'
+    
+    g = MyDot("G")
+    with pytest.raises(AssertionError) as e:
+        g.create(format="svg")
+    assert 'returned code: 1' in str(e)
 
 
 def test_graph_add_node_argument_type(graph_directed: pydot.Graph) -> None:
@@ -632,3 +654,8 @@ def test_graph_from_incidence_matrix() -> None:
 
 def test_version() -> None:
     assert isinstance(pydot.__version__, str)
+
+
+def test_call_graphviz() -> None:
+    with pytest.raises(FileNotFoundError):
+        pydot.call_graphviz("__dotnotexist", None, '.')

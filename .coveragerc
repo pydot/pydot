@@ -17,6 +17,7 @@ source_pkgs =
   pydot
 omit =
   **/_vendor/*
+  test/badexit.py
 
 [report]
 omit =
