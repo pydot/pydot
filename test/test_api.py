@@ -57,6 +57,55 @@ def test_attribute_with_implicit_value() -> None:
     assert "decorate" in attrs
 
 
+def test_node_handling() -> None:
+    g = pydot.Graph("N")
+    a = pydot.Node("a")
+    b = pydot.Node("b")
+    c = pydot.Node("c")
+    g.add_node(a)
+    g.add_node(b)
+    g.add_node(c)
+
+    assert len(g.get_nodes()) == 3
+    assert g.del_node("a")
+    assert not g.del_node(a)
+    assert g.del_node(b, 0)
+    assert len(g.get_nodes()) == 1
+
+
+def test_edge_handling() -> None:
+    g = pydot.Graph("G")
+    a = pydot.Node("a")
+    b = pydot.Node("b")
+    c = pydot.Node("c")
+    g.add_edge(pydot.Edge(a.get_name(), b.get_name()))
+    g.add_edge(pydot.Edge(b.get_name(), c.get_name()))
+    g.add_edge(pydot.Edge(b, c))
+
+    a_b_out = g.get_edge("a", "b")
+    assert len(a_b_out) == 1
+    a_b = a_b_out[0]
+    assert isinstance(a_b, pydot.Edge)
+    assert a_b.get_source() == "a"
+    assert a_b.get_destination() == "b"
+
+    b_c_out = g.get_edge(("b", "c"))
+    assert len(b_c_out) == 2
+    b_c = b_c_out[0]
+    assert isinstance(b_c, pydot.Edge)
+    assert b_c.get_source() == "b"
+    assert b_c.get_destination() == "c"
+
+    bad_out = g.get_edge(("e", "f"))
+    assert len(bad_out) == 0
+
+    assert g.del_edge(("a", "b"), "badarg")
+    assert g.del_edge(("b", "c"), 0)
+    assert g.del_edge(b, c)
+    assert not g.del_edge("b", "c")
+    assert g.get_edges() == []
+
+
 def test_subgraphs() -> None:
     g = pydot.Graph()
     s = pydot.Subgraph("foo")
@@ -68,6 +117,20 @@ def test_subgraphs() -> None:
 
     assert g.get_subgraphs()[0].get_name() == s.get_name()
     assert g.get_subgraph_list()[0].get_name() == s.get_name()
+
+
+def test_get_subgraph() -> None:
+    g = pydot.Graph()
+    g.add_subgraph(pydot.Subgraph("sub"))
+
+    badres = g.get_subgraph("NOTHOME")
+    assert badres == []
+
+    res = g.get_subgraph("sub")
+    assert len(res) == 1
+    sout = res[0]
+    assert isinstance(sout, pydot.Subgraph)
+    assert sout.get_name() == "sub"
 
 
 def test_graph_pickling() -> None:
