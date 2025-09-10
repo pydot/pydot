@@ -482,6 +482,35 @@ def test_id_storage_and_lookup() -> None:
     assert sg.get_edges() == []
 
 
+def test_generated_setter_getters() -> None:
+    g = pydot.Graph("G", graph_type="graph")
+    n = pydot.Node("A")
+    n.set_shape("box")
+    n.set_penwidth(2)
+    g.add_node(n)
+
+    nout = g.get_nodes()[0]
+    assert nout.get_shape() == "box"
+    assert nout.get_penwidth() == 2
+
+    expected = 'graph G {\nA [shape=box, penwidth=2];\n}\n'
+    assert g.to_string() == expected
+
+
+def test_generated_create_write() -> None:
+    g = pydot.Dot()
+    g.add_node(pydot.Node("N"))
+    svg = g.create_svg()
+    assert isinstance(svg, bytes)
+    assert svg.startswith(b'<?xml version')
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
+        outfile = os.path.join(tmp_dir, "write.svg")
+        g.write_svg(outfile)
+        with open(outfile, "rb") as outf:
+            written = outf.read()
+    assert svg == written
+
+
 def test_dot_args() -> None:
     g = pydot.Dot()
     u = pydot.Node("a")
@@ -498,6 +527,22 @@ def test_bad_graph_type() -> None:
     assert str(e.value) == (
         'Invalid type "round".' + " Accepted graph types are: graph, digraph"
     )
+
+
+def test_sequence() -> None:
+    g = pydot.Graph("G")
+    for i in range(10):
+        n = pydot.Node(f"n{i}", penwidth=i)
+        g.add_node(n)
+    nout = g.get_node("n9")[0]
+    assert nout.get_name() == "n9"
+    assert nout.get_sequence() == 10
+    for i in range(5, 10):
+        ndel = g.get_node(f"n{i}")[0]
+        g.del_node(ndel.get_name())
+    nnew = pydot.Node("n11", shape="box")
+    g.add_node(nnew)
+    assert nnew.get_sequence() == 11
 
 
 def test_suppress_disconnected() -> None:
