@@ -361,10 +361,8 @@ def quote_id_if_necessary(
     if isinstance(s, bool):
         return str(s).lower()
     if not isinstance(s, str):
-        return s
-    if not s:  # pragma: no cover
-        # should never happen
-        return s
+        # Based on type annotations, should never happen
+        return s  # pragma: no cover
 
     if s.lower() in unquoted:
         return s
