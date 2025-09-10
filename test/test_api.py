@@ -418,7 +418,7 @@ def test_subprocess_bad_exit() -> None:
     assert isinstance(out, bytes)
     assert isinstance(err, bytes)
     assert proc.returncode == 1
-    assert err == b"I'm a failure.\n"
+    assert err.strip() == b"I'm a failure."
 
 
 def test_dot_bad_input() -> None:
