@@ -124,7 +124,7 @@ def push_top_graph_stmt(toks: ParseResults) -> list[pydot.core.Dot]:
 
         g = pydot.core.Dot(id_, graph_type=gtype, strict=strict)
         g.set_parent_graph(g)
-        if isinstance(result.contents, ParseResults):
+        if isinstance(result.contents, ParseResults):  # pragma: no branch
             add_elements(g, result.contents)
         update_parent_graph_hierarchy(g)
         top_graphs.append(g)
@@ -215,7 +215,7 @@ def push_subgraph_stmt(toks: ParseResults) -> pydot.core.Subgraph:
     show_kw = "keyword" in toks
     g = pydot.core.Subgraph(id_)
     g.obj_dict["show_keyword"] = show_kw
-    if isinstance(toks.contents, ParseResults):
+    if isinstance(toks.contents, ParseResults):  # pragma: no branch
         add_elements(g, toks.contents)
     return g
 

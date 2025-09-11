@@ -4,15 +4,19 @@
 
 """Unit testing of pydot api calls."""
 
+from __future__ import annotations
+
 import os
 import pickle
 import string
 import textwrap
 import typing as T
+from pathlib import Path
 
 import pytest
 
 import pydot
+import pydot.exceptions
 from pydot._vendor import tempfile
 
 
@@ -45,6 +49,11 @@ def test_create_simple_graph_with_node() -> None:
     assert s == expected
 
 
+def test_boolean_attribute() -> None:
+    n = pydot.Node("n", color=True)
+    assert str(n) == "n [color=true];"
+
+
 def test_attribute_with_implicit_value() -> None:
     d = 'digraph {\na -> b[label="hi", decorate];\n}'
     graphs = pydot.graph_from_dot_data(d)
@@ -52,6 +61,69 @@ def test_attribute_with_implicit_value() -> None:
     attrs = g.get_edges()[0].get_attributes()
 
     assert "decorate" in attrs
+
+
+def test_node_handling() -> None:
+    g = pydot.Graph("N")
+    a = pydot.Node("a")
+    b = pydot.Node("b")
+    c = pydot.Node("c")
+    g.add_node(a)
+    g.add_node(b)
+    g.add_node(c)
+
+    assert len(g.get_nodes()) == 3
+    assert g.del_node("a")
+    assert not g.del_node(a)
+    assert g.del_node(b, 0)
+    assert len(g.get_nodes()) == 1
+
+
+def test_edge_handling() -> None:
+    g = pydot.Graph("G")
+    a = pydot.Node("a")
+    b = pydot.Node("b")
+    c = pydot.Node("c")
+    g.add_edge(pydot.Edge(a.get_name(), b.get_name()))
+    g.add_edge(pydot.Edge(b.get_name(), c.get_name()))
+    g.add_edge(pydot.Edge(b, c))
+
+    a_b_out = g.get_edge("a", "b")
+    assert len(a_b_out) == 1
+    a_b = a_b_out[0]
+    assert isinstance(a_b, pydot.Edge)
+    assert a_b.get_source() == "a"
+    assert a_b.get_destination() == "b"
+
+    b_c_out = g.get_edge(("b", "c"))
+    assert len(b_c_out) == 2
+    b_c = b_c_out[0]
+    assert isinstance(b_c, pydot.Edge)
+    assert b_c.get_source() == "b"
+    assert b_c.get_destination() == "c"
+
+    bad_out = g.get_edge(("e", "f"))
+    assert len(bad_out) == 0
+
+    assert g.del_edge(("a", "b"), "badarg")
+    assert g.del_edge(("b", "c"), 0)
+    assert g.del_edge(b, c)
+    assert not g.del_edge("b", "c")
+    assert g.get_edges() == []
+
+
+def test_edge_compare_fail() -> None:
+    e1 = pydot.Edge("a", "b")
+    e2 = pydot.Edge("c", "d")
+    assert e1 != e2
+
+
+def test_edge_compare_bad() -> None:
+    n = pydot.Node("n")
+    e = pydot.Edge("a", "b")
+    with pytest.raises(pydot.Error) as err:
+        bool(n == e)
+    assert "edge to a non-edge" in str(err)
 
 
 def test_subgraphs() -> None:
@@ -65,6 +137,58 @@ def test_subgraphs() -> None:
 
     assert g.get_subgraphs()[0].get_name() == s.get_name()
     assert g.get_subgraph_list()[0].get_name() == s.get_name()
+
+
+def test_get_subgraph() -> None:
+    g = pydot.Graph()
+    g.add_subgraph(pydot.Subgraph("sub"))
+
+    badres = g.get_subgraph("NOTHOME")
+    assert badres == []
+
+    res = g.get_subgraph("sub")
+    assert len(res) == 1
+    sout = res[0]
+    assert isinstance(sout, pydot.Subgraph)
+    assert sout.get_name() == "sub"
+
+
+def test_cluster_casting() -> None:
+    c = pydot.Cluster("sg")
+    assert c.get_type() == "subgraph"
+    assert c.get_name() == "cluster_sg"
+    sg = pydot.Graph("sg")
+    sg_c = pydot.Cluster(obj_dict=sg.obj_dict)
+    assert sg_c.get_type() == "digraph"
+    assert sg_c.get_name() == "sg"
+
+
+def test_graph_defaults() -> None:
+    g = pydot.Graph()
+    g.set_graph_defaults(rank="TB", color="red")
+    dflts = g.get_graph_defaults()
+    assert dflts == [{"rank": "TB", "color": "red"}]
+
+
+def test_node_defaults() -> None:
+    g = pydot.Graph()
+    g.set_node_defaults(shape="box", penwidth=5)
+    dflts = g.get_node_defaults()
+    assert dflts == [{"shape": "box", "penwidth": 5}]
+
+
+def test_edge_defaults() -> None:
+    g = pydot.Graph()
+    g.set_edge_defaults(arrows="both", color="brown")
+    dflts = g.get_edge_defaults()
+    assert dflts == [{"arrows": "both", "color": "brown"}]
+
+
+def test_graph_methods() -> None:
+    g = pydot.Graph("di")
+    assert g.get_graph_type() == "digraph"
+    g.set_name("rekted")
+    assert g.get_name() == "rekted"
 
 
 def test_graph_pickling() -> None:
@@ -164,9 +288,16 @@ def test_multiple_graphs() -> None:
     assert names == ["A", "B"]
 
 
-def test_numeric_node_id(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_node(pydot.Node(1))
-    assert graph_directed.get_nodes()[0].get_name() == "1"
+def test_numeric_node_id() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node(1))
+    assert g.get_nodes()[0].get_name() == "1"
+
+
+def test_boolean_node_id() -> None:
+    n = pydot.Node("n", color="blue")
+    n.set_name(True)
+    assert str(n) == "true [color=blue];"
 
 
 def test_numeric_quoting() -> None:
@@ -176,69 +307,113 @@ def test_numeric_quoting() -> None:
     assert non.to_string() == '"1.2.3" [label="1.4.0"];'
 
 
-def test_quoted_node_id(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_node(pydot.Node('"node"'))
-    assert graph_directed.get_nodes()[0].get_name() == '"node"'
+def test_quoted_node_id() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node('"node"'))
+    assert g.get_nodes()[0].get_name() == '"node"'
 
 
-def test_quoted_node_id_to_string_no_attributes(
-    graph_directed: pydot.Graph,
-) -> None:
-    graph_directed.add_node(pydot.Node('"node"'))
-    assert graph_directed.get_nodes()[0].to_string() == '"node";'
+def test_quoted_node_id_to_string_no_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node('"node"'))
+    assert g.get_nodes()[0].to_string() == '"node";'
 
 
-def test_keyword_node_id(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_node(pydot.Node("node"))
-    assert graph_directed.get_nodes()[0].get_name() == "node"
+def test_keyword_node_id() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("node"))
+    assert g.get_nodes()[0].get_name() == "node"
 
 
-def test_keyword_node_id_to_string_no_attributes(
-    graph_directed: pydot.Graph,
-) -> None:
-    graph_directed.add_node(pydot.Node("node"))
-    assert graph_directed.get_nodes()[0].to_string() == ""
+def test_keyword_node_id_to_string_no_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("node"))
+    assert g.get_nodes()[0].to_string() == ""
 
 
-def test_keyword_node_id_to_string_with_attributes(
-    graph_directed: pydot.Graph,
-) -> None:
-    graph_directed.add_node(pydot.Node("node", shape="box"))
-    assert graph_directed.get_nodes()[0].to_string() == "node [shape=box];"
+def test_keyword_node_id_to_string_with_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("node", shape="box"))
+    assert g.get_nodes()[0].to_string() == "node [shape=box];"
 
 
-def test_keyword_node_id_in_label(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_node(pydot.Node("Node", label="Node"))
-    assert graph_directed.get_nodes()[0].to_string() == 'Node [label="Node"];'
+def test_keyword_node_id_in_label() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("Node", label="Node"))
+    assert g.get_nodes()[0].to_string() == 'Node [label="Node"];'
 
 
-def test_comma_separated_attribute_values_to_string(
-    graph_directed: pydot.Graph,
-) -> None:
-    graph_directed.add_node(
-        pydot.Node("node", color="green", style="rounded,filled")
-    )
+def test_keywords_with_ports() -> None:
+    g = pydot.Graph("KW")
+    g.add_edge(pydot.Edge("graph:edge", "strict:graph"))
+    eout = g.get_edges()[0]
+    assert isinstance(eout, pydot.Edge)
+    assert str(eout) == '"graph":"edge" -> "strict":"graph";'
+    n = pydot.Node(str(eout.get_source()))
+    assert n.get_name() == "graph"
+    assert n.get_port() == ":edge"
+
+
+@pytest.mark.xfail(reason="The port logic is a broken mess")
+def test_broken_port_handling() -> None:
+    n = pydot.Node("edge:12", color="red")
+    e = pydot.Edge(n, "strict:node")
+    assert str(e) == '"edge":12 -- "strict":"node";'
+
+
+@pytest.mark.xfail(reason="We use bad regexps to parse numbers")
+def test_broken_negatives() -> None:
+    assert str(pydot.Node(-2)) == "-2;"
+
+
+@pytest.mark.xfail(reason="We use bad regexps to parse numbers")
+def test_broken_negatives_2() -> None:
+    assert str(pydot.Node("a", penwidth="-2")) == "a [penwidth=-2];"
+
+
+@pytest.mark.xfail(reason="Our quoting can be broken by set_name")
+def test_set_name_breakage() -> None:
+    n = pydot.Node("n:strict")
+    n.set_name("graph")
+    assert str(n) == '"graph";'
+
+
+def test_comma_separated_attribute_values_to_string() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("node", color="green", style="rounded,filled"))
     assert (
-        graph_directed.get_nodes()[0].to_string()
+        g.get_nodes()[0].to_string()
         == 'node [color=green, style="rounded,filled"];'
     )
 
 
-def test_attribute_string_values_quoting(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_node(
-        pydot.Node("node", length=1.234, size="2.345", radius="9,876")
+def test_attribute_values_quoting() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    n1 = pydot.Node(
+        "n1",
+        length=1.234,
+        size="2.345",
+        taste=None,
     )
-    assert (
-        graph_directed.get_nodes()[0].to_string()
-        == 'node [length=1.234, size=2.345, radius="9,876"];'
-    )
+    n2 = pydot.Node("n2", radius="9,876", graph="strict", silence="")
+    expected = {
+        "n1": "n1 [length=1.234, size=2.345, taste];",
+        "n2": 'n2 [radius="9,876", graph="strict", silence=""];',
+    }
+
+    g.add_node(n1)
+    g.add_node(n2)
+    nodes = g.get_nodes()
+    for nout in filter(lambda n: n.get_name() in ["n1", "n2"], nodes):
+        assert str(nout) == expected[nout.get_name()]
 
 
-def test_names_of_a_thousand_nodes(graph_directed: pydot.Graph) -> None:
+def test_names_of_a_thousand_nodes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
     names = {f"node_{i:05d}" for i in range(10**3)}
     for name in names:
-        graph_directed.add_node(pydot.Node(name, label=name))
-    assert {n.get_name() for n in graph_directed.get_nodes()} == names
+        g.add_node(pydot.Node(name, label=name))
+    assert {n.get_name() for n in g.get_nodes()} == names
 
 
 def test_executable_not_found_exception() -> None:
@@ -247,25 +422,48 @@ def test_executable_not_found_exception() -> None:
         graph.create(prog="dothehe")
 
 
-def test_graph_add_node_argument_type(graph_directed: pydot.Graph) -> None:
-    with pytest.raises(TypeError):
-        graph_directed.add_node(1)
-    with pytest.raises(TypeError):
-        graph_directed.add_node("a")
+def test_subprocess_bad_exit() -> None:
+    script = Path(__file__).parent / "badexit.py"
+    (out, err, proc) = pydot.call_graphviz("python", [script], ".")
+    assert isinstance(out, bytes)
+    assert isinstance(err, bytes)
+    assert proc.returncode == 1
+    assert err.strip() == b"I'm a failure."
 
 
-def test_graph_add_edge_argument_type(graph_directed: pydot.Graph) -> None:
-    with pytest.raises(TypeError):
-        graph_directed.add_edge(1)
-    with pytest.raises(TypeError):
-        graph_directed.add_edge("a")
+def test_dot_bad_input() -> None:
+    class MyDot(pydot.Dot):
+        def to_string(self, indent="", indent_level=0) -> str:
+            return "graph G { {{[{red=blue}]}}; }"
+
+    g = MyDot("G")
+    with pytest.raises(AssertionError) as e:
+        g.create(format="svg")
+    assert "returned code: 1" in str(e)
 
 
-def test_graph_add_subgraph_argument_type(graph_directed: pydot.Graph) -> None:
+def test_graph_add_node_argument_type() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
     with pytest.raises(TypeError):
-        graph_directed.add_subgraph(1)
+        g.add_node(1)
     with pytest.raises(TypeError):
-        graph_directed.add_subgraph("a")
+        g.add_node("a")
+
+
+def test_graph_add_edge_argument_type() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    with pytest.raises(TypeError):
+        g.add_edge(1)
+    with pytest.raises(TypeError):
+        g.add_edge("a")
+
+
+def test_graph_add_subgraph_argument_type() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    with pytest.raises(TypeError):
+        g.add_subgraph(1)
+    with pytest.raises(TypeError):
+        g.add_subgraph("a")
 
 
 def test_node_parenting() -> None:
@@ -416,6 +614,35 @@ def test_id_storage_and_lookup() -> None:
     assert sg.get_edges() == []
 
 
+def test_generated_setter_getters() -> None:
+    g = pydot.Graph("G", graph_type="graph")
+    n = pydot.Node("A")
+    n.set_shape("box")
+    n.set_penwidth(2)
+    g.add_node(n)
+
+    nout = g.get_nodes()[0]
+    assert nout.get_shape() == "box"
+    assert nout.get_penwidth() == 2
+
+    expected = "graph G {\nA [shape=box, penwidth=2];\n}\n"
+    assert g.to_string() == expected
+
+
+def test_generated_create_write() -> None:
+    g = pydot.Dot()
+    g.add_node(pydot.Node("N"))
+    svg = g.create_svg()
+    assert isinstance(svg, bytes)
+    assert svg.startswith(b"<?xml version")
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
+        outfile = os.path.join(tmp_dir, "write.svg")
+        g.write_svg(outfile)
+        with open(outfile, "rb") as outf:
+            written = outf.read()
+    assert svg == written
+
+
 def test_dot_args() -> None:
     g = pydot.Dot()
     u = pydot.Node("a")
@@ -424,6 +651,30 @@ def test_dot_args() -> None:
         outfile = os.path.join(tmp_dir, "test.svg")
         g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
         assert os.path.exists(outfile)
+
+
+def test_bad_graph_type() -> None:
+    with pytest.raises(pydot.exceptions.Error) as e:
+        pydot.Graph("G", graph_type="round")
+    assert str(e.value) == (
+        'Invalid type "round".' + " Accepted graph types are: graph, digraph"
+    )
+
+
+def test_sequence() -> None:
+    g = pydot.Graph("G")
+    for i in range(10):
+        n = pydot.Node(f"n{i}", penwidth=i)
+        g.add_node(n)
+    nout = g.get_node("n9")[0]
+    assert nout.get_name() == "n9"
+    assert nout.get_sequence() == 10
+    for i in range(5, 10):
+        ndel = g.get_node(f"n{i}")[0]
+        g.del_node(ndel.get_name())
+    nnew = pydot.Node("n11", shape="box")
+    g.add_node(nnew)
+    assert nnew.get_sequence() == 11
 
 
 def test_suppress_disconnected() -> None:
@@ -441,12 +692,36 @@ def test_suppress_disconnected() -> None:
     assert gr1.to_string() == gr2.to_string()
 
 
-def test_strict(objdict: T.Dict[str, T.Any]) -> None:
+def test_strict(objdict: dict[str, T.Any]) -> None:
     g = pydot.Dot(obj_dict=objdict)
     g.set_parent_graph(g)
     g.set_strict(True)
     s = g.to_string()
     assert s == "strict graph G {\n3;\n16;\n}\n"
+
+
+def test_tostring_indent() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    expected = textwrap.dedent("""
+        digraph testgraph {
+            a -> b;
+            subgraph subG {
+                sga [shape=box];
+                sgb [shape=circle];
+                1 -> 2;
+            }
+        }""").strip()
+
+    g.add_edge(pydot.Edge("a", "b"))
+    sg = pydot.Subgraph("subG")
+    sg.add_node(pydot.Node("sga", shape="box"))
+    sg.add_node(pydot.Node("sgb", shape="circle"))
+    sg.add_edge(pydot.Edge(1, 2))
+    g.add_subgraph(sg)
+    sgout = g.to_string(indent=4).strip()
+    assert sgout == expected
+    sgout2 = g.to_string(indent=4.0).strip()
+    assert sgout2 == expected
 
 
 def test_edge_equality_basics_3_same_points_not_not_equal() -> None:
@@ -459,28 +734,28 @@ def test_edge_equality_basics_3_same_points_not_not_equal() -> None:
     assert (e1 != e2) is False
 
 
-def test_edge_point_namestr(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_edge(pydot.Edge("a", "b"))
-    assert graph_directed.get_edges()[0].to_string() == "a -> b;"
+def test_edge_point_namestr() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_edge(pydot.Edge("a", "b"))
+    assert g.get_edges()[0].to_string() == "a -> b;"
 
 
-def test_edge_point_object_node(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_edge(pydot.Edge(pydot.Node("a"), pydot.Node("b")))
-    assert graph_directed.get_edges()[0].to_string() == "a -> b;"
+def test_edge_point_object_node() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_edge(pydot.Edge(pydot.Node("a"), pydot.Node("b")))
+    assert g.get_edges()[0].to_string() == "a -> b;"
 
 
-def test_edge_point_object_subgraph(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_edge(
-        pydot.Edge(pydot.Subgraph("a"), pydot.Subgraph("b"))
-    )
-    assert graph_directed.get_edges()[0].to_string() == "a -> b;"
+def test_edge_point_object_subgraph() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_edge(pydot.Edge(pydot.Subgraph("a"), pydot.Subgraph("b")))
+    assert g.get_edges()[0].to_string() == "a -> b;"
 
 
-def test_edge_point_object_cluster(graph_directed: pydot.Graph) -> None:
-    graph_directed.add_edge(pydot.Edge(pydot.Cluster("a"), pydot.Cluster("b")))
-    assert (
-        graph_directed.get_edges()[0].to_string() == "cluster_a -> cluster_b;"
-    )
+def test_edge_point_object_cluster() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_edge(pydot.Edge(pydot.Cluster("a"), pydot.Cluster("b")))
+    assert g.get_edges()[0].to_string() == "cluster_a -> cluster_b;"
 
 
 def test_graph_from_adjacency_matrix() -> None:
@@ -505,11 +780,40 @@ def test_graph_from_incidence_matrix() -> None:
     assert s == "digraph G { 1 -> 2; 2 -> 1; 3 -> 2; }"
 
     g = pydot.graph_from_incidence_matrix(
-        [[1, 1, 0], [0, 1, 1]], directed=False
+        [[1, 1, 0], [0, 1, 1], [98]], directed=False
     )
     s = " ".join(g.to_string().split())
     assert s == "graph G { 1 -- 2; 2 -- 3; }"
 
 
+def test_graph_from_edges() -> None:
+    edge_list = [
+        ("a", "b"),
+        ("b", "c"),
+        ("c", 1),
+        (1, 2),
+    ]
+    g1 = pydot.graph_from_edges(edge_list[0:2], "node_")
+    g2 = pydot.graph_from_edges(edge_list[2:4], "node_", True)
+
+    expected1 = textwrap.dedent("""
+        graph G {
+        node_a -- node_b;
+        node_b -- node_c;
+        }""").strip()
+    expected2 = textwrap.dedent("""
+        digraph G {
+        node_c -> node_1;
+        node_1 -> node_2;
+        }""").strip()
+    assert str(g1).strip() == expected1
+    assert str(g2).strip() == expected2
+
+
 def test_version() -> None:
     assert isinstance(pydot.__version__, str)
+
+
+def test_call_graphviz() -> None:
+    with pytest.raises(FileNotFoundError):
+        pydot.call_graphviz("__dotnotexist", None, ".")

@@ -172,11 +172,11 @@ def __generate_format_methods(Klass: type) -> None:
     for frmt in OUTPUT_FORMATS:
 
         def __create_method(
-            self: Any,
+            self: Dot,
             f: str = frmt,
             prog: str | None = None,
             encoding: str | None = None,
-        ) -> Any:
+        ) -> bytes:
             """Refer to docstring of method `create`."""
             return self.create(format=f, prog=prog, encoding=encoding)
 
@@ -185,7 +185,7 @@ def __generate_format_methods(Klass: type) -> None:
     for frmt in OUTPUT_FORMATS ^ {"raw"}:
 
         def __write_method(
-            self: Any,
+            self: Dot,
             path: str,
             f: str = frmt,
             prog: str | None = None,
@@ -220,10 +220,7 @@ def call_graphviz(
     arguments: list[str],
     working_dir: str | bytes,
     **kwargs: Any,
-) -> tuple[str, str, subprocess.Popen[str]]:
-    # explicitly inherit `$PATH`, on Windows too,
-    # with `shell=False`
-
+) -> tuple[bytes, bytes, subprocess.Popen[bytes]]:
     if program in DEFAULT_PROGRAMS:
         extension = get_executable_extension()
         program += extension
@@ -238,6 +235,8 @@ def call_graphviz(
         # specify that the new process shall not create a new window
         kwargs.update(creationflags=subprocess.CREATE_NO_WINDOW)
 
+    # explicitly inherit `$PATH`, on Windows too,
+    # with `shell=False`
     env = {
         "PATH": os.environ.get("PATH", ""),
         "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
@@ -246,7 +245,12 @@ def call_graphviz(
 
     program_with_args = [program] + arguments
 
-    process = subprocess.Popen(
+    if sys.version_info < (3, 9):
+        my_popen = subprocess.Popen  # pragma: no cover
+    else:
+        my_popen = subprocess.Popen[bytes]
+
+    process = my_popen(
         program_with_args,
         env=env,
         cwd=working_dir,
@@ -325,7 +329,8 @@ def id_needs_quotes(s: str) -> bool:
     # false indicating that a keyword string, if provided as-is, won't
     # need quotes.
     if s.lower() in dot_keywords:
-        return False
+        # Our callers shield us from ever reaching here, fortunately
+        return False  # pragma: no cover
 
     any_result = any_needs_quotes(s)
     if any_result is not None:
@@ -356,9 +361,8 @@ def quote_id_if_necessary(
     if isinstance(s, bool):
         return str(s).lower()
     if not isinstance(s, str):
-        return s
-    if not s:
-        return s
+        # Based on type annotations, should never happen
+        return s  # pragma: no cover
 
     if s.lower() in unquoted:
         return s
@@ -569,16 +573,21 @@ class Common:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
-        return self.obj_dict.get("parent_graph", None)
+        return cast("Graph", self.obj_dict.get("parent_graph", None))
 
     def get_top_graph_type(self, default: str = "graph") -> str:
         """Find the topmost parent graph type for the current object."""
         parent = self.get_parent_graph()
         while parent is not None:
             parent_ = parent.get_parent_graph()
-            if parent_ == parent:
+            if parent_ == parent:  # pragma: no branch
                 break
-            parent = parent_
+            # Currently every added element gets re-parented to
+            # the topmost graph of the current hierarchy (which
+            # is also its own parent) every time subgraphs are
+            # joined, so most of this loop is unreachable. The
+            # first get_parent_graph() returns THE parent graph.
+            parent = parent_  # pragma: no cover
         if parent is None:
             return default
         return cast("str", parent.obj_dict.get("type", default))
@@ -619,7 +628,8 @@ class Common:
         """Get sequence"""
         seq = self.obj_dict.get("sequence")
         if seq is None:
-            return seq
+            # Should never happen
+            return seq  # pragma: no cover
         return int(seq)
 
     @staticmethod
@@ -887,7 +897,7 @@ class Edge(Common):
 
         if node_port_idx > 0:
             a = node_ref[:node_port_idx]
-            b = node_ref[node_port_idx + 1 :]
+            b = node_ref[(node_port_idx + 1) :]
 
             node = quote_id_if_necessary(a)
             node += ":" + quote_id_if_necessary(b)
@@ -1652,7 +1662,7 @@ class Dot(Graph):
     def __setstate__(self, state: AttributeDict) -> None:
         if "obj_dict" not in state:
             # Backwards compatibility for old picklings
-            state = {"obj_dict": state}
+            state = {"obj_dict": state}  # pragma: no cover
         self.obj_dict = state.get("obj_dict", {})
         self.prog = state.get("prog", "dot")
         self.shape_files = state.get("shape_files", [])
@@ -1727,9 +1737,9 @@ class Dot(Graph):
             with open(path, mode="w", encoding=encoding) as f:
                 f.write(s)
         else:
-            s = self.create(prog, format, encoding=encoding)
+            b = self.create(prog, format, encoding=encoding)
             with open(path, mode="wb") as f:
-                f.write(s)  # type: ignore
+                f.write(b)
         return True
 
     def create(
@@ -1737,7 +1747,7 @@ class Dot(Graph):
         prog: list[str] | tuple[str] | str | None = None,
         format: str = "ps",
         encoding: str | None = None,
-    ) -> str:
+    ) -> bytes:
         """Creates and returns a binary image for the graph.
 
         create will write the graph to a tempworary dot file in the
@@ -1832,13 +1842,15 @@ class Dot(Graph):
                     args[1] = f'"{prog}" not found in path.'  # type: ignore
                     raise OSError(*args)
                 else:
-                    raise
+                    raise  # pragma: no cover
 
         if process.returncode != 0:
             code = process.returncode
             print(
                 f'"{prog}" with args {arguments} returned code: {code}\n\n'
-                f"stdout, stderr:\n {stdout_data}\n{stderr_data}\n"
+                f"stdout, stderr:\n"
+                f" {stdout_data.decode('utf-8')}\n"
+                f" {stderr_data.decode('utf-8')}\n"
             )
 
         assert process.returncode == 0, (
