@@ -96,3 +96,8 @@ files = "src"
 [[tool.mypy.overrides]]
 module = "pydot._vendor.tempfile"
 ignore_errors = true
+
+[tool.pytest.ini_options]
+thread_unsafe_fixtures = [
+    'objdict',
+]
