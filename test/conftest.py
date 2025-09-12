@@ -1,17 +1,16 @@
 # SPDX-FileCopyrightText: 2024 pydot contributors
 #
 # SPDX-License-Identifier: MIT
+from __future__ import annotations
 
 import copy
 import typing as T
 
 import pytest
 
-import pydot.core
-
 
 @pytest.fixture
-def objdict() -> T.Dict[str, T.Any]:
+def objdict() -> dict[str, T.Any]:
     obj = {
         "attributes": {},
         "name": "G",
@@ -46,11 +45,6 @@ def objdict() -> T.Dict[str, T.Any]:
         "subgraphs": {},
     }
     return copy.deepcopy(obj)
-
-
-@pytest.fixture
-def graph_directed() -> pydot.core.Graph:
-    return pydot.core.Graph("testgraph", graph_type="digraph")
 
 
 @pytest.fixture

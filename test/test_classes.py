@@ -4,6 +4,8 @@
 
 """Unit testing of `pydot.classes`."""
 
+from __future__ import annotations
+
 import pytest
 
 import pydot
@@ -63,6 +65,19 @@ def test_FrozenDict_compare():
 
     assert fd1 == dict_in
     assert fd2 == dict_in  # Unfortunate fallback to dict.__eq__
+
+
+def test_FrozenDict_repr() -> None:
+    dict_in = {
+        "one": 1,
+        "two": 2,
+        "group": {"three": 3, "four": 4},
+    }
+    fd = FrozenDict(dict_in)
+    assert repr(fd) == (
+        "FrozenDict({'one': 1, 'two': 2, 'group':"
+        + " FrozenDict({'three': 3, 'four': 4})})"
+    )
 
 
 def test_frozendict_deprecation(objdict):

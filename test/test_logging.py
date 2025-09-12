@@ -4,6 +4,8 @@
 
 """Unit testing of pydot logging setup."""
 
+from __future__ import annotations
+
 import importlib
 import logging
 

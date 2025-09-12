@@ -129,7 +129,7 @@ class GraphParser:
 
             g = pydot.core.Dot(id_, graph_type=gtype, strict=strict)
             g.set_parent_graph(g)
-            if isinstance(result.contents, ParseResults):
+            if isinstance(result.contents, ParseResults):  # pragma: no branch
                 self.add_elements(g, result.contents)
             self.update_parent_graph_hierarchy(g)
             top_graphs.append(g)
@@ -212,7 +212,7 @@ class GraphParser:
         show_kw = "keyword" in toks
         g = pydot.core.Subgraph(id_)
         g.obj_dict["show_keyword"] = show_kw
-        if isinstance(toks.contents, ParseResults):
+        if isinstance(toks.contents, ParseResults):  # pragma: no branch
             self.add_elements(g, toks.contents)
         return g
 
