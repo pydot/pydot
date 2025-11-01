@@ -143,7 +143,7 @@ jobs:
       #   run: coverage report
       - name: "Coverage comment"
         id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@406af558b29115de58cfab8a2d103867142c0332 # v3
+        uses: py-cov-action/python-coverage-comment-action@1156b0812016e288297fceb8ebd6ee6ddcc834d5 # v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           MERGE_COVERAGE_FILES: true
