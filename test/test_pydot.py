@@ -9,7 +9,6 @@ from __future__ import annotations
 import functools
 import os
 import sys
-import unittest
 from hashlib import sha256
 
 import chardet
@@ -161,14 +160,16 @@ def _compare_images(
     return False  # pragma: no cover
 
 
-class TestShapeFiles(unittest.TestCase):
+class TestShapeFiles:
     shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
     # image files are omitted from sdist
-    @unittest.skipUnless(  # pragma: no cover
-        os.path.isdir(shapefile_dir),
-        "Skipping tests that involve images,"
-        + " they can be found in the git repository",
+    @pytest.mark.skipif(  # pragma: no cover
+        not os.path.isdir(shapefile_dir),
+        reason=(
+            "Skipping tests that involve images,"
+            " they can be found in the git repository"
+        ),
     )
     def test_graph_with_shapefiles(self) -> None:
         dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
