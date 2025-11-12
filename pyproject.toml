@@ -67,7 +67,6 @@ dev = [
   'pydot[lint]',
   'pydot[types]',
   'chardet',
-  'parameterized',
 ]
 tests = [
   'pydot[dev]',

@@ -14,7 +14,7 @@ import unittest
 from hashlib import sha256
 
 import chardet
-from parameterized import parameterized
+import pytest
 
 import pydot
 
@@ -198,7 +198,7 @@ class TestShapeFiles(unittest.TestCase):
             )
 
 
-class RenderedTestCase(unittest.TestCase):
+class RenderedTestCase:
     def _render_and_compare_dot_file(self, fdir: str, fname: str) -> None:
         # files that confuse `chardet`
         encodings = {"Latin1.dot": "latin-1"}
@@ -226,7 +226,7 @@ class RenderedTestCase(unittest.TestCase):
 class TestMyRegressions(RenderedTestCase):
     """Perform regression tests in my_tests dir."""
 
-    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_1))
+    @pytest.mark.parametrize("_,fname,path", _load_test_cases(TESTS_DIR_1))
     def test_regression(self, _: T.Never, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
 
@@ -234,6 +234,6 @@ class TestMyRegressions(RenderedTestCase):
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
-    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
+    @pytest.mark.parametrize("_,fname,path", _load_test_cases(TESTS_DIR_2))
     def test_regression(self, _: T.Never, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
