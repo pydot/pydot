@@ -9,7 +9,6 @@ from __future__ import annotations
 import functools
 import os
 import sys
-import typing as T
 import unittest
 from hashlib import sha256
 
@@ -129,7 +128,10 @@ def _load_test_cases(casedir: str) -> list[tuple[str, str, str]]:
             return fname
         return fname.removesuffix(".dot")
 
-    return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
+    return [
+        pytest.param(dot_file, path, id=_case_name(dot_file))
+        for dot_file in dot_files
+    ]
 
 
 def _compare_images(
@@ -226,14 +228,14 @@ class RenderedTestCase:
 class TestMyRegressions(RenderedTestCase):
     """Perform regression tests in my_tests dir."""
 
-    @pytest.mark.parametrize("_,fname,path", _load_test_cases(TESTS_DIR_1))
-    def test_regression(self, _: T.Never, fname: str, path: str) -> None:
+    @pytest.mark.parametrize("fname,path", _load_test_cases(TESTS_DIR_1))
+    def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
 
 
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
-    @pytest.mark.parametrize("_,fname,path", _load_test_cases(TESTS_DIR_2))
-    def test_regression(self, _: T.Never, fname: str, path: str) -> None:
+    @pytest.mark.parametrize("fname,path", _load_test_cases(TESTS_DIR_2))
+    def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
