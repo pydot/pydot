@@ -9,6 +9,7 @@ from __future__ import annotations
 import functools
 import os
 import sys
+from collections.abc import Generator
 from hashlib import sha256
 
 import chardet
@@ -113,11 +114,10 @@ class Renderer:
         return PydotRenderResult(jpe_data, src)
 
 
-def _load_test_cases(casedir: str) -> list[pytest.param]:
-    """Return a list of testcase parameters.
+def _load_test_cases(casedir: str) -> Generator[tuple[str, str, str]]:
+    """Generate testcase parameters from files in a directory.
 
-    Returns a list of ``pytest.param`` objects containing
-    a testcase filename and its directory path.
+    Yields testcase names, testfiles, and the files' parent directory.
     """
     path = os.path.join(_test_root, casedir)
     dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
@@ -128,10 +128,8 @@ def _load_test_cases(casedir: str) -> list[pytest.param]:
             return fname
         return fname.removesuffix(".dot")
 
-    return [
-        pytest.param(dot_file, path, id=_case_name(dot_file))
-        for dot_file in dot_files
-    ]
+    for dot_file in dot_files:
+        yield (_case_name(dot_file), dot_file, path)
 
 
 def _compare_images(
@@ -217,7 +215,13 @@ class RenderedTestCase:
 class TestMyRegressions(RenderedTestCase):
     """Perform regression tests in my_tests dir."""
 
-    @pytest.mark.parametrize("fname,path", _load_test_cases(TESTS_DIR_1))
+    @pytest.mark.parametrize(
+        "fname,path",
+        [
+            pytest.param(fname, path, id=_name)
+            for (_name, fname, path) in _load_test_cases(TESTS_DIR_1)
+        ],
+    )
     def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
 
@@ -225,6 +229,12 @@ class TestMyRegressions(RenderedTestCase):
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
-    @pytest.mark.parametrize("fname,path", _load_test_cases(TESTS_DIR_2))
+    @pytest.mark.parametrize(
+        "fname,path",
+        [
+            pytest.param(fname, path, id=_name)
+            for (_name, fname, path) in _load_test_cases(TESTS_DIR_2)
+        ],
+    )
     def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
