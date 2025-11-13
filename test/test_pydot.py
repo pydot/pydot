@@ -9,12 +9,11 @@ from __future__ import annotations
 import functools
 import os
 import sys
-import typing as T
-import unittest
+from collections.abc import Generator
 from hashlib import sha256
 
 import chardet
-from parameterized import parameterized
+import pytest
 
 import pydot
 
@@ -25,6 +24,7 @@ TESTS_DIR_1 = "my_tests"
 TESTS_DIR_2 = "graphs"
 
 _test_root = os.path.dirname(os.path.abspath(__file__))
+_shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
 
 class RenderResult:
@@ -114,11 +114,10 @@ class Renderer:
         return PydotRenderResult(jpe_data, src)
 
 
-def _load_test_cases(casedir: str) -> list[tuple[str, str, str]]:
-    """Return a list of testcase files,
+def _load_test_cases(casedir: str) -> Generator[tuple[str, str, str]]:
+    """Generate testcase parameters from files in a directory.
 
-    Returns a list of tuples of the form:
-        ("case_file_name", "case_file_name.dot", "path/to/directory")
+    Yields testcase names, testfiles, and the files' parent directory.
     """
     path = os.path.join(_test_root, casedir)
     dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
@@ -129,7 +128,8 @@ def _load_test_cases(casedir: str) -> list[tuple[str, str, str]]:
             return fname
         return fname.removesuffix(".dot")
 
-    return [(_case_name(dot_file), dot_file, path) for dot_file in dot_files]
+    for dot_file in dot_files:
+        yield (_case_name(dot_file), dot_file, path)
 
 
 def _compare_images(
@@ -159,46 +159,35 @@ def _compare_images(
     return False  # pragma: no cover
 
 
-class TestShapeFiles(unittest.TestCase):
-    shapefile_dir = os.path.join(_test_root, "from-past-to-future")
+# image files are omitted from sdist
+@pytest.mark.skipif(  # pragma: no cover
+    not os.path.isdir(_shapefile_dir), reason="shape files not present"
+)
+def test_graph_with_shapefiles() -> None:
+    dot_file = os.path.join(_shapefile_dir, "from-past-to-future.dot")
 
-    # image files are omitted from sdist
-    @unittest.skipUnless(  # pragma: no cover
-        os.path.isdir(shapefile_dir),
-        "Skipping tests that involve images,"
-        + " they can be found in the git repository",
-    )
-    def test_graph_with_shapefiles(self) -> None:
-        dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
+    pngs = [
+        os.path.join(_shapefile_dir, fname)
+        for fname in os.listdir(_shapefile_dir)
+        if fname.endswith(".png")
+    ]
 
-        pngs = [
-            os.path.join(self.shapefile_dir, fname)
-            for fname in os.listdir(self.shapefile_dir)
-            if fname.endswith(".png")
-        ]
+    with open(dot_file, encoding="utf-8") as f:
+        graph_data = f.read()
 
-        with open(dot_file, encoding="utf-8") as f:
-            graph_data = f.read()
+    graphs = pydot.graph_from_dot_data(graph_data)
+    assert isinstance(graphs, list)
+    assert len(graphs) == 1
 
-        graphs = pydot.graph_from_dot_data(graph_data)
-        self.assertIsNotNone(graphs)
+    g = graphs.pop()
+    g.set_shape_files(pngs)
 
-        if not isinstance(graphs, list):
-            return
-        g = graphs.pop()
-        g.set_shape_files(pngs)
-
-        rendered = PydotRenderResult(g.create(format="jpe"), g.to_string())
-        graphviz = Renderer.graphviz(dot_file, encoding="ascii")
-        if not _compare_images("from-past-to-future", rendered, graphviz):
-            raise AssertionError(
-                "from-past-to-future.dot: "
-                f"{rendered.checksum} != {graphviz.checksum} "
-                "(found pydot vs graphviz difference)"
-            )
+    rendered = PydotRenderResult(g.create(format="jpe"), g.to_string())
+    graphviz = Renderer.graphviz(dot_file, encoding="ascii")
+    assert _compare_images("from-past-to-future", rendered, graphviz)
 
 
-class RenderedTestCase(unittest.TestCase):
+class RenderedTestCase:
     def _render_and_compare_dot_file(self, fdir: str, fname: str) -> None:
         # files that confuse `chardet`
         encodings = {"Latin1.dot": "latin-1"}
@@ -226,14 +215,26 @@ class RenderedTestCase(unittest.TestCase):
 class TestMyRegressions(RenderedTestCase):
     """Perform regression tests in my_tests dir."""
 
-    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_1))
-    def test_regression(self, _: T.Never, fname: str, path: str) -> None:
+    @pytest.mark.parametrize(
+        "fname,path",
+        [
+            pytest.param(fname, path, id=_name)
+            for (_name, fname, path) in _load_test_cases(TESTS_DIR_1)
+        ],
+    )
+    def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
 
 
 class TestGraphvizRegressions(RenderedTestCase):
     """Perform regression tests in graphs dir."""
 
-    @parameterized.expand(functools.partial(_load_test_cases, TESTS_DIR_2))
-    def test_regression(self, _: T.Never, fname: str, path: str) -> None:
+    @pytest.mark.parametrize(
+        "fname,path",
+        [
+            pytest.param(fname, path, id=_name)
+            for (_name, fname, path) in _load_test_cases(TESTS_DIR_2)
+        ],
+    )
+    def test_regression(self, fname: str, path: str) -> None:
         self._render_and_compare_dot_file(path, fname)
