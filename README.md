@@ -15,8 +15,8 @@
 | test/test\_classes.py     |       48 |        0 |        0 |        0 |     100% |           |
 | test/test\_logging.py     |       12 |        0 |        0 |        0 |     100% |           |
 | test/test\_parser.py      |       96 |        0 |        0 |        0 |     100% |           |
-| test/test\_pydot.py       |       81 |        0 |        2 |        0 |     100% |           |
-|                 **TOTAL** | **1727** |    **0** |  **336** |    **0** | **100%** |           |
+| test/test\_pydot.py       |       80 |        0 |        4 |        0 |     100% |           |
+|                 **TOTAL** | **1726** |    **0** |  **338** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
