@@ -89,14 +89,14 @@ jobs:
         run: cp test/compare_images.sh "${{ env.TEST_ERROR_DIR }}"
       - name: "Publish error artifacts"
         if: ${{ failure() }}
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: test-errors-${{ runner.os }}-${{ matrix.python-version }}
           path: ${{ env.TEST_ERROR_DIR }}
           if-no-files-found: ignore
       - name: "Publish coverage-data artifact"
         if: ${{ always() }}
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: coverage-data-${{ runner.os }}-${{ matrix.python-version }}
           path: .coverage.*
@@ -149,7 +149,7 @@ jobs:
           MERGE_COVERAGE_FILES: true
           ANNOTATE_MISSING_LINES: true
       - name: "Store PR comment for secure workflow"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
         with:
           name: python-coverage-comment-action
