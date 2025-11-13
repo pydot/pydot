@@ -23,6 +23,7 @@ TESTS_DIR_1 = "my_tests"
 TESTS_DIR_2 = "graphs"
 
 _test_root = os.path.dirname(os.path.abspath(__file__))
+_shapefile_dir = os.path.join(_test_root, "from-past-to-future")
 
 
 class RenderResult:
@@ -112,11 +113,11 @@ class Renderer:
         return PydotRenderResult(jpe_data, src)
 
 
-def _load_test_cases(casedir: str) -> list[tuple[str, str, str]]:
-    """Return a list of testcase files,
+def _load_test_cases(casedir: str) -> list[pytest.param]:
+    """Return a list of testcase parameters.
 
-    Returns a list of tuples of the form:
-        ("case_file_name", "case_file_name.dot", "path/to/directory")
+    Returns a list of ``pytest.param`` objects containing
+    a testcase filename and its directory path.
     """
     path = os.path.join(_test_root, casedir)
     dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
@@ -160,45 +161,32 @@ def _compare_images(
     return False  # pragma: no cover
 
 
-class TestShapeFiles:
-    shapefile_dir = os.path.join(_test_root, "from-past-to-future")
+# image files are omitted from sdist
+@pytest.mark.skipif(  # pragma: no cover
+    not os.path.isdir(_shapefile_dir), reason="shape files not present"
+)
+def test_graph_with_shapefiles() -> None:
+    dot_file = os.path.join(_shapefile_dir, "from-past-to-future.dot")
 
-    # image files are omitted from sdist
-    @pytest.mark.skipif(  # pragma: no cover
-        not os.path.isdir(shapefile_dir),
-        reason=(
-            "Skipping tests that involve images,"
-            " they can be found in the git repository"
-        ),
-    )
-    def test_graph_with_shapefiles(self) -> None:
-        dot_file = os.path.join(self.shapefile_dir, "from-past-to-future.dot")
+    pngs = [
+        os.path.join(_shapefile_dir, fname)
+        for fname in os.listdir(_shapefile_dir)
+        if fname.endswith(".png")
+    ]
 
-        pngs = [
-            os.path.join(self.shapefile_dir, fname)
-            for fname in os.listdir(self.shapefile_dir)
-            if fname.endswith(".png")
-        ]
+    with open(dot_file, encoding="utf-8") as f:
+        graph_data = f.read()
 
-        with open(dot_file, encoding="utf-8") as f:
-            graph_data = f.read()
+    graphs = pydot.graph_from_dot_data(graph_data)
+    assert isinstance(graphs, list)
+    assert len(graphs) == 1
 
-        graphs = pydot.graph_from_dot_data(graph_data)
-        self.assertIsNotNone(graphs)
+    g = graphs.pop()
+    g.set_shape_files(pngs)
 
-        if not isinstance(graphs, list):
-            return
-        g = graphs.pop()
-        g.set_shape_files(pngs)
-
-        rendered = PydotRenderResult(g.create(format="jpe"), g.to_string())
-        graphviz = Renderer.graphviz(dot_file, encoding="ascii")
-        if not _compare_images("from-past-to-future", rendered, graphviz):
-            raise AssertionError(
-                "from-past-to-future.dot: "
-                f"{rendered.checksum} != {graphviz.checksum} "
-                "(found pydot vs graphviz difference)"
-            )
+    rendered = PydotRenderResult(g.create(format="jpe"), g.to_string())
+    graphviz = Renderer.graphviz(dot_file, encoding="ascii")
+    assert _compare_images("from-past-to-future", rendered, graphviz)
 
 
 class RenderedTestCase:
