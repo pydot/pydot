@@ -49,6 +49,23 @@ jobs:
           - "3.11"
           - "3.10"
           - "3.9"
+        include:
+          - system: {os: ubuntu, can-fail: true}
+            python-version: "3.13t"
+          - system: {os: windows, can-fail: true}
+            python-version: "3.13t"
+          - system: {os: macos, can-fail: true}
+            python-version: "3.13t"
+          - system: {os: ubuntu, can-fail: true}
+            python-version: "3.14t"
+          - system: {os: windows, can-fail: true}
+            python-version: "3.14t"
+          - system: {os: macos, can-fail: true}
+            python-version: "3.14t"
+
+    # Work around tox-gh missing support for freethreaded variants
+    env:
+      TOX_GH_MAJOR_MINOR: ${{ matrix.python-version }}
 
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
