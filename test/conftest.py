@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import copy
 import typing as T
 
 import pytest
@@ -10,7 +11,7 @@ import pytest
 
 @pytest.fixture
 def objdict() -> dict[str, T.Any]:
-    return {
+    obj = {
         "attributes": {},
         "name": "G",
         "type": "graph",
@@ -42,4 +43,15 @@ def objdict() -> dict[str, T.Any]:
         },
         "edges": {},
         "subgraphs": {},
+    }
+    return copy.deepcopy(obj)
+
+
+@pytest.fixture
+def latin1_graph_files() -> set[str]:
+    return {
+        "b34.dot",
+        "b56.dot",
+        "b60.dot",
+        "Latin1.dot",
     }

@@ -18,6 +18,7 @@ source_pkgs =
 omit =
   **/_vendor/*
   test/badexit.py
+  test/test_benchmark_parser.py
 
 [report]
 omit =

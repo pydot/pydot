@@ -72,7 +72,9 @@ tests = [
   'pydot[dev]',
   'tox',
   'pytest',
+  'pytest-benchmark',
   'pytest-cov',
+  'pytest-run-parallel[psutil]',
   'pytest-xdist[psutil]',
 ]
 release = ['zest.releaser[recommended]']
@@ -93,3 +95,8 @@ files = "src"
 [[tool.mypy.overrides]]
 module = "pydot._vendor.tempfile"
 ignore_errors = true
+
+[tool.pytest.ini_options]
+thread_unsafe_fixtures = [
+    'objdict',
+]
