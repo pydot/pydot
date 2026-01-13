@@ -33,10 +33,10 @@ from pyparsing import (
     Token,
     Word,
     autoname_elements,
-    cStyleComment,
+    c_style_comment,
     lineno,
     nums,
-    restOfLine,
+    rest_of_line,
     unicode,
 )
 
@@ -362,23 +362,25 @@ class GraphParser:
         )
     ).set_results_name("graphs")
 
-    singleLineComment = Group("//" + restOfLine) | Group("#" + restOfLine)
+    single_line_comment = Group("//" + rest_of_line) | Group(
+        "#" + rest_of_line
+    )
 
     # actions
 
-    parser.ignore(singleLineComment)
-    parser.ignore(cStyleComment)
+    parser.ignore(single_line_comment)
+    parser.ignore(c_style_comment)
     parser.parse_with_tabs()
 
-    assignment.setParseAction(push_attr_list)
-    a_list.setParseAction(push_attr_list)
-    edge_stmt.setParseAction(push_edge_stmt)
-    node_stmt.setParseAction(push_node_stmt)
-    default_stmt.setParseAction(push_default_stmt)
+    assignment.set_parse_action(push_attr_list)
+    a_list.set_parse_action(push_attr_list)
+    edge_stmt.set_parse_action(push_edge_stmt)
+    node_stmt.set_parse_action(push_node_stmt)
+    default_stmt.set_parse_action(push_default_stmt)
 
-    subgraph.setParseAction(push_subgraph_stmt)
-    graph_stmt.setParseAction(push_graph_stmt)
-    parser.setParseAction(push_top_graph_stmt)
+    subgraph.set_parse_action(push_subgraph_stmt)
+    graph_stmt.set_parse_action(push_graph_stmt)
+    parser.set_parse_action(push_top_graph_stmt)
 
     autoname_elements()
 
