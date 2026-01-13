@@ -1014,6 +1014,14 @@ class Graph(Common):
 
             self.set_parent_graph(self)
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Graph):
+            return self.obj_dict is other.obj_dict
+        return False
+
+    def __hash__(self) -> int:
+        return hash(id(self.obj_dict))
+
     def __str__(self) -> str:
         return self.to_string()
 
