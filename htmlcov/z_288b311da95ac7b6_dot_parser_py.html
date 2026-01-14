@@ -3,9 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for src/pydot/dot_parser.py: 100%</title>
-    <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_a5a05ca4.css" type="text/css">
-    <script src="coverage_html_cb_bcae5fc4.js" defer></script>
+    <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
+    <link rel="stylesheet" href="style_cb_9ff733b0.css" type="text/css">
+    <script src="coverage_html_cb_dd2e7eb5.js" defer></script>
 </head>
 <body class="pyfile">
 <header>
@@ -17,7 +17,7 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed_cb_ce680311.png" alt="Show/hide keyboard shortcuts">
+                <img id="keyboard_icon" src="keybd_closed_cb_900cfef5.png" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_288b311da95ac7b6_exceptions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.0">coverage.py v7.13.0</a>,
-            created at 2026-01-04 12:45 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
+            created at 2026-01-14 23:16 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -117,10 +117,10 @@
     <p class="run run2"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">    <span class="nam">Token</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="nam">Word</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">    <span class="nam">autoname_elements</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">    <span class="nam">cStyleComment</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">    <span class="nam">c_style_comment</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="nam">lineno</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">    <span class="nam">nums</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">    <span class="nam">restOfLine</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">    <span class="nam">rest_of_line</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">    <span class="nam">unicode</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -446,48 +446,50 @@
     <p class="run run2"><span class="n"><a id="t362" href="#t362">362</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t363" href="#t363">363</a></span><span class="t">    <span class="op">)</span><span class="op">.</span><span class="nam">set_results_name</span><span class="op">(</span><span class="str">"graphs"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t364" href="#t364">364</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t365" href="#t365">365</a></span><span class="t">    <span class="nam">singleLineComment</span> <span class="op">=</span> <span class="nam">Group</span><span class="op">(</span><span class="str">"//"</span> <span class="op">+</span> <span class="nam">restOfLine</span><span class="op">)</span> <span class="op">|</span> <span class="nam">Group</span><span class="op">(</span><span class="str">"#"</span> <span class="op">+</span> <span class="nam">restOfLine</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t366" href="#t366">366</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t367" href="#t367">367</a></span><span class="t">    <span class="com"># actions</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t365" href="#t365">365</a></span><span class="t">    <span class="nam">single_line_comment</span> <span class="op">=</span> <span class="nam">Group</span><span class="op">(</span><span class="str">"//"</span> <span class="op">+</span> <span class="nam">rest_of_line</span><span class="op">)</span> <span class="op">|</span> <span class="nam">Group</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t366" href="#t366">366</a></span><span class="t">        <span class="str">"#"</span> <span class="op">+</span> <span class="nam">rest_of_line</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t367" href="#t367">367</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t368" href="#t368">368</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t369" href="#t369">369</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">ignore</span><span class="op">(</span><span class="nam">singleLineComment</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t370" href="#t370">370</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">ignore</span><span class="op">(</span><span class="nam">cStyleComment</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t371" href="#t371">371</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">parse_with_tabs</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t372" href="#t372">372</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t373" href="#t373">373</a></span><span class="t">    <span class="nam">assignment</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_attr_list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t374" href="#t374">374</a></span><span class="t">    <span class="nam">a_list</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_attr_list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t">    <span class="nam">edge_stmt</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_edge_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">    <span class="nam">node_stmt</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_node_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">    <span class="nam">default_stmt</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_default_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">    <span class="nam">subgraph</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_subgraph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">    <span class="nam">graph_stmt</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_graph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">setParseAction</span><span class="op">(</span><span class="nam">push_top_graph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t382" href="#t382">382</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t">    <span class="nam">autoname_elements</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t369" href="#t369">369</a></span><span class="t">    <span class="com"># actions</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t370" href="#t370">370</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t371" href="#t371">371</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">ignore</span><span class="op">(</span><span class="nam">single_line_comment</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t372" href="#t372">372</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">ignore</span><span class="op">(</span><span class="nam">c_style_comment</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t373" href="#t373">373</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">parse_with_tabs</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t374" href="#t374">374</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t">    <span class="nam">assignment</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_attr_list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">    <span class="nam">a_list</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_attr_list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">    <span class="nam">edge_stmt</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_edge_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">    <span class="nam">node_stmt</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_node_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">    <span class="nam">default_stmt</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_default_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">    <span class="nam">subgraph</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_subgraph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t382" href="#t382">382</a></span><span class="t">    <span class="nam">graph_stmt</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_graph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t">    <span class="nam">parser</span><span class="op">.</span><span class="nam">set_parse_action</span><span class="op">(</span><span class="nam">push_top_graph_stmt</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t384" href="#t384">384</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t"><span class="key">def</span> <span class="nam">parse_dot_data</span><span class="op">(</span><span class="nam">s</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">pydot</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">Dot</span><span class="op">]</span> <span class="op">|</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t">    <span class="str">"""Parse DOT description in (unicode) string `s`.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t"><span class="str">    This function is NOT thread-safe due to the internal use of `pyparsing`.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t390" href="#t390">390</a></span><span class="t"><span class="str">    Use a lock if needed.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t391" href="#t391">391</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t392" href="#t392">392</a></span><span class="t"><span class="str">    @return: Graphs that result from parsing.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t393" href="#t393">393</a></span><span class="t"><span class="str">    @rtype: `list` of `pydot.core.Dot`</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t394" href="#t394">394</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t395" href="#t395">395</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t396" href="#t396">396</a></span><span class="t">        <span class="nam">tokens</span> <span class="op">=</span> <span class="nam">GraphParser</span><span class="op">.</span><span class="nam">parser</span><span class="op">.</span><span class="nam">parse_string</span><span class="op">(</span><span class="nam">s</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t397" href="#t397">397</a></span><span class="t">        <span class="key">return</span> <span class="nam">list</span><span class="op">(</span><span class="nam">tokens</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t398" href="#t398">398</a></span><span class="t">    <span class="key">except</span> <span class="nam">ParseException</span> <span class="key">as</span> <span class="nam">err</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t399" href="#t399">399</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="nam">err</span><span class="op">.</span><span class="nam">line</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t400" href="#t400">400</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="str">" "</span> <span class="op">*</span> <span class="op">(</span><span class="nam">err</span><span class="op">.</span><span class="nam">column</span> <span class="op">-</span> <span class="num">1</span><span class="op">)</span> <span class="op">+</span> <span class="str">"^"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t401" href="#t401">401</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="nam">err</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t402" href="#t402">402</a></span><span class="t">        <span class="key">return</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t403" href="#t403">403</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t404" href="#t404">404</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t405" href="#t405">405</a></span><span class="t"><span class="com"># Backwards compatibility</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t406" href="#t406">406</a></span><span class="t"><span class="nam">graphparser</span><span class="op">:</span> <span class="nam">ParserElement</span> <span class="op">=</span> <span class="nam">GraphParser</span><span class="op">.</span><span class="nam">parser</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t">    <span class="nam">autoname_elements</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t"><span class="key">def</span> <span class="nam">parse_dot_data</span><span class="op">(</span><span class="nam">s</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">pydot</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">Dot</span><span class="op">]</span> <span class="op">|</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t">    <span class="str">"""Parse DOT description in (unicode) string `s`.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t390" href="#t390">390</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t391" href="#t391">391</a></span><span class="t"><span class="str">    This function is NOT thread-safe due to the internal use of `pyparsing`.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t392" href="#t392">392</a></span><span class="t"><span class="str">    Use a lock if needed.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t393" href="#t393">393</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t394" href="#t394">394</a></span><span class="t"><span class="str">    @return: Graphs that result from parsing.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t395" href="#t395">395</a></span><span class="t"><span class="str">    @rtype: `list` of `pydot.core.Dot`</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t396" href="#t396">396</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t397" href="#t397">397</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t398" href="#t398">398</a></span><span class="t">        <span class="nam">tokens</span> <span class="op">=</span> <span class="nam">GraphParser</span><span class="op">.</span><span class="nam">parser</span><span class="op">.</span><span class="nam">parse_string</span><span class="op">(</span><span class="nam">s</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t399" href="#t399">399</a></span><span class="t">        <span class="key">return</span> <span class="nam">list</span><span class="op">(</span><span class="nam">tokens</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t400" href="#t400">400</a></span><span class="t">    <span class="key">except</span> <span class="nam">ParseException</span> <span class="key">as</span> <span class="nam">err</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t401" href="#t401">401</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="nam">err</span><span class="op">.</span><span class="nam">line</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t402" href="#t402">402</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="str">" "</span> <span class="op">*</span> <span class="op">(</span><span class="nam">err</span><span class="op">.</span><span class="nam">column</span> <span class="op">-</span> <span class="num">1</span><span class="op">)</span> <span class="op">+</span> <span class="str">"^"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t403" href="#t403">403</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="nam">err</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t404" href="#t404">404</a></span><span class="t">        <span class="key">return</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t405" href="#t405">405</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t406" href="#t406">406</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t407" href="#t407">407</a></span><span class="t"><span class="com"># Backwards compatibility</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t408" href="#t408">408</a></span><span class="t"><span class="nam">graphparser</span><span class="op">:</span> <span class="nam">ParserElement</span> <span class="op">=</span> <span class="nam">GraphParser</span><span class="op">.</span><span class="nam">parser</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -496,8 +498,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_288b311da95ac7b6_exceptions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.0">coverage.py v7.13.0</a>,
-            created at 2026-01-04 12:45 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
+            created at 2026-01-14 23:16 +0000
         </p>
     </div>
 </footer>
