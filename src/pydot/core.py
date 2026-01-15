@@ -569,6 +569,18 @@ class Common:
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
 
+    @staticmethod
+    def _wrap_node(obj_dict: AttributeDict) -> Node:
+        return Node(obj_dict=obj_dict)
+
+    @staticmethod
+    def _wrap_edge(obj_dict: AttributeDict) -> Edge:
+        return Edge(obj_dict=obj_dict)
+
+    @staticmethod
+    def _wrap_subgraph(obj_dict: AttributeDict) -> Subgraph:
+        return Subgraph(obj_dict=obj_dict)
+
     def set_parent_graph(self, parent_graph: Common | None) -> None:
         self.obj_dict["parent_graph"] = parent_graph
 
@@ -914,7 +926,7 @@ class Edge(Common):
         indent_str = self.get_indent(indent, indent_level)
 
         if isinstance(src, FrozenDict):
-            sgraph = Subgraph(obj_dict=src)
+            sgraph = self._wrap_subgraph(obj_dict=src)
             edge = [
                 sgraph.to_string(
                     indent=indent, indent_level=indent_level, inline=True
@@ -929,7 +941,7 @@ class Edge(Common):
             edge.append("--")
 
         if isinstance(dst, FrozenDict):
-            sgraph = Subgraph(obj_dict=dst)
+            sgraph = self._wrap_subgraph(obj_dict=dst)
             edge.append(
                 sgraph.to_string(
                     indent=indent, indent_level=indent_level, inline=True
@@ -1197,7 +1209,7 @@ class Graph(Common):
         if name in self.obj_dict["nodes"]:
             match.extend(
                 [
-                    Node(obj_dict=obj_dict)
+                    self._wrap_node(obj_dict=obj_dict)
                     for obj_dict in self.obj_dict["nodes"][name]
                 ]
             )
@@ -1218,7 +1230,9 @@ class Graph(Common):
 
         for node in self.obj_dict["nodes"]:
             obj_dict_list = self.obj_dict["nodes"][node]
-            node_objs.extend([Node(obj_dict=obj_d) for obj_d in obj_dict_list])
+            node_objs.extend(
+                [self._wrap_node(obj_dict=obj_d) for obj_d in obj_dict_list]
+            )
 
         return node_objs
 
@@ -1305,7 +1319,7 @@ class Graph(Common):
             edge_points = (src_or_list, dst)
             edge_points_reverse = (dst, src_or_list)
 
-        match = []
+        match: list[Edge] = []
 
         if edge_points in self.obj_dict["edges"] or (
             self.get_top_graph_type() == "graph"
@@ -1316,12 +1330,10 @@ class Graph(Common):
                 self.obj_dict["edges"].get(edge_points_reverse, None),
             )
 
-            for edge_obj_dict in edges_obj_dict:
-                match.append(
-                    Edge(
-                        edge_points[0], edge_points[1], obj_dict=edge_obj_dict
-                    )
-                )
+            match.extend(
+                self._wrap_edge(obj_dict=edge_obj_dict)
+                for edge_obj_dict in edges_obj_dict
+            )
 
         return match
 
@@ -1334,11 +1346,13 @@ class Graph(Common):
         This method returns the list of Edge instances
         composing the graph.
         """
-        edge_objs = []
+        edge_objs: list[Edge] = []
 
         for edge in self.obj_dict["edges"]:
             obj_dict_list = self.obj_dict["edges"][edge]
-            edge_objs.extend([Edge(obj_dict=obj_d) for obj_d in obj_dict_list])
+            edge_objs.extend(
+                [self._wrap_edge(obj_dict=obj_d) for obj_d in obj_dict_list]
+            )
 
         return edge_objs
 
@@ -1376,13 +1390,15 @@ class Graph(Common):
         Subgraph instances is returned.
         An empty list is returned otherwise.
         """
-        match = []
+        match: list[Subgraph] = []
 
         if name in self.obj_dict["subgraphs"]:
             sgraphs_obj_dict = self.obj_dict["subgraphs"].get(name)
 
-            for obj_dict_list in sgraphs_obj_dict:
-                match.append(Subgraph(obj_dict=obj_dict_list))
+            match.extend(
+                self._wrap_subgraph(obj_dict=obj_dict)
+                for obj_dict in sgraphs_obj_dict
+            )
 
         return match
 
@@ -1395,12 +1411,12 @@ class Graph(Common):
         This method returns the list of Subgraph instances
         in the graph.
         """
-        sgraph_objs = []
+        sgraph_objs: list[Subgraph] = []
 
         for sgraph in self.obj_dict["subgraphs"]:
             obj_dict_list = self.obj_dict["subgraphs"][sgraph]
             sgraph_objs.extend(
-                [Subgraph(obj_dict=obj_d) for obj_d in obj_dict_list]
+                self._wrap_subgraph(obj_dict=obj_d) for obj_d in obj_dict_list
             )
 
         return sgraph_objs
@@ -1494,7 +1510,7 @@ class Graph(Common):
 
         for idx, obj in obj_list:
             if obj["type"] == "node":
-                node = Node(obj_dict=obj)
+                node = self._wrap_node(obj_dict=obj)
 
                 if skip_disconnected and node.get_name() not in edge_ep_set:
                     continue
@@ -1505,7 +1521,7 @@ class Graph(Common):
                 graph.append(f"{node_str}\n")
 
             elif obj["type"] == "edge":
-                edge = Edge(obj_dict=obj)
+                edge = self._wrap_edge(obj_dict=obj)
 
                 if simplify and edge in edges_done:
                     continue
@@ -1517,7 +1533,7 @@ class Graph(Common):
                 edges_done.add(edge)
 
             else:
-                sgraph_str = Subgraph(obj_dict=obj).to_string(
+                sgraph_str = self._wrap_subgraph(obj_dict=obj).to_string(
                     indent=indent, indent_level=indent_level + 1
                 )
                 graph.append(f"{sgraph_str}")  # No newline, already present
