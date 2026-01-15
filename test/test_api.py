@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import copy
 import os
 import pickle
 import string
@@ -817,3 +818,21 @@ def test_version() -> None:
 def test_call_graphviz() -> None:
     with pytest.raises(FileNotFoundError):
         pydot.call_graphviz("__dotnotexist", None, ".")
+
+
+def test_object_cloning(objdict: dict[str, T.Any]) -> None:
+    g_obj_dict = copy.deepcopy(objdict)
+    g = pydot.Dot(obj_dict=g_obj_dict)
+    g.set_parent_graph(g)
+
+    assert g.get_name() == "G"
+    assert g.get_parent_graph() is g
+    assert g != 12
+
+    h = pydot.Dot(obj_dict=g.obj_dict)
+    assert h == g
+    assert h.get_parent_graph() == h
+
+    newg = pydot.Dot("G")
+    assert newg != g
+    assert newg != h
