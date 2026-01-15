@@ -12,125 +12,23 @@ import itertools
 import logging
 import os
 import re
-import subprocess
-import sys
 import warnings
 from typing import Any, Sequence, Union, cast
 
 import pydot
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
+from pydot.constants import (
+    CLUSTER_ATTRIBUTES,
+    EDGE_ATTRIBUTES,
+    GRAPH_ATTRIBUTES,
+    NODE_ATTRIBUTES,
+    OUTPUT_FORMATS,
+)
+from pydot.launcher import call_graphviz
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
-
-# fmt: off
-GRAPH_ATTRIBUTES = {
-    "Damping", "K", "URL", "aspect", "bb", "bgcolor",
-    "center", "charset", "clusterrank", "colorscheme", "comment", "compound",
-    "concentrate", "defaultdist", "dim", "dimen", "diredgeconstraints",
-    "dpi", "epsilon", "esep", "fontcolor", "fontname", "fontnames",
-    "fontpath", "fontsize", "id", "label", "labeljust", "labelloc",
-    "landscape", "layers", "layersep", "layout", "levels", "levelsgap",
-    "lheight", "lp", "lwidth", "margin", "maxiter", "mclimit", "mindist",
-    "mode", "model", "mosek", "nodesep", "nojustify", "normalize", "nslimit",
-    "nslimit1", "ordering", "orientation", "outputorder", "overlap",
-    "overlap_scaling", "pack", "packmode", "pad", "page", "pagedir",
-    "quadtree", "quantum", "rankdir", "ranksep", "ratio", "remincross",
-    "repulsiveforce", "resolution", "root", "rotate", "searchsize", "sep",
-    "showboxes", "size", "smoothing", "sortv", "splines", "start",
-    "stylesheet", "target", "truecolor", "viewport", "voro_margin",
-    # for subgraphs
-    "rank"
-}
-
-
-EDGE_ATTRIBUTES = {
-    "URL", "arrowhead", "arrowsize", "arrowtail",
-    "color", "colorscheme", "comment", "constraint", "decorate", "dir",
-    "edgeURL", "edgehref", "edgetarget", "edgetooltip", "fontcolor",
-    "fontname", "fontsize", "headURL", "headclip", "headhref", "headlabel",
-    "headport", "headtarget", "headtooltip", "href", "id", "label",
-    "labelURL", "labelangle", "labeldistance", "labelfloat", "labelfontcolor",
-    "labelfontname", "labelfontsize", "labelhref", "labeltarget",
-    "labeltooltip", "layer", "len", "lhead", "lp", "ltail", "minlen",
-    "nojustify", "penwidth", "pos", "samehead", "sametail", "showboxes",
-    "style", "tailURL", "tailclip", "tailhref", "taillabel", "tailport",
-    "tailtarget", "tailtooltip", "target", "tooltip", "weight",
-    "rank"
-}
-
-
-NODE_ATTRIBUTES = {
-    "URL", "color", "colorscheme", "comment",
-    "distortion", "fillcolor", "fixedsize", "fontcolor", "fontname",
-    "fontsize", "group", "height", "id", "image", "imagescale", "label",
-    "labelloc", "layer", "margin", "nojustify", "orientation", "penwidth",
-    "peripheries", "pin", "pos", "rects", "regular", "root", "samplepoints",
-    "shape", "shapefile", "showboxes", "sides", "skew", "sortv", "style",
-    "target", "tooltip", "vertices", "width", "z",
-    # The following are attributes dot2tex
-    "texlbl",  "texmode"
-}
-
-
-CLUSTER_ATTRIBUTES = {
-    "K", "URL", "bgcolor", "color", "colorscheme",
-    "fillcolor", "fontcolor", "fontname", "fontsize", "label", "labeljust",
-    "labelloc", "lheight", "lp", "lwidth", "nojustify", "pencolor",
-    "penwidth", "peripheries", "sortv", "style", "target", "tooltip"
-}
-# fmt: on
-
-
-OUTPUT_FORMATS = {
-    "canon",
-    "cmap",
-    "cmapx",
-    "cmapx_np",
-    "dia",
-    "dot",
-    "fig",
-    "gd",
-    "gd2",
-    "gif",
-    "hpgl",
-    "imap",
-    "imap_np",
-    "ismap",
-    "jpe",
-    "jpeg",
-    "jpg",
-    "mif",
-    "mp",
-    "pcl",
-    "pdf",
-    "pic",
-    "plain",
-    "plain-ext",
-    "png",
-    "ps",
-    "ps2",
-    "svg",
-    "svgz",
-    "vml",
-    "vmlz",
-    "vrml",
-    "vtx",
-    "wbmp",
-    "xdot",
-    "xlib",
-}
-
-
-DEFAULT_PROGRAMS = {
-    "dot",
-    "twopi",
-    "neato",
-    "circo",
-    "fdp",
-    "sfdp",
-}
 
 
 class frozendict(FrozenDict):
@@ -195,73 +93,6 @@ def __generate_format_methods(Klass: type) -> None:
             self.write(path, format=f, prog=prog, encoding=encoding)
 
         setattr(Klass, f"write_{frmt}", __write_method)
-
-
-def is_windows() -> bool:
-    return os.name == "nt"
-
-
-def is_anaconda() -> bool:
-    import glob
-
-    conda_pattern = os.path.join(sys.prefix, "conda-meta\\graphviz*.json")
-    return glob.glob(conda_pattern) != []
-
-
-def get_executable_extension() -> str:
-    if is_windows():
-        return ".bat" if is_anaconda() else ".exe"
-    else:
-        return ""
-
-
-def call_graphviz(
-    program: str,
-    arguments: list[str],
-    working_dir: str | bytes,
-    **kwargs: Any,
-) -> tuple[bytes, bytes, subprocess.Popen[bytes]]:
-    if program in DEFAULT_PROGRAMS:
-        extension = get_executable_extension()
-        program += extension
-
-    if arguments is None:
-        arguments = []
-
-    if "creationflags" not in kwargs and hasattr(
-        subprocess, "CREATE_NO_WINDOW"
-    ):
-        # Only on Windows OS:
-        # specify that the new process shall not create a new window
-        kwargs.update(creationflags=subprocess.CREATE_NO_WINDOW)
-
-    # explicitly inherit `$PATH`, on Windows too,
-    # with `shell=False`
-    env = {
-        "PATH": os.environ.get("PATH", ""),
-        "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
-        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
-    }
-
-    program_with_args = [program] + arguments
-
-    if sys.version_info < (3, 9):
-        my_popen = subprocess.Popen  # pragma: no cover
-    else:
-        my_popen = subprocess.Popen[bytes]
-
-    process = my_popen(
-        program_with_args,
-        env=env,
-        cwd=working_dir,
-        shell=False,
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        **kwargs,
-    )
-    stdout_data, stderr_data = process.communicate()
-
-    return stdout_data, stderr_data, process
 
 
 def make_quoted(s: str) -> str:
@@ -1846,9 +1677,9 @@ class Dot(Graph):
                 )
             except OSError as e:
                 if e.errno == errno.ENOENT:
-                    args = list(e.args)  # type: ignore
-                    args[1] = f'"{prog}" not found in path.'  # type: ignore
-                    raise OSError(*args)
+                    err_args: list[str] = list(e.args)
+                    err_args[1] = f'"{prog}" not found in path.'
+                    raise OSError(*err_args)
                 else:
                     raise  # pragma: no cover
 
