@@ -250,12 +250,7 @@ def call_graphviz(
 
     program_with_args = [program] + arguments
 
-    if sys.version_info < (3, 9):
-        my_popen = subprocess.Popen  # pragma: no cover
-    else:
-        my_popen = subprocess.Popen[bytes]
-
-    process = my_popen(
+    process = subprocess.Popen[bytes](
         program_with_args,
         env=env,
         cwd=working_dir,
