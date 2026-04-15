@@ -107,7 +107,6 @@ OUTPUT_FORMATS = {
     "pdf",
     "pic",
     "plain",
-    "plain-ext",
     "png",
     "ps",
     "ps2",
