@@ -166,30 +166,15 @@ def __generate_format_methods(Klass: type) -> None:
     # the methods enabling the creation
     # of output in any of the supported formats.
     for frmt in OUTPUT_FORMATS:
-
-        def __create_method(
-            self: Dot,
-            f: str = frmt,
-            prog: str | None = None,
-            encoding: str | None = None,
-        ) -> bytes:
-            """Refer to docstring of method `create`."""
-            return self.create(format=f, prog=prog, encoding=encoding)
-
+        __create_method = functools.partialmethod(
+            Klass._wrappable_create, frmt
+        )
         setattr(Klass, f"create_{frmt}", __create_method)
 
     for frmt in OUTPUT_FORMATS ^ {"raw"}:
-
-        def __write_method(
-            self: Dot,
-            path: str,
-            f: str = frmt,
-            prog: str | None = None,
-            encoding: str | None = None,
-        ) -> None:
-            """Refer to docstring of method `write`."""
-            self.write(path, format=f, prog=prog, encoding=encoding)
-
+        __write_method = functools.partialmethod(
+            Klass._wrappable_write, frmt
+        )
         setattr(Klass, f"write_{frmt}", __write_method)
 
 
@@ -1746,6 +1731,17 @@ class Dot(Graph):
                 f.write(b)
         return True
 
+    def _wrappable_write(
+        self,
+        _format: str,
+        path: str | bytes,
+        prog: str | None = None,
+        encoding: str | None = None,
+    ) -> bool:
+        return self.write(path, prog, _format, encoding)
+
+    _wrappable_write.__doc__ = write.__doc__
+
     def create(
         self,
         prog: list[str] | tuple[str] | str | None = None,
@@ -1863,6 +1859,16 @@ class Dot(Graph):
         )
 
         return stdout_data
+
+    def _wrappable_create(
+        self,
+        _format: str,
+        prog: list[str] | tuple[str] | str | None = None,
+        encoding: str | None = None,
+    ) -> bytes:
+        return self.create(prog, _format, encoding)
+
+    _wrappable_create.__doc__ = create.__doc__
 
 
 __generate_format_methods(Dot)
