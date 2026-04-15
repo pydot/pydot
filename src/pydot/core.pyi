@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 pydot contributors
+#
+# SPDX-License-Identifier: MIT
+
 from __future__ import annotations
 
 import pydot.classes

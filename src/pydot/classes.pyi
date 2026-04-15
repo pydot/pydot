@@ -1,5 +1,8 @@
-from typing import Any, ClassVar, Union
+# SPDX-FileCopyrightText: 2026 pydot contributors
+#
+# SPDX-License-Identifier: MIT
 
+from typing import Any, ClassVar, Union
 
 class FrozenDict(dict):
     _block_msg: ClassVar[str] = ...
