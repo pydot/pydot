@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import errno
+import functools
 import itertools
 import logging
 import os
@@ -150,16 +151,12 @@ def __generate_attribute_methods(Klass: type[Common], attrs: set[str]) -> None:
     for attr in attrs:
         # Generate all the Getter methods.
         #
-        def __getter(self: Any, _attr: str = attr) -> Any:
-            return self.get(_attr)
-
+        __getter = functools.partialmethod(Klass.get, attr)
         setattr(Klass, f"get_{attr}", __getter)
 
         # Generate all the Setter methods.
         #
-        def __setter(self: Any, *args: Any, _attr: str = attr) -> Any:
-            return self.set(_attr, *args)
-
+        __setter = functools.partialmethod(Klass.set, attr)
         setattr(Klass, f"set_{attr}", __setter)
 
 
