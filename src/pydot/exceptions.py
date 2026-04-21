@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from typing import Final
+
 
 class PydotException(Exception):
     """Base class for exceptions in Pydot.
@@ -20,6 +22,8 @@ class PydotException(Exception):
 
 class Error(PydotException):
     """General error handling class."""
+
+    value: Final[str]
 
     def __init__(self, value: str) -> None:
         self.value = value
