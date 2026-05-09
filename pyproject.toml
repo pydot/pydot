@@ -71,6 +71,7 @@ dev = [
 tests = [
   'pydot[dev]',
   'tox',
+  'tox-uv',
   'pytest',
   'pytest-cov',
   'pytest-xdist[psutil]',

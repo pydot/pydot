@@ -10,6 +10,7 @@ include REUSE.toml
 include src/pydot/py.typed
 prune .github
 exclude .git*
+exclude uv.lock
 graft test
 prune test/from-past-to-future
 global-exclude test.svg
