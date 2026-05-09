@@ -19,3 +19,8 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright © 2001-2023 Python Software Foundation. All rights reserved."
 SPDX-License-Identifier = "Python-2.0"
 
+[[annotations]]
+path = ["uv.lock"]
+precedence = "override"
+SPDX-FileCopyrightText = "pydot contributors"
+SPDX-License-Identifier = "MIT"

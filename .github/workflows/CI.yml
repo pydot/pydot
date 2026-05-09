@@ -43,6 +43,7 @@ jobs:
           - {os: windows, can-fail: false}
           - {os: macos, can-fail: false}
         python-version:
+          - "3.15"
           - "3.14"
           - "3.13"
           - "3.12"
@@ -54,11 +55,16 @@ jobs:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Install uv and Set Python Version
+        uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
+          cache-dependency-path: "pyproject.toml"
           python-version: "${{ matrix.python-version }}"
-          allow-prereleases: true
-          cache: "pip"
+      - name: "Verify Python Environment"
+        run: |
+          echo "Python used by uv:"
+          uv run python --version
       - name: "Set up environment"
         shell: bash
         run: |
@@ -79,11 +85,11 @@ jobs:
         if: runner.os == 'macos'
         run: brew install graphviz
       - name: "Install Python dependencies"
-        run: python -m pip install pip==25.2 setuptools==80.9.0 tox==4.30.2 tox-gh==1.5.0
+        run: uv pip install pip==25.2 setuptools==80.9.0 tox==4.30.2 tox-gh==1.5.0
       - name: "Setup tests"
-        run: tox -vv --notest
+        run: uv run tox -vv --notest
       - name: "Run tests"
-        run: tox --skip-pkg-install
+        run: uv run tox --skip-pkg-install
       - name: "Prepare error artifacts"
         if: ${{ failure() }}
         run: cp test/compare_images.sh "${{ env.TEST_ERROR_DIR }}"
@@ -123,16 +129,20 @@ jobs:
       # comments (to avoid publishing multiple comments in the same PR)
       contents: write
     steps:
-      - name: "Install Python"
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: "3.12"
       - name: "Check out source"
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
+      - name: "Install uv and Python 3.12"
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: "Verify Python Environment"
+        run: |
+          echo "Python used by uv:"
+          uv run python --version
       - name: "Install coverage.py"
-        run: python -m pip install coverage
+        run: uv tool install coverage
       - name: "Download coverage-data artifacts"
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:

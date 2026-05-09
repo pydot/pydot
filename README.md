@@ -40,7 +40,6 @@ To see what Graphviz is capable of, check the [Graphviz Gallery](https://graphvi
   ```
 
 - Development installation, to modify the code or contribute changes:
-
   ```bash
   # Clone the repository
   git clone https://github.com/pydot/pydot
@@ -51,7 +50,11 @@ To see what Graphviz is capable of, check the [Graphviz Gallery](https://graphvi
   . ./_venv/bin/activate
 
   # Make an editable install of pydot from the source tree
-  pip install -e .
+  pip install -e ".[tests,dev]"
+  ```
+- Development installation, if you use the `uv` package manager:
+  ```bash
+  uv sync --extra tests --extra dev
   ```
 
 ## Quickstart
