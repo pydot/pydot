@@ -43,6 +43,7 @@ jobs:
           - {os: windows, can-fail: false}
           - {os: macos, can-fail: false}
         python-version:
+          - "3.15"
           - "3.14"
           - "3.13"
           - "3.12"
