@@ -20,68 +20,16 @@ from typing import Any, Sequence, Union, cast
 import pydot
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
+from pydot.mixins import (
+    ClusterMixin,
+    CommonMixin,
+    EdgeMixin,
+    GraphMixin,
+    NodeMixin,
+)
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
-
-# fmt: off
-GRAPH_ATTRIBUTES = {
-    "Damping", "K", "URL", "aspect", "bb", "bgcolor",
-    "center", "charset", "clusterrank", "colorscheme", "comment", "compound",
-    "concentrate", "defaultdist", "dim", "dimen", "diredgeconstraints",
-    "dpi", "epsilon", "esep", "fontcolor", "fontname", "fontnames",
-    "fontpath", "fontsize", "id", "label", "labeljust", "labelloc",
-    "landscape", "layers", "layersep", "layout", "levels", "levelsgap",
-    "lheight", "lp", "lwidth", "margin", "maxiter", "mclimit", "mindist",
-    "mode", "model", "mosek", "nodesep", "nojustify", "normalize", "nslimit",
-    "nslimit1", "ordering", "orientation", "outputorder", "overlap",
-    "overlap_scaling", "pack", "packmode", "pad", "page", "pagedir",
-    "quadtree", "quantum", "rankdir", "ranksep", "ratio", "remincross",
-    "repulsiveforce", "resolution", "root", "rotate", "searchsize", "sep",
-    "showboxes", "size", "smoothing", "sortv", "splines", "start",
-    "stylesheet", "target", "truecolor", "viewport", "voro_margin",
-    # for subgraphs
-    "rank"
-}
-
-
-EDGE_ATTRIBUTES = {
-    "URL", "arrowhead", "arrowsize", "arrowtail",
-    "color", "colorscheme", "comment", "constraint", "decorate", "dir",
-    "edgeURL", "edgehref", "edgetarget", "edgetooltip", "fontcolor",
-    "fontname", "fontsize", "headURL", "headclip", "headhref", "headlabel",
-    "headport", "headtarget", "headtooltip", "href", "id", "label",
-    "labelURL", "labelangle", "labeldistance", "labelfloat", "labelfontcolor",
-    "labelfontname", "labelfontsize", "labelhref", "labeltarget",
-    "labeltooltip", "layer", "len", "lhead", "lp", "ltail", "minlen",
-    "nojustify", "penwidth", "pos", "samehead", "sametail", "showboxes",
-    "style", "tailURL", "tailclip", "tailhref", "taillabel", "tailport",
-    "tailtarget", "tailtooltip", "target", "tooltip", "weight",
-    "rank"
-}
-
-
-NODE_ATTRIBUTES = {
-    "URL", "color", "colorscheme", "comment",
-    "distortion", "fillcolor", "fixedsize", "fontcolor", "fontname",
-    "fontsize", "group", "height", "id", "image", "imagescale", "label",
-    "labelloc", "layer", "margin", "nojustify", "orientation", "penwidth",
-    "peripheries", "pin", "pos", "rects", "regular", "root", "samplepoints",
-    "shape", "shapefile", "showboxes", "sides", "skew", "sortv", "style",
-    "target", "tooltip", "vertices", "width", "z",
-    # The following are attributes dot2tex
-    "texlbl",  "texmode"
-}
-
-
-CLUSTER_ATTRIBUTES = {
-    "K", "URL", "bgcolor", "color", "colorscheme",
-    "fillcolor", "fontcolor", "fontname", "fontsize", "label", "labeljust",
-    "labelloc", "lheight", "lp", "lwidth", "nojustify", "pencolor",
-    "penwidth", "peripheries", "sortv", "style", "target", "tooltip"
-}
-# fmt: on
-
 
 OUTPUT_FORMATS = {
     "canon",
@@ -107,7 +55,6 @@ OUTPUT_FORMATS = {
     "pdf",
     "pic",
     "plain",
-    "plain-ext",
     "png",
     "ps",
     "ps2",
@@ -144,24 +91,6 @@ class frozendict(FrozenDict):
             stacklevel=2,
         )
         super().__init__(self, *args, **kwargs)
-
-
-def __generate_attribute_methods(Klass: type[Common], attrs: set[str]) -> None:
-    """Generate setter and getter methods for attributes."""
-    for attr in attrs:
-        # Generate all the Getter methods.
-        #
-        def __getter(self: Any, _attr: str = attr) -> Any:
-            return self.get(_attr)
-
-        setattr(Klass, f"get_{attr}", __getter)
-
-        # Generate all the Setter methods.
-        #
-        def __setter(self: Any, *args: Any, _attr: str = attr) -> Any:
-            return self.set(_attr, *args)
-
-        setattr(Klass, f"set_{attr}", __setter)
 
 
 def __generate_format_methods(Klass: type) -> None:
@@ -552,15 +481,17 @@ def graph_from_incidence_matrix(
     return graph
 
 
-class Common:
+class Common(CommonMixin):
     """Common information to several classes.
 
     Should not be directly used, several classes are derived from
     this one.
     """
 
+    obj_dict: AttributeDict = {}
+
     def __init__(self, obj_dict: AttributeDict | None = None) -> None:
-        self.obj_dict: AttributeDict = obj_dict or {}
+        self.obj_dict = obj_dict or {}
 
     def __getstate__(self) -> AttributeDict:
         _dict = copy.copy(self.obj_dict)
@@ -667,7 +598,7 @@ class Common:
         return f"{prefix}[{', '.join(attrs)}]"
 
 
-class Node(Common):
+class Node(Common, NodeMixin):
     """A graph node.
 
     This class represents a graph's node with all its attributes.
@@ -752,10 +683,7 @@ class Node(Common):
         return f"{indent_str}{node}{self.attrs_string(prefix=' ')};"
 
 
-__generate_attribute_methods(Node, NODE_ATTRIBUTES)
-
-
-class Edge(Common):
+class Edge(Common, EdgeMixin):
     """A graph edge.
 
     This class represents a graph's edge with all its attributes.
@@ -941,10 +869,7 @@ class Edge(Common):
         return f"{indent_str}{' '.join(edge)}{self.attrs_string(prefix=' ')};"
 
 
-__generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
-
-
-class Graph(Common):
+class Graph(Common, GraphMixin):
     """Class representing a graph in Graphviz's dot language.
 
     This class implements the methods to work on a representation
@@ -1529,9 +1454,6 @@ class Graph(Common):
         return "".join(graph)
 
 
-__generate_attribute_methods(Graph, GRAPH_ATTRIBUTES)
-
-
 class Subgraph(Graph):
     """Class representing a subgraph in Graphviz's dot language.
 
@@ -1586,7 +1508,7 @@ class Subgraph(Graph):
             self.obj_dict["type"] = "subgraph"
 
 
-class Cluster(Graph):
+class Cluster(Graph, ClusterMixin):
     """Class representing a cluster in Graphviz's dot language.
 
     This class implements the methods to work on a representation
@@ -1638,9 +1560,6 @@ class Cluster(Graph):
             self.obj_dict["name"] = quote_id_if_necessary(
                 "cluster_" + graph_name
             )
-
-
-__generate_attribute_methods(Cluster, CLUSTER_ATTRIBUTES)
 
 
 class Dot(Graph):
