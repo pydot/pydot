@@ -695,13 +695,45 @@ class Node(Common):
             self.obj_dict["parent_graph"] = None
             self.obj_dict["sequence"] = None
 
-            # Remove the compass point
-            #
-            port = None
-            if isinstance(name, str) and not name.startswith('"'):
-                idx = name.find(":")
-                if idx > 0 and idx + 1 < len(name):
-                    name, port = name[:idx], name[idx:]
+            # Split a "<name>"[:port] string into (name, port). The
+            # unquoted "name:port" form has always worked. The quoted
+            # form ('"name":port') used to swallow everything (including
+            # the port) as the name, dropping both the port and the
+            # useful distinction between the two halves of the identifier.
+            # This now finds the matching closing quote (respecting
+            # backslash-escaped quotes inside the name) and treats any
+            # trailing text starting with ":" as a port.
+            port: str | None = None
+            if isinstance(name, str):
+                if name.startswith('"'):
+                    # Find the matching closing quote, respecting \" escapes
+                    closing_idx = -1
+                    i = 1
+                    while i < len(name):
+                        if name[i] == "\\" and i + 1 < len(name):
+                            i += 2
+                            continue
+                        if name[i] == '"':
+                            closing_idx = i
+                            break
+                        i += 1
+                    if closing_idx > 0:
+                        # Capture the part after the closing quote. Keep
+                        # the surrounding quotes on the name so the user's
+                        # explicit "quote it" intent survives a round-trip:
+                        # `Node('"node"')` and `Node('node')` must remain
+                        # distinguishable, since the first is a literal
+                        # node name and the second is a DOT reserved
+                        # keyword. Only the port, if any, is extracted.
+                        rest = name[closing_idx + 1 :]
+                        name = name[: closing_idx + 1]
+                        if rest.startswith(":"):
+                            port = rest
+                else:
+                    idx = name.find(":")
+                    if idx > 0 and idx + 1 < len(name):
+                        port = name[idx:]
+                        name = name[:idx]
 
             if isinstance(name, int):
                 name = str(name)
