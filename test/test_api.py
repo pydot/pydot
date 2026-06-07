@@ -386,6 +386,15 @@ def test_quoted_node_id_with_port() -> None:
     assert n5.get_name() == '"unterminated'
     assert n5.get_port() is None
 
+    # Quoted id with trailing non-port text is preserved verbatim,
+    # matching the pre-fix behavior. The new port-extraction logic
+    # only fires when the text after the closing quote starts with
+    # ':', so an input like '"a"b' (a quoted name with stray text)
+    # is left alone rather than silently truncated to '"a"'.
+    n6 = pydot.Node('"a"b')
+    assert n6.get_name() == '"a"b'
+    assert n6.get_port() is None
+
 
 @pytest.mark.xfail(reason="The port logic is a broken mess")
 def test_broken_port_handling() -> None:

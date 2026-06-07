@@ -702,7 +702,11 @@ class Node(Common):
             # useful distinction between the two halves of the identifier.
             # This now finds the matching closing quote (respecting
             # backslash-escaped quotes inside the name) and treats any
-            # trailing text starting with ":" as a port.
+            # trailing text starting with ":" as a port. If the trailing
+            # text isn't a port (e.g. the input is '"a"b' — a quoted
+            # name with extra unquoted text), we fall back to the
+            # pre-fix behavior of leaving the name untouched, so we
+            # don't silently drop data the caller provided.
             port: str | None = None
             if isinstance(name, str):
                 if name.startswith('"'):
@@ -726,9 +730,14 @@ class Node(Common):
                         # node name and the second is a DOT reserved
                         # keyword. Only the port, if any, is extracted.
                         rest = name[closing_idx + 1 :]
-                        name = name[: closing_idx + 1]
                         if rest.startswith(":"):
+                            name = name[: closing_idx + 1]
                             port = rest
+                        # If `rest` is empty the whole input is the name
+                        # and there's no port — fall through with the
+                        # original name. Same when `rest` is non-empty
+                        # but doesn't start with ":": this is something
+                        # like `'"a"b'`, which the old code left alone.
                 else:
                     idx = name.find(":")
                     if idx > 0 and idx + 1 < len(name):
