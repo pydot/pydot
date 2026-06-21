@@ -796,6 +796,25 @@ class Node(Common):
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
 
 
+def _format_node_endpoint(node: "Node | Subgraph | Cluster") -> str:
+    """Return the DOT representation of a node endpoint, including port.
+
+    ``Node`` stores the (optional) port with a leading colon (e.g. ``":p45"``)
+    so the leading colon of the port is treated as part of the node-id syntax.
+    When emitting an Edge endpoint we want ``"name":port`` (or
+    ``"name":"port"`` when the port itself needs quoting), not just the bare
+    name — otherwise the port is silently dropped on round-trip.
+    """
+    name = str(node.get_name())
+    port = node.get_port() if hasattr(node, "get_port") else None
+    if not port:
+        return name
+    # port is stored as e.g. ":p45" — split off the leading ':' so we can
+    # re-quote the port identifier with the same rules used elsewhere.
+    port_id = port[1:] if port.startswith(":") else port
+    return f"{name}:{quote_id_if_necessary(port_id)}"
+
+
 class Edge(Common):
     """A graph edge.
 
@@ -843,14 +862,14 @@ class Edge(Common):
             ep1: EdgeEndpoint
 
             if isinstance(_src, (Node, Subgraph, Cluster)):
-                ep0 = str(_src.get_name())
+                ep0 = _format_node_endpoint(_src)
             elif isinstance(_src, (FrozenDict, int, float)):
                 ep0 = _src
             else:
                 ep0 = str(_src)
 
             if isinstance(_dst, (Node, Subgraph, Cluster)):
-                ep1 = str(_dst.get_name())
+                ep1 = _format_node_endpoint(_dst)
             elif isinstance(_dst, (FrozenDict, int, float)):
                 ep1 = _dst
             else:

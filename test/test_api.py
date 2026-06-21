@@ -396,6 +396,36 @@ def test_quoted_node_id_with_port() -> None:
     assert n6.get_port() is None
 
 
+def test_quoted_node_id_with_port_in_edge() -> None:
+    """Regression test for pydot/pydot#552 review feedback (lkk7).
+
+    A quoted node id with a port (e.g. ``"abc":p45``) used to be rendered
+    correctly when used as a standalone node, but when the same node was
+    used as an Edge endpoint the port was dropped during serialization:
+    ``pydot.Edge(pydot.Node('"abc":p45'), 'b')`` produced ``"abc" -- b;``
+    instead of ``"abc":p45 -- b;``. The Edge constructor now propagates
+    the node's port into the endpoint string, so the rendered edge
+    round-trips back to a Node with the same name and port.
+    """
+    n = pydot.Node('"abc":p45')
+    e = pydot.Edge(n, "b")
+    assert e.to_string() == '"abc":p45 -- b;'
+
+    # Round-trip: parse the source back into a Node and confirm name+port.
+    parsed = pydot.Node(e.get_source())
+    assert parsed.get_name() == '"abc"'
+    assert parsed.get_port() == ":p45"
+
+    # Same for the multi-segment port and for the unquoted-keyword port.
+    n_multi = pydot.Node('"my_name":p45:nw')
+    e_multi = pydot.Edge(n_multi, "b")
+    assert e_multi.to_string() == '"my_name":p45:nw -- b;'
+
+    n_kw = pydot.Node("graph:edge")
+    e_kw = pydot.Edge("a", n_kw)
+    assert e_kw.to_string() == 'a -- "graph":"edge";'
+
+
 @pytest.mark.xfail(reason="The port logic is a broken mess")
 def test_broken_port_handling() -> None:
     n = pydot.Node("edge:12", color="red")
