@@ -2,21 +2,22 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/pydot/pydot/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                      |    Stmts |     Miss |   Branch |   BrPart |    Cover |   Missing |
-|-------------------------- | -------: | -------: | -------: | -------: | -------: | --------: |
-| src/pydot/\_\_init\_\_.py |       10 |        0 |        0 |        0 |     100% |           |
-| src/pydot/classes.py      |       56 |        0 |       12 |        0 |     100% |           |
-| src/pydot/core.py         |      667 |        0 |      254 |        0 |     100% |           |
-| src/pydot/dot\_parser.py  |      217 |        0 |       58 |        0 |     100% |           |
-| src/pydot/exceptions.py   |        7 |        0 |        0 |        0 |     100% |           |
-| test/\_\_init\_\_.py      |        0 |        0 |        0 |        0 |     100% |           |
-| test/conftest.py          |        6 |        0 |        0 |        0 |     100% |           |
-| test/test\_api.py         |      547 |        0 |       12 |        0 |     100% |           |
-| test/test\_classes.py     |       48 |        0 |        0 |        0 |     100% |           |
-| test/test\_logging.py     |       12 |        0 |        0 |        0 |     100% |           |
-| test/test\_parser.py      |       96 |        0 |        0 |        0 |     100% |           |
-| test/test\_pydot.py       |       80 |        0 |        4 |        0 |     100% |           |
-| **TOTAL**                 | **1746** |    **0** |  **340** |    **0** | **100%** |           |
+| Name                            |    Stmts |     Miss |   Branch |   BrPart |    Cover |   Missing |
+|-------------------------------- | -------: | -------: | -------: | -------: | -------: | --------: |
+| src/pydot/\_\_init\_\_.py       |       10 |        0 |        0 |        0 |     100% |           |
+| src/pydot/classes.py            |       56 |        0 |       12 |        0 |     100% |           |
+| src/pydot/core.py               |      672 |        0 |      254 |        0 |     100% |           |
+| src/pydot/dot\_parser.py        |      217 |        0 |       58 |        0 |     100% |           |
+| src/pydot/exceptions.py         |        7 |        0 |        0 |        0 |     100% |           |
+| test/\_\_init\_\_.py            |        0 |        0 |        0 |        0 |     100% |           |
+| test/conftest.py                |        6 |        0 |        0 |        0 |     100% |           |
+| test/test\_api.py               |      547 |        0 |       12 |        0 |     100% |           |
+| test/test\_classes.py           |       48 |        0 |        0 |        0 |     100% |           |
+| test/test\_context\_managers.py |       81 |        0 |        2 |        0 |     100% |           |
+| test/test\_logging.py           |       12 |        0 |        0 |        0 |     100% |           |
+| test/test\_parser.py            |       96 |        0 |        0 |        0 |     100% |           |
+| test/test\_pydot.py             |       80 |        0 |        4 |        0 |     100% |           |
+| **TOTAL**                       | **1832** |    **0** |  **342** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
