@@ -15,7 +15,7 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, Sequence, Union, cast
+from typing import Any, Sequence, TypeVar, Union, cast
 
 import pydot
 from pydot._vendor import tempfile
@@ -943,6 +943,8 @@ class Edge(Common):
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
 
+TGraph = TypeVar("TGraph", bound="Graph")
+
 
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
@@ -1122,6 +1124,28 @@ class Graph(Common):
         seq: int = self.obj_dict.get("current_child_sequence", 1)
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
+
+    def __enter__(self: TGraph) -> TGraph:
+        """Enter the runtime context for this graph.
+
+        Enables a nested construction style:
+
+            with Dot("A") as dot:
+                with Subgraph("B") as sg:
+                    sg.add_node(Node("N1"))
+                    dot.add_subgraph(sg)
+
+        This is syntactic sugar only with no side effects.
+        """
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit the runtime context for this graph.
+
+        Performs no cleanup.
+        Always returns `None`, so exceptions are never suppressed.
+        """
+        return
 
     def add_node(self, graph_node: Node) -> None:
         """Adds a node object to the graph.
