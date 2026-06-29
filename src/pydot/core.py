@@ -1143,7 +1143,7 @@ class Graph(Common):
         """Exit the runtime context for this graph.
 
         Performs no cleanup.
-        Always returns `False`, so exceptions are never suppressed.
+        Always returns `None`, so exceptions are never suppressed.
         """
         return
 
