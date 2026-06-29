@@ -15,12 +15,12 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import TYPE_CHECKING, Any, Final, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
 
 if TYPE_CHECKING:
     # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
     # even if not  installed
-    from typing_extensions import TypeAlias
+    from typing_extensions import Self, TypeAlias
 
 import pydot
 from pydot._vendor import tempfile
@@ -952,9 +952,6 @@ class Edge(Common):
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
 
-TGraph = TypeVar("TGraph", bound="Graph")
-
-
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
 
@@ -1134,7 +1131,7 @@ class Graph(Common):
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
 
-    def __enter__(self: TGraph) -> TGraph:
+    def __enter__(self) -> Self:
         """Enter the runtime context for this graph.
 
         Enables a nested construction style:
