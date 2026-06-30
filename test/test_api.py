@@ -344,6 +344,41 @@ def test_keyword_node_id_in_label() -> None:
     assert g.get_nodes()[0].to_string() == 'Node [label="Node"];'
 
 
+def test_keyword_node_id_uppercase_to_string_no_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("NODE"))
+    assert g.get_nodes()[0].to_string() == ""
+
+
+def test_keyword_node_id_uppercase_to_string_with_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("NODE", shape="box"))
+    assert g.get_nodes()[0].to_string() == "NODE [shape=box];"
+
+
+def test_dot_graph_type_uppercase() -> None:
+    g = pydot.Dot("G", graph_type="DIGRAPH")
+    assert g.get_type() == "digraph"
+
+
+def test_dot_graph_type_mixed_case() -> None:
+    g = pydot.Dot("G", graph_type="Graph")
+    assert g.get_type() == "graph"
+
+
+def test_non_string_graph_type_raises_error() -> None:
+    with pytest.raises(pydot.exceptions.Error):
+        pydot.Dot("G", graph_type=123)
+
+
+def test_int_node_id_to_string() -> None:
+    assert pydot.Node(2).to_string() == "2;"
+
+
+def test_float_node_id_to_string() -> None:
+    assert pydot.Node(2.5).to_string() == "2.5;"
+
+
 def test_keywords_with_ports() -> None:
     g = pydot.Graph("KW")
     g.add_edge(pydot.Edge("graph:edge", "strict:graph"))
