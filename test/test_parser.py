@@ -81,6 +81,56 @@ def test_DefaultStatement_repr() -> None:
     assert repr_str == "DefaultStatement(node, {'color': 'blue'})"
 
 
+def test_keyword_case_insensitive_graph_type() -> None:
+    """Graph type keywords are case-insensitive."""
+    for src, expected_type in [
+        ("DIGRAPH G { a -> b }", "digraph"),
+        ("GRAPH G { a -- b }", "graph"),
+        ("Digraph G { a -> b }", "digraph"),
+        ("Graph G { a -- b }", "graph"),
+    ]:
+        (g,) = dot_parser.parse_dot_data(src)
+        assert g.get_type() == expected_type, src
+
+
+def test_keyword_case_insensitive_strict() -> None:
+    """STRICT keyword is case-insensitive."""
+    for src in [
+        "STRICT DIGRAPH G { a -> b }",
+        "STRICT GRAPH G { a -- b }",
+        "Strict Digraph G { a -> b }",
+        "strict GRAPH G { a -- b }",
+    ]:
+        (g,) = dot_parser.parse_dot_data(src)
+        assert g.get_strict(), src
+
+
+def test_keyword_case_insensitive_node_edge_defaults() -> None:
+    """NODE and EDGE default-attribute statements are case-insensitive."""
+    for node_kw, edge_kw in [
+        ("NODE", "EDGE"),
+        ("Node", "Edge"),
+        ("node", "edge"),
+    ]:
+        src = (
+            f"digraph G {{ {node_kw} [color=red]; {edge_kw}"
+            " [style=dashed]; a -> b }}"
+        )
+        (g,) = dot_parser.parse_dot_data(src)
+        assert g.get_node_defaults() == [{"color": "red"}], src
+        assert g.get_edge_defaults() == [{"style": "dashed"}], src
+
+
+def test_keyword_case_insensitive_subgraph() -> None:
+    """SUBGRAPH keyword is case-insensitive."""
+    for kw in ["subgraph", "SUBGRAPH", "Subgraph"]:
+        src = f"digraph G {{ {kw} SUB {{ a; b; }} }}"
+        (g,) = dot_parser.parse_dot_data(src)
+        subs = g.get_subgraphs()
+        assert len(subs) == 1, src
+        assert subs[0].get_name() == "SUB", src
+
+
 def test_strict_graph_parsing() -> None:
     res = dot_parser.parse_dot_data("strict graph G { a; b; }")
     assert isinstance(res, list)
