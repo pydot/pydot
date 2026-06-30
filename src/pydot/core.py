@@ -15,7 +15,12 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
+
+if TYPE_CHECKING:
+    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
+    # even if not  installed
+    from typing_extensions import Self, TypeAlias
 
 import pydot
 from pydot._vendor import tempfile
@@ -25,7 +30,7 @@ _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
 
 # fmt: off
-GRAPH_ATTRIBUTES = {
+GRAPH_ATTRIBUTES: Final = {
     "Damping", "K", "URL", "aspect", "bb", "bgcolor",
     "center", "charset", "clusterrank", "colorscheme", "comment", "compound",
     "concentrate", "defaultdist", "dim", "dimen", "diredgeconstraints",
@@ -45,7 +50,7 @@ GRAPH_ATTRIBUTES = {
 }
 
 
-EDGE_ATTRIBUTES = {
+EDGE_ATTRIBUTES: Final = {
     "URL", "arrowhead", "arrowsize", "arrowtail",
     "color", "colorscheme", "comment", "constraint", "decorate", "dir",
     "edgeURL", "edgehref", "edgetarget", "edgetooltip", "fontcolor",
@@ -61,7 +66,7 @@ EDGE_ATTRIBUTES = {
 }
 
 
-NODE_ATTRIBUTES = {
+NODE_ATTRIBUTES: Final = {
     "URL", "color", "colorscheme", "comment",
     "distortion", "fillcolor", "fixedsize", "fontcolor", "fontname",
     "fontsize", "group", "height", "id", "image", "imagescale", "label",
@@ -74,7 +79,7 @@ NODE_ATTRIBUTES = {
 }
 
 
-CLUSTER_ATTRIBUTES = {
+CLUSTER_ATTRIBUTES: Final = {
     "K", "URL", "bgcolor", "color", "colorscheme",
     "fillcolor", "fontcolor", "fontname", "fontsize", "label", "labeljust",
     "labelloc", "lheight", "lp", "lwidth", "nojustify", "pencolor",
@@ -83,7 +88,7 @@ CLUSTER_ATTRIBUTES = {
 # fmt: on
 
 
-OUTPUT_FORMATS = {
+OUTPUT_FORMATS: Final = {
     "canon",
     "cmap",
     "cmapx",
@@ -123,7 +128,7 @@ OUTPUT_FORMATS = {
 }
 
 
-DEFAULT_PROGRAMS = {
+DEFAULT_PROGRAMS: Final = {
     "dot",
     "twopi",
     "neato",
@@ -136,7 +141,7 @@ DEFAULT_PROGRAMS = {
 class frozendict(FrozenDict):
     """Deprecated alias for pydot.classes.FrozenDict."""
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         warnings.warn(
             f"{self.__class__.__name__} is deprecated. "
             "Use pydot.classes.FrozenDict instead.",
@@ -276,15 +281,19 @@ def make_quoted(s: str) -> str:
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
-re_dbl_quoted = re.compile(r'^".*"$', re.S)
-re_html = re.compile(r"^<.*>$", re.S)
+re_numeric: Final[re.Pattern[str]] = re.compile(
+    r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$"
+)
+re_dbl_quoted: Final[re.Pattern[str]] = re.compile(r'^".*"$', re.S)
+re_html: Final[re.Pattern[str]] = re.compile(r"^<.*>$", re.S)
 
-id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_]*$")
-id_re_alpha_nums_with_ports = re.compile(
+id_re_alpha_nums: Final[re.Pattern[str]] = re.compile(
+    r"^[_a-zA-Z][a-zA-Z0-9_]*$"
+)
+id_re_alpha_nums_with_ports: Final[re.Pattern[str]] = re.compile(
     r'^[_a-zA-Z][a-zA-Z0-9_:"]*[a-zA-Z0-9_"]+$'
 )
-id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
+id_re_with_port: Final[re.Pattern[str]] = re.compile(r"^([^:]*):([^:]*)$")
 
 
 def any_needs_quotes(s: str) -> bool | None:
@@ -943,8 +952,6 @@ class Edge(Common):
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
 
-TGraph = TypeVar("TGraph", bound="Graph")
-
 
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
@@ -1125,7 +1132,7 @@ class Graph(Common):
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
 
-    def __enter__(self: TGraph) -> TGraph:
+    def __enter__(self) -> Self:
         """Enter the runtime context for this graph.
 
         Enables a nested construction style:
@@ -1675,10 +1682,14 @@ class Dot(Graph):
     the base class 'Graph'.
     """
 
+    shape_files: list[str]
+    formats: set[str]
+    prog: str
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.shape_files: list[str] = []
+        self.shape_files = []
         self.formats = OUTPUT_FORMATS
         self.prog = "dot"
 
@@ -1897,4 +1908,4 @@ __generate_format_methods(Dot)
 
 
 # Type alias for forward-referenced type
-EdgeDefinition = Union[EdgeEndpoint, Node, Subgraph, Cluster]
+EdgeDefinition: TypeAlias = Union[EdgeEndpoint, Node, Subgraph, Cluster]
