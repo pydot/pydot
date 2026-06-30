@@ -1081,6 +1081,11 @@ class Graph(Common):
 
     def set_type(self, graph_type: str) -> None:
         """Set the graph's type, 'graph' or 'digraph'."""
+        if graph_type not in ["graph", "digraph"]:
+            raise pydot.Error(
+                f'Invalid type "{graph_type}". '
+                "Accepted graph types are: graph, digraph"
+            )
         self.obj_dict["type"] = graph_type
 
     def get_type(self) -> str | None:
