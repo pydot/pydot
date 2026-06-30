@@ -697,6 +697,15 @@ def test_bad_graph_type() -> None:
     )
 
 
+def test_set_type_invalid() -> None:
+    g = pydot.Dot(graph_name="Test", graph_type="graph")
+    with pytest.raises(pydot.exceptions.Error) as e:
+        g.set_type("round")
+    assert str(e.value) == (
+        'Invalid type "round".' + " Accepted graph types are: graph, digraph"
+    )
+
+
 def test_sequence() -> None:
     g = pydot.Graph("G")
     for i in range(10):
