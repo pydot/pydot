@@ -952,6 +952,7 @@ class Edge(Common):
 
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
 
+
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
 
