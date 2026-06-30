@@ -753,7 +753,8 @@ class Node(Common):
 
         # No point in having default nodes that don't set any attributes...
         if (
-            node in ("graph", "node", "edge")
+            isinstance(node, str)
+            and node.lower() in ("graph", "node", "edge")
             and len(self.obj_dict.get("attributes", {})) == 0
         ):
             return ""
@@ -1003,14 +1004,17 @@ class Graph(Common):
         if obj_dict is None:
             self.obj_dict["attributes"] = dict(attrs)
 
-            if graph_type not in ["graph", "digraph"]:
+            if not isinstance(graph_type, str) or graph_type.lower() not in [
+                "graph",
+                "digraph",
+            ]:
                 raise pydot.Error(
                     f'Invalid type "{graph_type}". '
                     "Accepted graph types are: graph, digraph"
                 )
 
             self.obj_dict["name"] = graph_name
-            self.obj_dict["type"] = graph_type
+            self.obj_dict["type"] = graph_type.lower()
 
             self.obj_dict["strict"] = strict
             self.obj_dict["suppress_disconnected"] = suppress_disconnected
@@ -1081,12 +1085,15 @@ class Graph(Common):
 
     def set_type(self, graph_type: str) -> None:
         """Set the graph's type, 'graph' or 'digraph'."""
-        if graph_type not in ["graph", "digraph"]:
+        if not isinstance(graph_type, str) or graph_type.lower() not in [
+            "graph",
+            "digraph",
+        ]:
             raise pydot.Error(
                 f'Invalid type "{graph_type}". '
                 "Accepted graph types are: graph, digraph"
             )
-        self.obj_dict["type"] = graph_type
+        self.obj_dict["type"] = graph_type.lower()
 
     def get_type(self) -> str | None:
         """Get the graph's type, 'graph' or 'digraph'."""
