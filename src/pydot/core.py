@@ -1529,7 +1529,7 @@ class Graph(Common):
         skip_disconnected = self.get_suppress_disconnected()
         simplify = self.get_simplify()
 
-        for idx, obj in obj_list:
+        for _, obj in obj_list:
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
 
