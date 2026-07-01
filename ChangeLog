@@ -9,7 +9,11 @@ Pydot versions since 1.4.2 adhere to [PEP 440-style semantic versioning]
 4.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixed:
+- Escape double quotes embedded in node and edge identifiers. (#561)
+  Such an identifier was emitted raw and unescaped, producing invalid DOT:
+  a standalone node became unparseable and an edge silently corrupted into
+  three unrelated nodes on round-trip.
 
 
 4.0.1 (2025-06-17)
