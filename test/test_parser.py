@@ -207,7 +207,7 @@ def test_plus_concatenation() -> None:
     assert edge.get("arrows") == '"both"'
 
 
-def test_bad_parse(capsys) -> None:
+def test_bad_parse_brace(capsys) -> None:
     src = textwrap.dedent(r"""
         graph G {
             a -- b;
@@ -216,7 +216,24 @@ def test_bad_parse(capsys) -> None:
     expected = textwrap.dedent("""
         {{[{foo:bar:baz}]}}};
         ^
-    Expected rbrace, found '{'  (at char 27), (line:4, col:5)
+    Expected '}', found '{'  (at char 27), (line:4, col:5)
+    """).strip()
+    res = dot_parser.parse_dot_data(src)
+    assert res is None
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected
+
+
+def test_bad_parse_bracket(capsys) -> None:
+    src = textwrap.dedent(r"""
+        graph G {
+            a -- b;
+            node [shape=box;
+        }""")
+    expected = textwrap.dedent("""
+        node [shape=box;
+             ^
+    Expected '}', found '['  (at char 32), (line:4, col:10)
     """).strip()
     res = dot_parser.parse_dot_data(src)
     assert res is None
