@@ -30,6 +30,7 @@ from pyparsing import (
     ParserElement,
     ParseResults,
     QuotedString,
+    Suppress,
     Token,
     Word,
     autoname_elements,
@@ -264,17 +265,6 @@ def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
 class GraphParser:
     """Pyparsing grammar for graphviz 'dot' syntax."""
 
-    # punctuation
-    colon: ClassVar[Literal] = Literal(":")
-    lbrace: ClassVar[Literal] = Literal("{")
-    rbrace: ClassVar[Literal] = Literal("}")
-    lbrack: ClassVar[Literal] = Literal("[")
-    rbrack: ClassVar[Literal] = Literal("]")
-    equals: ClassVar[Literal] = Literal("=")
-    comma: ClassVar[Literal] = Literal(",")
-    semi: ClassVar[Literal] = Literal(";")
-    minus: ClassVar[Literal] = Literal("-")
-
     # keywords
     strict_: ClassVar[CaselessLiteral] = CaselessLiteral("strict")
     graph_: ClassVar[CaselessLiteral] = CaselessLiteral("graph")
@@ -306,7 +296,7 @@ class GraphParser:
     ).set_parse_action(push_ID)
 
     float_number: ClassVar[Combine] = Combine(
-        Optional(minus) + OneOrMore(Word(nums + "."))
+        Optional("-") + OneOrMore(Word(nums + "."))
     )
 
     righthand_id: ClassVar[ParserElement] = float_number | ID
@@ -316,15 +306,15 @@ class GraphParser:
     ).set_parse_action(push_node_id)
 
     a_list: ClassVar[OneOrMore] = OneOrMore(
-        ID + Optional(equals + righthand_id) + Optional(comma.suppress())
+        ID + Optional("=" + righthand_id) + Optional(Suppress(","))
     )
     attr_list: ClassVar[OneOrMore] = OneOrMore(
-        lbrack.suppress() + Optional(a_list) + rbrack.suppress()
+        Suppress("[") + Optional(a_list) + Suppress("]")
     )
     node_stmt: ClassVar[ParserElement] = (
         node_id("name")
         + Optional(attr_list("attr_l"))
-        + Optional(semi.suppress())
+        + Optional(Suppress(";"))
     )
 
     default_type: ClassVar[ParserElement] = graph_ | node_ | edge_
@@ -334,10 +324,10 @@ class GraphParser:
 
     stmt_list: ClassVar[Forward] = Forward()
     graph_stmt: ClassVar[Group] = Group(
-        lbrace.suppress()
+        Suppress("{")
         + Optional(stmt_list)
-        + rbrace.suppress()
-        + Optional(semi.suppress())
+        + Suppress("}")
+        + Optional(Suppress(";"))
     )
 
     subgraph: ClassVar[ParserElement] = (
@@ -350,7 +340,7 @@ class GraphParser:
         edge_point, delim=edgeop, min=2
     )("endpoints") + Optional(attr_list("attr_l"))
 
-    assignment: ClassVar[ParserElement] = ID + equals + righthand_id
+    assignment: ClassVar[ParserElement] = ID + "=" + righthand_id
 
     stmt: ClassVar[ParserElement] = (
         assignment
@@ -360,7 +350,7 @@ class GraphParser:
         | graph_stmt
         | node_stmt
     )
-    stmt_list <<= OneOrMore(stmt + Optional(semi.suppress()))
+    stmt_list <<= OneOrMore(stmt + Optional(Suppress(";")))
 
     graph_type: ClassVar[ParserElement] = digraph_ | graph_
     parser: ClassVar[ParserElement] = OneOrMore(
