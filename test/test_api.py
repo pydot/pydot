@@ -127,6 +127,32 @@ def test_edge_compare_bad() -> None:
     assert "edge to a non-edge" in str(err)
 
 
+def test_edge_missing_endpoints() -> None:
+    # No source and/or destination given: should raise.
+    with pytest.raises(pydot.Error):
+        pydot.Edge()
+    with pytest.raises(pydot.Error):
+        pydot.Edge(color="grey50")
+    with pytest.raises(pydot.Error):
+        pydot.Edge("a")
+    with pytest.raises(pydot.Error):
+        pydot.Edge(src="a")
+    with pytest.raises(pydot.Error):
+        pydot.Edge(dst="b")
+
+    # Source and destination given, including explicit empty strings
+    # (a legal, if unusual, node name): should work fine.
+    assert pydot.Edge("a", "b").get_source() == "a"
+    assert pydot.Edge("a", "b").get_destination() == "b"
+    assert pydot.Edge(("a", "b")).get_source() == "a"
+    assert pydot.Edge(["a", "b"]).get_source() == "a"
+    assert pydot.Edge("", "").get_source() == ""
+    assert pydot.Edge("", "").get_destination() == ""
+    assert pydot.Edge("", "b").get_source() == ""
+    assert pydot.Edge("a", "").get_destination() == ""
+    assert pydot.Edge(("", "")).get_source() == ""
+
+
 def test_subgraphs() -> None:
     g = pydot.Graph()
     s = pydot.Subgraph("foo")
