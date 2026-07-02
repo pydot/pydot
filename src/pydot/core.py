@@ -796,8 +796,8 @@ class Edge(Common):
 
     def __init__(
         self,
-        src: EdgeDefinition | Sequence[EdgeDefinition] = "",
-        dst: EdgeDefinition = "",
+        src: EdgeDefinition | Sequence[EdgeDefinition] | None = None,
+        dst: EdgeDefinition | None = None,
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
@@ -805,6 +805,12 @@ class Edge(Common):
         if obj_dict is None:
             if isinstance(src, (list, tuple)):
                 _src, _dst = src[0:2]
+            elif src is None or dst is None:
+                raise pydot.Error(
+                    "Edge requires a source and destination, e.g. "
+                    "Edge('a', 'b'). For default attributes, use "
+                    "Graph.set_edge_defaults()."
+                )
             else:
                 _src, _dst = src, dst
 
