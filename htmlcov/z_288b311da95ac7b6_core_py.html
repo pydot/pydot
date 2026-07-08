@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.3">coverage.py v7.14.3</a>,
-            created at 2026-07-02 11:47 +0000
+            created at 2026-07-08 19:52 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -86,7 +86,7 @@
     <p class="pln"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="com">#</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="com"># SPDX-License-Identifier: MIT</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="str">"""An interface to GraphViz."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="str">"""An interface to Graphviz."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">from</span> <span class="nam">__future__</span> <span class="key">import</span> <span class="nam">annotations</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -390,7 +390,7 @@
     <p class="run"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t">    <span class="key">if</span> <span class="nam">s</span><span class="op">.</span><span class="nam">isdigit</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t">        <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t308" href="#t308">308</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t">    <span class="com"># MIXED-aphanumeric values need quoting if they *start* with a digit</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t">    <span class="com"># mixed alphanumeric values need quoting if they *start* with a digit</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t310" href="#t310">310</a></span><span class="t">    <span class="key">if</span> <span class="nam">s</span><span class="op">.</span><span class="nam">isalnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t311" href="#t311">311</a></span><span class="t">        <span class="key">return</span> <span class="nam">s</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">.</span><span class="nam">isdigit</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t312" href="#t312">312</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -409,7 +409,7 @@
     <p class="pln"><span class="n"><a id="t325" href="#t325">325</a></span><span class="t">    <span class="str">"""Checks whether a string is a dot language ID.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t326" href="#t326">326</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t327" href="#t327">327</a></span><span class="t"><span class="str">    It will check whether the string is solely composed</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t328" href="#t328">328</a></span><span class="t"><span class="str">    by the characters allowed in an ID or not.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t328" href="#t328">328</a></span><span class="t"><span class="str">    of the characters allowed in an ID or not.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t329" href="#t329">329</a></span><span class="t"><span class="str">    If the string is one of the reserved keywords it will</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t330" href="#t330">330</a></span><span class="t"><span class="str">    need quotes too but the user will need to add them</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t331" href="#t331">331</a></span><span class="t"><span class="str">    manually.</span>&nbsp;</span><span class="r"></span></p>
@@ -1062,7 +1062,7 @@
     <p class="pln"><span class="n"><a id="t978" href="#t978">978</a></span><span class="t"><span class="str">        graph any disconnected nodes.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t979" href="#t979">979</a></span><span class="t"><span class="str">    simplify:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t980" href="#t980">980</a></span><span class="t"><span class="str">        if True it will avoid displaying equal edges, i.e.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t981" href="#t981">981</a></span><span class="t"><span class="str">        only one edge between two nodes. removing the</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t981" href="#t981">981</a></span><span class="t"><span class="str">        only one edge between two nodes, removing the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t982" href="#t982">982</a></span><span class="t"><span class="str">        duplicated ones.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t983" href="#t983">983</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t984" href="#t984">984</a></span><span class="t"><span class="str">    All the attributes defined in the Graphviz dot language should</span>&nbsp;</span><span class="r"></span></p>
@@ -1161,7 +1161,7 @@
     <p class="pln"><span class="n"><a id="t1077" href="#t1077">1077</a></span><span class="t">        <span class="str">"""Set whether to simplify or not.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1078" href="#t1078">1078</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1079" href="#t1079">1079</a></span><span class="t"><span class="str">        If True it will avoid displaying equal edges, i.e.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1080" href="#t1080">1080</a></span><span class="t"><span class="str">        only one edge between two nodes. removing the</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1080" href="#t1080">1080</a></span><span class="t"><span class="str">        only one edge between two nodes, removing the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1081" href="#t1081">1081</a></span><span class="t"><span class="str">        duplicated ones.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1082" href="#t1082">1082</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1083" href="#t1083">1083</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">obj_dict</span><span class="op">[</span><span class="str">"simplify"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">simplify</span>&nbsp;</span><span class="r"></span></p>
@@ -1358,7 +1358,7 @@
     <p class="run"><span class="n"><a id="t1274" href="#t1274">1274</a></span><span class="t">    <span class="key">def</span> <span class="nam">add_edge</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">graph_edge</span><span class="op">:</span> <span class="nam">Edge</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1275" href="#t1275">1275</a></span><span class="t">        <span class="str">"""Adds an edge object to the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1276" href="#t1276">1276</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1277" href="#t1277">1277</a></span><span class="t"><span class="str">        It takes a edge object as its only argument and returns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1277" href="#t1277">1277</a></span><span class="t"><span class="str">        It takes an edge object as its only argument and returns</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1278" href="#t1278">1278</a></span><span class="t"><span class="str">        None.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1279" href="#t1279">1279</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1280" href="#t1280">1280</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">graph_edge</span><span class="op">,</span> <span class="nam">Edge</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1384,7 +1384,7 @@
     <p class="pln"><span class="n"><a id="t1300" href="#t1300">1300</a></span><span class="t">        <span class="str">"""Delete an edge from the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1301" href="#t1301">1301</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1302" href="#t1302">1302</a></span><span class="t"><span class="str">        Given an edge's (source, destination) node names all</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1303" href="#t1303">1303</a></span><span class="t"><span class="str">        matching edges(s) will be deleted if 'index' is not</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1303" href="#t1303">1303</a></span><span class="t"><span class="str">        matching edge(s) will be deleted if 'index' is not</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1304" href="#t1304">1304</a></span><span class="t"><span class="str">        specified or set to None.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1305" href="#t1305">1305</a></span><span class="t"><span class="str">        If there are several matching edges and 'index' is</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1306" href="#t1306">1306</a></span><span class="t"><span class="str">        given, only the edge in that position will be deleted.</span>&nbsp;</span><span class="r"></span></p>
@@ -1422,7 +1422,7 @@
     <p class="run"><span class="n"><a id="t1338" href="#t1338">1338</a></span><span class="t">        <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1339" href="#t1339">1339</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1340" href="#t1340">1340</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_edge</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">src_or_list</span><span class="op">:</span> <span class="nam">Any</span><span class="op">,</span> <span class="nam">dst</span><span class="op">:</span> <span class="nam">Any</span> <span class="op">=</span> <span class="key">None</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">Edge</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1341" href="#t1341">1341</a></span><span class="t">        <span class="str">"""Retrieved an edge from the graph.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1341" href="#t1341">1341</a></span><span class="t">        <span class="str">"""Retrieve an edge from the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1342" href="#t1342">1342</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1343" href="#t1343">1343</a></span><span class="t"><span class="str">        Given an edge's source and destination the corresponding</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1344" href="#t1344">1344</a></span><span class="t"><span class="str">        Edge instance(s) will be returned.</span>&nbsp;</span><span class="r"></span></p>
@@ -1476,7 +1476,7 @@
     <p class="run"><span class="n"><a id="t1392" href="#t1392">1392</a></span><span class="t">        <span class="key">return</span> <span class="nam">edge_objs</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1393" href="#t1393">1393</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1394" href="#t1394">1394</a></span><span class="t">    <span class="key">def</span> <span class="nam">add_subgraph</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">sgraph</span><span class="op">:</span> <span class="nam">Subgraph</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1395" href="#t1395">1395</a></span><span class="t">        <span class="str">"""Adds an subgraph object to the graph.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1395" href="#t1395">1395</a></span><span class="t">        <span class="str">"""Adds a subgraph object to the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1396" href="#t1396">1396</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1397" href="#t1397">1397</a></span><span class="t"><span class="str">        It takes a subgraph object as its only argument and returns</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1398" href="#t1398">1398</a></span><span class="t"><span class="str">        None.</span>&nbsp;</span><span class="r"></span></p>
@@ -1500,7 +1500,7 @@
     <p class="run"><span class="n"><a id="t1416" href="#t1416">1416</a></span><span class="t">        <span class="nam">sgraph</span><span class="op">.</span><span class="nam">set_parent_graph</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">get_parent_graph</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1417" href="#t1417">1417</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1418" href="#t1418">1418</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_subgraph</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">name</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">Subgraph</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1419" href="#t1419">1419</a></span><span class="t">        <span class="str">"""Retrieved a subgraph from the graph.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1419" href="#t1419">1419</a></span><span class="t">        <span class="str">"""Retrieve a subgraph from the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1420" href="#t1420">1420</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1421" href="#t1421">1421</a></span><span class="t"><span class="str">        Given a subgraph's name the corresponding</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1422" href="#t1422">1422</a></span><span class="t"><span class="str">        Subgraph instance will be returned.</span>&nbsp;</span><span class="r"></span></p>
@@ -1854,7 +1854,7 @@
     <p class="pln"><span class="n"><a id="t1770" href="#t1770">1770</a></span><span class="t">        <span class="str">"""Writes a graph to a file.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1771" href="#t1771">1771</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1772" href="#t1772">1772</a></span><span class="t"><span class="str">        Given a filename 'path' it will open/create and truncate</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1773" href="#t1773">1773</a></span><span class="t"><span class="str">        such file and write on it a representation of the graph</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1773" href="#t1773">1773</a></span><span class="t"><span class="str">        that file and write to it a representation of the graph</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1774" href="#t1774">1774</a></span><span class="t"><span class="str">        defined by the dot object in the format specified by</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1775" href="#t1775">1775</a></span><span class="t"><span class="str">        'format' and using the encoding specified by `encoding` for text.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1776" href="#t1776">1776</a></span><span class="t"><span class="str">        The format 'raw' is used to dump the string representation</span>&nbsp;</span><span class="r"></span></p>
@@ -1895,10 +1895,10 @@
     <p class="run run2"><span class="n"><a id="t1811" href="#t1811">1811</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="nam">bytes</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1812" href="#t1812">1812</a></span><span class="t">        <span class="str">"""Creates and returns a binary image for the graph.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1813" href="#t1813">1813</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1814" href="#t1814">1814</a></span><span class="t"><span class="str">        create will write the graph to a tempworary dot file in the</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1814" href="#t1814">1814</a></span><span class="t"><span class="str">        create will write the graph to a temporary dot file in the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1815" href="#t1815">1815</a></span><span class="t"><span class="str">        encoding specified by `encoding` and process it with the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1816" href="#t1816">1816</a></span><span class="t"><span class="str">        program given by 'prog' (which defaults to 'twopi'), reading</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1817" href="#t1817">1817</a></span><span class="t"><span class="str">        the binary image output and return it as `bytes`.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1817" href="#t1817">1817</a></span><span class="t"><span class="str">        the binary image output and returning it as `bytes`.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1818" href="#t1818">1818</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1819" href="#t1819">1819</a></span><span class="t"><span class="str">        There's also the preferred possibility of using:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1820" href="#t1820">1820</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1912,7 +1912,7 @@
     <p class="pln"><span class="n"><a id="t1828" href="#t1828">1828</a></span><span class="t"><span class="str">          - `create_dia()`</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1829" href="#t1829">1829</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1830" href="#t1830">1830</a></span><span class="t"><span class="str">        If 'prog' is a list, instead of a string,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1831" href="#t1831">1831</a></span><span class="t"><span class="str">        then the fist item is expected to be the program name,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1831" href="#t1831">1831</a></span><span class="t"><span class="str">        then the first item is expected to be the program name,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1832" href="#t1832">1832</a></span><span class="t"><span class="str">        followed by any optional command-line arguments for it:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1833" href="#t1833">1833</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1834" href="#t1834">1834</a></span><span class="t"><span class="str">            [ 'twopi', '-Tdot', '-s10' ]</span>&nbsp;</span><span class="r"></span></p>
@@ -1920,12 +1920,12 @@
     <p class="pln"><span class="n"><a id="t1836" href="#t1836">1836</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1837" href="#t1837">1837</a></span><span class="t"><span class="str">        @param prog: either:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1838" href="#t1838">1838</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1839" href="#t1839">1839</a></span><span class="t"><span class="str">          - name of GraphViz executable that</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1839" href="#t1839">1839</a></span><span class="t"><span class="str">          - name of Graphviz executable that</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1840" href="#t1840">1840</a></span><span class="t"><span class="str">            can be found in the `$PATH`, or</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1841" href="#t1841">1841</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1842" href="#t1842">1842</a></span><span class="t"><span class="str">          - absolute path to GraphViz executable.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1842" href="#t1842">1842</a></span><span class="t"><span class="str">          - absolute path to Graphviz executable.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1843" href="#t1843">1843</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1844" href="#t1844">1844</a></span><span class="t"><span class="str">          If you have added GraphViz to the `$PATH` and</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1844" href="#t1844">1844</a></span><span class="t"><span class="str">          If you have added Graphviz to the `$PATH` and</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1845" href="#t1845">1845</a></span><span class="t"><span class="str">          use its executables as installed</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1846" href="#t1846">1846</a></span><span class="t"><span class="str">          (without renaming any of them)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1847" href="#t1847">1847</a></span><span class="t"><span class="str">          then their names are:</span>&nbsp;</span><span class="r"></span></p>
@@ -1943,7 +1943,7 @@
     <p class="pln"><span class="n"><a id="t1859" href="#t1859">1859</a></span><span class="t"><span class="str">          The `$PATH` is inherited from `os.env['PATH']` and</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1860" href="#t1860">1860</a></span><span class="t"><span class="str">          passed to `subprocess.Popen` using the `env` argument.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1861" href="#t1861">1861</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1862" href="#t1862">1862</a></span><span class="t"><span class="str">          If you haven't added GraphViz to your `$PATH` on Windows,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1862" href="#t1862">1862</a></span><span class="t"><span class="str">          If you haven't added Graphviz to your `$PATH` on Windows,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1863" href="#t1863">1863</a></span><span class="t"><span class="str">          then you may want to give the absolute path to the</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1864" href="#t1864">1864</a></span><span class="t"><span class="str">          executable (for example, to `dot.exe`) in `prog`.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1865" href="#t1865">1865</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
@@ -2020,7 +2020,7 @@
             <a class="nav" href="z_288b311da95ac7b6_dot_parser_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.3">coverage.py v7.14.3</a>,
-            created at 2026-07-02 11:47 +0000
+            created at 2026-07-08 19:52 +0000
         </p>
     </div>
 </footer>
