@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""An interface to GraphViz."""
+"""An interface to Graphviz."""
 
 from __future__ import annotations
 
@@ -306,7 +306,7 @@ def any_needs_quotes(s: str) -> bool | None:
     if s.isdigit():
         return False
 
-    # MIXED-aphanumeric values need quoting if they *start* with a digit
+    # mixed alphanumeric values need quoting if they *start* with a digit
     if s.isalnum():
         return s[0].isdigit()
 
@@ -325,7 +325,7 @@ def id_needs_quotes(s: str) -> bool:
     """Checks whether a string is a dot language ID.
 
     It will check whether the string is solely composed
-    by the characters allowed in an ID or not.
+    of the characters allowed in an ID or not.
     If the string is one of the reserved keywords it will
     need quotes too but the user will need to add them
     manually.
@@ -978,7 +978,7 @@ class Graph(Common):
         graph any disconnected nodes.
     simplify:
         if True it will avoid displaying equal edges, i.e.
-        only one edge between two nodes. removing the
+        only one edge between two nodes, removing the
         duplicated ones.
 
     All the attributes defined in the Graphviz dot language should
@@ -1077,7 +1077,7 @@ class Graph(Common):
         """Set whether to simplify or not.
 
         If True it will avoid displaying equal edges, i.e.
-        only one edge between two nodes. removing the
+        only one edge between two nodes, removing the
         duplicated ones.
         """
         self.obj_dict["simplify"] = simplify
@@ -1274,7 +1274,7 @@ class Graph(Common):
     def add_edge(self, graph_edge: Edge) -> None:
         """Adds an edge object to the graph.
 
-        It takes a edge object as its only argument and returns
+        It takes an edge object as its only argument and returns
         None.
         """
         if not isinstance(graph_edge, Edge):
@@ -1300,7 +1300,7 @@ class Graph(Common):
         """Delete an edge from the graph.
 
         Given an edge's (source, destination) node names all
-        matching edges(s) will be deleted if 'index' is not
+        matching edge(s) will be deleted if 'index' is not
         specified or set to None.
         If there are several matching edges and 'index' is
         given, only the edge in that position will be deleted.
@@ -1338,7 +1338,7 @@ class Graph(Common):
         return False
 
     def get_edge(self, src_or_list: Any, dst: Any = None) -> list[Edge]:
-        """Retrieved an edge from the graph.
+        """Retrieve an edge from the graph.
 
         Given an edge's source and destination the corresponding
         Edge instance(s) will be returned.
@@ -1392,7 +1392,7 @@ class Graph(Common):
         return edge_objs
 
     def add_subgraph(self, sgraph: Subgraph) -> None:
-        """Adds an subgraph object to the graph.
+        """Adds a subgraph object to the graph.
 
         It takes a subgraph object as its only argument and returns
         None.
@@ -1416,7 +1416,7 @@ class Graph(Common):
         sgraph.set_parent_graph(self.get_parent_graph())
 
     def get_subgraph(self, name: str) -> list[Subgraph]:
-        """Retrieved a subgraph from the graph.
+        """Retrieve a subgraph from the graph.
 
         Given a subgraph's name the corresponding
         Subgraph instance will be returned.
@@ -1770,7 +1770,7 @@ class Dot(Graph):
         """Writes a graph to a file.
 
         Given a filename 'path' it will open/create and truncate
-        such file and write on it a representation of the graph
+        that file and write to it a representation of the graph
         defined by the dot object in the format specified by
         'format' and using the encoding specified by `encoding` for text.
         The format 'raw' is used to dump the string representation
@@ -1811,10 +1811,10 @@ class Dot(Graph):
     ) -> bytes:
         """Creates and returns a binary image for the graph.
 
-        create will write the graph to a tempworary dot file in the
+        create will write the graph to a temporary dot file in the
         encoding specified by `encoding` and process it with the
         program given by 'prog' (which defaults to 'twopi'), reading
-        the binary image output and return it as `bytes`.
+        the binary image output and returning it as `bytes`.
 
         There's also the preferred possibility of using:
 
@@ -1828,7 +1828,7 @@ class Dot(Graph):
           - `create_dia()`
 
         If 'prog' is a list, instead of a string,
-        then the fist item is expected to be the program name,
+        then the first item is expected to be the program name,
         followed by any optional command-line arguments for it:
 
             [ 'twopi', '-Tdot', '-s10' ]
@@ -1836,12 +1836,12 @@ class Dot(Graph):
 
         @param prog: either:
 
-          - name of GraphViz executable that
+          - name of Graphviz executable that
             can be found in the `$PATH`, or
 
-          - absolute path to GraphViz executable.
+          - absolute path to Graphviz executable.
 
-          If you have added GraphViz to the `$PATH` and
+          If you have added Graphviz to the `$PATH` and
           use its executables as installed
           (without renaming any of them)
           then their names are:
@@ -1859,7 +1859,7 @@ class Dot(Graph):
           The `$PATH` is inherited from `os.env['PATH']` and
           passed to `subprocess.Popen` using the `env` argument.
 
-          If you haven't added GraphViz to your `$PATH` on Windows,
+          If you haven't added Graphviz to your `$PATH` on Windows,
           then you may want to give the absolute path to the
           executable (for example, to `dot.exe`) in `prog`.
         """

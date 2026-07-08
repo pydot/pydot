@@ -4,9 +4,8 @@
 
 """Graphviz's dot language parser.
 
-The dotparser parses GraphViz files in
-dot and dot files and transforms them
-into a class representation defined by `pydot`.
+The dotparser parses Graphviz dot data and dot files and
+transforms them into a class representation defined by `pydot`.
 
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
