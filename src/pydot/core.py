@@ -489,32 +489,33 @@ def graph_from_adjacency_matrix(
     as they can evaluate to True or False.
     """
 
-    node_orig = 1
-
     if directed:
         graph = Dot(graph_type="digraph")
     else:
         graph = Dot(graph_type="graph")
 
-    for row in matrix:
+    for row_index, row in enumerate(matrix):
         if not directed:
-            skip = matrix.index(row)
-            r = row[skip:]
+            # An undirected edge is represented once in the upper triangle.
+            skip = row_index
+            edge_values = row[skip:]
         else:
             skip = 0
-            r = row
+            edge_values = row
+
+        # Node IDs use 1-based matrix positions.
+        source_node = row_index + 1
         node_dest = skip + 1
 
-        for e in r:
-            if e:
+        for edge_value in edge_values:
+            if edge_value:
                 graph.add_edge(
                     Edge(
-                        f"{node_prefix}{node_orig}",
+                        f"{node_prefix}{source_node}",
                         f"{node_prefix}{node_dest}",
                     )
                 )
             node_dest += 1
-        node_orig += 1
 
     return graph
 

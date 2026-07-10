@@ -830,17 +830,45 @@ def test_edge_point_object_cluster() -> None:
 
 
 def test_graph_from_adjacency_matrix() -> None:
+    # Directed graphs use every truthy cell.
     g = pydot.graph_from_adjacency_matrix(
         [[0, 1, 0], [1, 0, 0], [0, 1, 1]], directed=True
     )
     s = " ".join(g.to_string().split())
     assert s == "digraph G { 1 -> 2; 2 -> 1; 3 -> 2; 3 -> 3; }"
 
+    # Undirected graphs use only the upper triangle.
     g = pydot.graph_from_adjacency_matrix(
         [[0, 1, 0], [1, 0, 0], [0, 0, 1]], directed=False
     )
     s = " ".join(g.to_string().split())
     assert s == "graph G { 1 -- 2; 3 -- 3; }"
+
+    # Equal rows don't break logic.
+    g = pydot.graph_from_adjacency_matrix([[1, 1], [1, 1]], directed=False)
+    s = " ".join(g.to_string().split())
+    assert s == "graph G { 1 -- 1; 1 -- 2; 2 -- 2; }"
+
+    # Equal rows don't break logic #2.
+    g = pydot.graph_from_adjacency_matrix(
+        [[0, 0, 0], [0, 1, 1], [0, 1, 1]], directed=False
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "graph G { 2 -- 2; 2 -- 3; 3 -- 3; }"
+
+    # Any truthy value creates an edge.
+    g = pydot.graph_from_adjacency_matrix(
+        [[False, "edge"], [1.5, None]], directed=True
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "digraph G { 1 -> 2; 2 -> 1; }"
+
+    # Any truthy value creates a prefixed edge.
+    g = pydot.graph_from_adjacency_matrix(
+        [[False, "edge"], [1.5, None]], node_prefix="node_", directed=True
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "digraph G { node_1 -> node_2; node_2 -> node_1; }"
 
 
 def test_graph_from_incidence_matrix() -> None:
