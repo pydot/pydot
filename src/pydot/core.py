@@ -1911,8 +1911,8 @@ class Dot(Graph):
             print(
                 f'"{prog}" with args {arguments} returned code: {code}\n\n'
                 f"stdout, stderr:\n"
-                f" {stdout_data.decode('utf-8')}\n"
-                f" {stderr_data.decode('utf-8')}\n"
+                f" {stdout_data.decode('utf-8', errors='replace')}\n"
+                f" {stderr_data.decode('utf-8', errors='replace')}\n"
             )
 
         assert process.returncode == 0, (

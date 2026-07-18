@@ -10,6 +10,7 @@ import copy
 import os
 import pickle
 import string
+import subprocess
 import textwrap
 import typing as T
 from pathlib import Path
@@ -502,6 +503,23 @@ def test_dot_bad_input() -> None:
     with pytest.raises(AssertionError) as e:
         g.create(format="svg")
     assert "returned code: 1" in str(e)
+
+
+def test_dot_bad_exit_with_non_utf8_diagnostics(monkeypatch, capsys) -> None:
+    process = subprocess.CompletedProcess([], returncode=1)
+    # Ensure non-UTF-8 error output does not cause UnicodeDecodeError
+    monkeypatch.setattr(
+        pydot.core,
+        "call_graphviz",
+        lambda **kwargs: (b"graph: caf\xe9", b"error: caf\xe9", process),
+    )
+
+    with pytest.raises(AssertionError):
+        pydot.Dot().create(format="svg")
+
+    captured = capsys.readouterr()
+    assert "graph: caf\ufffd" in captured.out
+    assert "error: caf\ufffd" in captured.out
 
 
 def test_graph_add_node_argument_type() -> None:
