@@ -11,13 +11,13 @@
 | src/pydot/exceptions.py         |        8 |        0 |        0 |        0 |     100% |           |
 | test/\_\_init\_\_.py            |        0 |        0 |        0 |        0 |     100% |           |
 | test/conftest.py                |        6 |        0 |        0 |        0 |     100% |           |
-| test/test\_api.py               |      605 |        0 |       12 |        0 |     100% |           |
+| test/test\_api.py               |      614 |        0 |       12 |        0 |     100% |           |
 | test/test\_classes.py           |       48 |        0 |        0 |        0 |     100% |           |
 | test/test\_context\_managers.py |       81 |        0 |        2 |        0 |     100% |           |
 | test/test\_logging.py           |       12 |        0 |        0 |        0 |     100% |           |
 | test/test\_parser.py            |      124 |        0 |        8 |        0 |     100% |           |
 | test/test\_pydot.py             |       80 |        0 |        4 |        0 |     100% |           |
-| **TOTAL**                       | **1917** |    **0** |  **354** |    **0** | **100%** |           |
+| **TOTAL**                       | **1926** |    **0** |  **354** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
