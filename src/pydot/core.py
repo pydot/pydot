@@ -448,9 +448,6 @@ def graph_from_edges(
     The edge list has to be a list of tuples representing
     the nodes connected by the edge.
     The values can be anything: bool, int, float, str.
-
-    If the graph is undirected by default, it is only
-    calculated from one of the symmetric halves of the matrix.
     """
 
     if directed:
