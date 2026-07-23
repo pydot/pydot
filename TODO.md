@@ -99,10 +99,6 @@ behavior.
   `True` or `False` according to success, but it always returns `True` and
   failures raise. **Fix:** document the actual return and failure behavior.
 
-- `src/pydot/core.py:1807`, `Dot.create()` docstring — it says `prog` defaults
-  to `twopi`, but the default is `self.prog`, initially `dot`. **Fix:** document
-  the actual default.
-
 - `src/pydot/core.py:964,1585,1639`, `Graph`, `Subgraph`, and `Cluster`
   docstrings — they say `suppress_disconnected=False` removes disconnected
   nodes. The default keeps them; `True` removes them. **Fix:** correct all three
@@ -151,6 +147,8 @@ behavior.
 
 ## DONE
 
+- `src/pydot/core.py:1807`, `Dot.create()` bad default documentation —
+  corrected.
 - `src/pydot/core.py:443`, `graph_from_edges()` bad docstring — removed.
 - `src/pydot/core.py:1914-1915`, `Dot.create()` failure reporting — decode
   non-UTF-8 bytes from Graphviz stdout and stderr with replacement error

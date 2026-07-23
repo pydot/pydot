@@ -1811,8 +1811,8 @@ class Dot(Graph):
 
         create will write the graph to a temporary dot file in the
         encoding specified by `encoding` and process it with the
-        program given by 'prog' (which defaults to 'twopi'), reading
-        the binary image output and returning it as `bytes`.
+        program given by 'prog' (which defaults to `self.prog`, initially
+        'dot'), reading the binary image output and returning it as `bytes`.
 
         There's also the preferred possibility of using:
 
