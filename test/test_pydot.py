@@ -122,14 +122,8 @@ def _load_test_cases(casedir: str) -> Generator[tuple[str, str, str]]:
     path = os.path.join(_test_root, casedir)
     dot_files = filter(lambda x: x.endswith(".dot"), os.listdir(path))
 
-    def _case_name(fname: str) -> str:
-        """No str.removesuffix() until Python 3.9."""
-        if sys.version_info < (3, 9):  # pragma: no cover
-            return fname
-        return fname.removesuffix(".dot")
-
     for dot_file in dot_files:
-        yield (_case_name(dot_file), dot_file, path)
+        yield (dot_file.removesuffix(".dot"), dot_file, path)
 
 
 def _compare_images(
