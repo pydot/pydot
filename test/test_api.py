@@ -417,6 +417,77 @@ def test_keywords_with_ports() -> None:
     assert n.get_port() == ":edge"
 
 
+def test_quoted_node_id_with_port() -> None:
+    """Regression test for pydot/pydot#489.
+
+    A quoted node id with a port suffix (e.g. ``"name":p45:nw``) used to
+    swallow the entire string into the name field and lose the port.
+    The name's surrounding quotes are preserved (they're meaningful in
+    DOT — they escape reserved keywords) but the port is now extracted
+    out, the same as for an unquoted id.
+    """
+    n = pydot.Node('"my_name":p45:nw')
+    assert n.get_name() == '"my_name"'
+    assert n.get_port() == ":p45:nw"
+
+    n2 = pydot.Node('"my_name"')
+    assert n2.get_name() == '"my_name"'
+    assert n2.get_port() is None
+
+    n3 = pydot.Node('"graph":edge')
+    assert n3.get_name() == '"graph"'
+    assert n3.get_port() == ":edge"
+
+    # Quoted name containing a colon must not be mis-parsed as having a port
+    n4 = pydot.Node('"a:b"')
+    assert n4.get_name() == '"a:b"'
+    assert n4.get_port() is None
+
+    # Unterminated quote is left untouched
+    n5 = pydot.Node('"unterminated')
+    assert n5.get_name() == '"unterminated'
+    assert n5.get_port() is None
+
+    # Quoted id with trailing non-port text is preserved verbatim,
+    # matching the pre-fix behavior. The new port-extraction logic
+    # only fires when the text after the closing quote starts with
+    # ':', so an input like '"a"b' (a quoted name with stray text)
+    # is left alone rather than silently truncated to '"a"'.
+    n6 = pydot.Node('"a"b')
+    assert n6.get_name() == '"a"b'
+    assert n6.get_port() is None
+
+
+def test_quoted_node_id_with_port_in_edge() -> None:
+    """Regression test for pydot/pydot#552 review feedback (lkk7).
+
+    A quoted node id with a port (e.g. ``"abc":p45``) used to be rendered
+    correctly when used as a standalone node, but when the same node was
+    used as an Edge endpoint the port was dropped during serialization:
+    ``pydot.Edge(pydot.Node('"abc":p45'), 'b')`` produced ``"abc" -- b;``
+    instead of ``"abc":p45 -- b;``. The Edge constructor now propagates
+    the node's port into the endpoint string, so the rendered edge
+    round-trips back to a Node with the same name and port.
+    """
+    n = pydot.Node('"abc":p45')
+    e = pydot.Edge(n, "b")
+    assert e.to_string() == '"abc":p45 -- b;'
+
+    # Round-trip: parse the source back into a Node and confirm name+port.
+    parsed = pydot.Node(e.get_source())
+    assert parsed.get_name() == '"abc"'
+    assert parsed.get_port() == ":p45"
+
+    # Same for the multi-segment port and for the unquoted-keyword port.
+    n_multi = pydot.Node('"my_name":p45:nw')
+    e_multi = pydot.Edge(n_multi, "b")
+    assert e_multi.to_string() == '"my_name":p45:nw -- b;'
+
+    n_kw = pydot.Node("graph:edge")
+    e_kw = pydot.Edge("a", n_kw)
+    assert e_kw.to_string() == 'a -- "graph":"edge";'
+
+
 @pytest.mark.xfail(reason="The port logic is a broken mess")
 def test_broken_port_handling() -> None:
     n = pydot.Node("edge:12", color="red")
