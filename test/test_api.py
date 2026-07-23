@@ -649,6 +649,35 @@ def test_edge_quoting() -> None:
         """)
 
 
+def test_quote_id_with_embedded_double_quote() -> None:
+    """Test that an embedded double quote in an ID is escaped (issue #187).
+
+    A ``"`` embedded in a node name or edge endpoint used to be emitted raw:
+    a standalone node became unparseable and an edge silently corrupted into
+    three unrelated nodes on round-trip.
+    """
+    from pydot.core import quote_id_if_necessary
+
+    # a bare identifier with an embedded quote must be quoted and escaped
+    assert pydot.Node('a"b').to_string() == '"a\\"b";'
+
+    # the edge must survive a round-trip instead of silently corrupting
+    g = pydot.Dot("G", graph_type="digraph")
+    g.add_edge(pydot.Edge('a"b', 'c"d'))
+    assert g.to_string() == textwrap.dedent("""\
+        digraph G {
+        "a\\"b" -> "c\\"d";
+        }
+        """)
+    reparsed = pydot.graph_from_dot_data(g.to_string())
+    assert reparsed is not None
+    assert len(reparsed[0].get_edges()) == 1
+
+    # quoted and plain ports must keep being emitted without extra quoting
+    assert quote_id_if_necessary('a:"b"') == 'a:"b"'
+    assert quote_id_if_necessary("a:b") == "a:b"
+
+
 def test_id_storage_and_lookup() -> None:
     g = pydot.Graph()
     a = pydot.Node("my node")
