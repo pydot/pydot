@@ -972,8 +972,7 @@ class Graph(Common):
     graph_type:
         can be 'graph' or 'digraph'
     suppress_disconnected:
-        defaults to False, which will remove from the
-        graph any disconnected nodes.
+        if True, remove disconnected nodes from the graph.
     simplify:
         if True it will avoid displaying equal edges, i.e.
         only one edge between two nodes, removing the
@@ -1593,8 +1592,7 @@ class Subgraph(Graph):
     graph_name:
         the subgraph's name
     suppress_disconnected:
-        defaults to false, which will remove from the
-        subgraph any disconnected nodes.
+        if True, remove disconnected nodes from the subgraph.
     All the attributes defined in the Graphviz dot language should
     be supported.
 
@@ -1648,8 +1646,7 @@ class Cluster(Graph):
         the cluster's name
         (the string 'cluster_' will be always prepended)
     suppress_disconnected:
-        defaults to false, which will remove from the
-        cluster any disconnected nodes.
+        if True, remove disconnected nodes from the cluster.
     All the attributes defined in the Graphviz dot language should
     be supported.
 
