@@ -1646,7 +1646,7 @@ class Cluster(Graph):
 
     graph_name:
         the cluster's name
-        (the string 'cluster' will be always prepended)
+        (the string 'cluster_' will be always prepended)
     suppress_disconnected:
         defaults to false, which will remove from the
         cluster any disconnected nodes.
