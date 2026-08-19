@@ -1394,9 +1394,7 @@ class Graph(Common):
         It takes a subgraph object as its only argument and returns
         None.
         """
-        if not isinstance(sgraph, Subgraph) and not isinstance(
-            sgraph, Cluster
-        ):
+        if not isinstance(sgraph, Subgraph):
             raise TypeError(
                 "add_subgraph() received a non subgraph class object:"
                 + str(sgraph)
@@ -1631,7 +1629,7 @@ class Subgraph(Graph):
             self.obj_dict["type"] = "subgraph"
 
 
-class Cluster(Graph):
+class Cluster(Subgraph):
     """Class representing a cluster in Graphviz's dot language.
 
     This class implements the methods to work on a representation
@@ -1678,7 +1676,6 @@ class Cluster(Graph):
             **attrs,
         )
         if obj_dict is None:
-            self.obj_dict["type"] = "subgraph"
             self.obj_dict["name"] = quote_id_if_necessary(
                 "cluster_" + graph_name
             )
