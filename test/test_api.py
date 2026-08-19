@@ -10,6 +10,7 @@ import copy
 import os
 import pickle
 import string
+import subprocess
 import textwrap
 import typing as T
 from pathlib import Path
@@ -125,6 +126,32 @@ def test_edge_compare_bad() -> None:
     with pytest.raises(pydot.Error) as err:
         bool(n == e)
     assert "edge to a non-edge" in str(err)
+
+
+def test_edge_missing_endpoints() -> None:
+    # No source and/or destination given: should raise.
+    with pytest.raises(pydot.Error):
+        pydot.Edge()
+    with pytest.raises(pydot.Error):
+        pydot.Edge(color="grey50")
+    with pytest.raises(pydot.Error):
+        pydot.Edge("a")
+    with pytest.raises(pydot.Error):
+        pydot.Edge(src="a")
+    with pytest.raises(pydot.Error):
+        pydot.Edge(dst="b")
+
+    # Source and destination given, including explicit empty strings
+    # (a legal, if unusual, node name): should work fine.
+    assert pydot.Edge("a", "b").get_source() == "a"
+    assert pydot.Edge("a", "b").get_destination() == "b"
+    assert pydot.Edge(("a", "b")).get_source() == "a"
+    assert pydot.Edge(["a", "b"]).get_source() == "a"
+    assert pydot.Edge("", "").get_source() == ""
+    assert pydot.Edge("", "").get_destination() == ""
+    assert pydot.Edge("", "b").get_source() == ""
+    assert pydot.Edge("a", "").get_destination() == ""
+    assert pydot.Edge(("", "")).get_source() == ""
 
 
 def test_subgraphs() -> None:
@@ -344,6 +371,41 @@ def test_keyword_node_id_in_label() -> None:
     assert g.get_nodes()[0].to_string() == 'Node [label="Node"];'
 
 
+def test_keyword_node_id_uppercase_to_string_no_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("NODE"))
+    assert g.get_nodes()[0].to_string() == ""
+
+
+def test_keyword_node_id_uppercase_to_string_with_attributes() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("NODE", shape="box"))
+    assert g.get_nodes()[0].to_string() == "NODE [shape=box];"
+
+
+def test_dot_graph_type_uppercase() -> None:
+    g = pydot.Dot("G", graph_type="DIGRAPH")
+    assert g.get_type() == "digraph"
+
+
+def test_dot_graph_type_mixed_case() -> None:
+    g = pydot.Dot("G", graph_type="Graph")
+    assert g.get_type() == "graph"
+
+
+def test_non_string_graph_type_raises_error() -> None:
+    with pytest.raises(pydot.exceptions.Error):
+        pydot.Dot("G", graph_type=123)
+
+
+def test_int_node_id_to_string() -> None:
+    assert pydot.Node(2).to_string() == "2;"
+
+
+def test_float_node_id_to_string() -> None:
+    assert pydot.Node(2.5).to_string() == "2.5;"
+
+
 def test_keywords_with_ports() -> None:
     g = pydot.Graph("KW")
     g.add_edge(pydot.Edge("graph:edge", "strict:graph"))
@@ -441,6 +503,23 @@ def test_dot_bad_input() -> None:
     with pytest.raises(AssertionError) as e:
         g.create(format="svg")
     assert "returned code: 1" in str(e)
+
+
+def test_dot_bad_exit_with_non_utf8_diagnostics(monkeypatch, capsys) -> None:
+    process = subprocess.CompletedProcess([], returncode=1)
+    # Ensure non-UTF-8 error output does not cause UnicodeDecodeError
+    monkeypatch.setattr(
+        pydot.core,
+        "call_graphviz",
+        lambda **kwargs: (b"graph: caf\xe9", b"error: caf\xe9", process),
+    )
+
+    with pytest.raises(AssertionError):
+        pydot.Dot().create(format="svg")
+
+    captured = capsys.readouterr()
+    assert "graph: caf\ufffd" in captured.out
+    assert "error: caf\ufffd" in captured.out
 
 
 def test_graph_add_node_argument_type() -> None:
@@ -662,6 +741,15 @@ def test_bad_graph_type() -> None:
     )
 
 
+def test_set_type_invalid() -> None:
+    g = pydot.Dot(graph_name="Test", graph_type="graph")
+    with pytest.raises(pydot.exceptions.Error) as e:
+        g.set_type("round")
+    assert str(e.value) == (
+        'Invalid type "round".' + " Accepted graph types are: graph, digraph"
+    )
+
+
 def test_sequence() -> None:
     g = pydot.Graph("G")
     for i in range(10):
@@ -760,17 +848,45 @@ def test_edge_point_object_cluster() -> None:
 
 
 def test_graph_from_adjacency_matrix() -> None:
+    # Directed graphs use every truthy cell.
     g = pydot.graph_from_adjacency_matrix(
         [[0, 1, 0], [1, 0, 0], [0, 1, 1]], directed=True
     )
     s = " ".join(g.to_string().split())
     assert s == "digraph G { 1 -> 2; 2 -> 1; 3 -> 2; 3 -> 3; }"
 
+    # Undirected graphs use only the upper triangle.
     g = pydot.graph_from_adjacency_matrix(
         [[0, 1, 0], [1, 0, 0], [0, 0, 1]], directed=False
     )
     s = " ".join(g.to_string().split())
     assert s == "graph G { 1 -- 2; 3 -- 3; }"
+
+    # Equal rows don't break logic.
+    g = pydot.graph_from_adjacency_matrix([[1, 1], [1, 1]], directed=False)
+    s = " ".join(g.to_string().split())
+    assert s == "graph G { 1 -- 1; 1 -- 2; 2 -- 2; }"
+
+    # Equal rows don't break logic #2.
+    g = pydot.graph_from_adjacency_matrix(
+        [[0, 0, 0], [0, 1, 1], [0, 1, 1]], directed=False
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "graph G { 2 -- 2; 2 -- 3; 3 -- 3; }"
+
+    # Any truthy value creates an edge.
+    g = pydot.graph_from_adjacency_matrix(
+        [[False, "edge"], [1.5, None]], directed=True
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "digraph G { 1 -> 2; 2 -> 1; }"
+
+    # Any truthy value creates a prefixed edge.
+    g = pydot.graph_from_adjacency_matrix(
+        [[False, "edge"], [1.5, None]], node_prefix="node_", directed=True
+    )
+    s = " ".join(g.to_string().split())
+    assert s == "digraph G { node_1 -> node_2; node_2 -> node_1; }"
 
 
 def test_graph_from_incidence_matrix() -> None:

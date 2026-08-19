@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""An interface to GraphViz."""
+"""An interface to Graphviz."""
 
 import logging
 

@@ -4,9 +4,8 @@
 
 """Graphviz's dot language parser.
 
-The dotparser parses GraphViz files in
-dot and dot files and transforms them
-into a class representation defined by `pydot`.
+The dotparser parses Graphviz dot data and dot files and
+transforms them into a class representation defined by `pydot`.
 
 Author: Michael Krause <michael@krause-software.de>
 Fixes by: Ero Carrera <ero.carrera@gmail.com>
@@ -15,7 +14,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar, Final, cast
 
 from pyparsing import (
     CaselessLiteral,
@@ -30,6 +29,7 @@ from pyparsing import (
     ParserElement,
     ParseResults,
     QuotedString,
+    Suppress,
     Token,
     Word,
     autoname_elements,
@@ -52,12 +52,14 @@ _logger.debug("pydot dot_parser module initializing")
 
 
 class P_AttrList:
+    attrs: dict[str, Any]
+
     def __init__(self, toks: ParseResults) -> None:
         self.attrs = {}
         i = 0
 
         while i < len(toks):
-            attrname = toks[i]
+            attrname = cast(str, toks[i])
             if i + 2 < len(toks) and toks[i + 1] == "=":
                 attrvalue = toks[i + 2]
                 i += 3
@@ -73,7 +75,9 @@ class P_AttrList:
 
 
 class DefaultStatement(P_AttrList):
-    def __init__(self, default_type: str, attrs: Any) -> None:
+    default_type: Final[str]
+
+    def __init__(self, default_type: str, attrs: dict[str, Any]) -> None:
         self.default_type = default_type
         self.attrs = attrs
 
@@ -260,89 +264,84 @@ def push_node_stmt(toks: ParseResults) -> pydot.core.Node:
 class GraphParser:
     """Pyparsing grammar for graphviz 'dot' syntax."""
 
-    # punctuation
-    colon = Literal(":")
-    lbrace = Literal("{")
-    rbrace = Literal("}")
-    lbrack = Literal("[")
-    rbrack = Literal("]")
-    equals = Literal("=")
-    comma = Literal(",")
-    semi = Literal(";")
-    minus = Literal("-")
-
     # keywords
-    strict_ = CaselessLiteral("strict")
-    graph_ = CaselessLiteral("graph")
-    digraph_ = CaselessLiteral("digraph")
-    subgraph_ = CaselessLiteral("subgraph")
-    node_ = CaselessLiteral("node")
-    edge_ = CaselessLiteral("edge")
+    strict_: ClassVar[CaselessLiteral] = CaselessLiteral("strict")
+    graph_: ClassVar[CaselessLiteral] = CaselessLiteral("graph")
+    digraph_: ClassVar[CaselessLiteral] = CaselessLiteral("digraph")
+    subgraph_: ClassVar[CaselessLiteral] = CaselessLiteral("subgraph")
+    node_: ClassVar[CaselessLiteral] = CaselessLiteral("node")
+    edge_: ClassVar[CaselessLiteral] = CaselessLiteral("edge")
 
     # token definitions
-    identifier = Word(unicode.BasicMultilingualPlane.alphanums + "_.")
+    identifier: ClassVar[Word] = Word(
+        unicode.BasicMultilingualPlane.alphanums + "_."
+    )
 
-    double_quoted = (
+    double_quoted: ClassVar[ParserElement] = (
         QuotedString('"', multiline=True, unquote_results=False, esc_char="\\")
         .set_results_name("dbl_quoted")
         .set_parse_action(push_dbl_quoted)
     )
 
-    concat_string = DelimitedList(
+    concat_string: ClassVar[DelimitedList] = DelimitedList(
         double_quoted, delim="+", min=2, combine=False
     )
 
-    ID = (
+    ID: ClassVar[ParserElement] = (
         concat_string("concat")
         | double_quoted
         | identifier("ident")
         | HTML().set_results_name("html")
     ).set_parse_action(push_ID)
 
-    float_number = Combine(Optional(minus) + OneOrMore(Word(nums + ".")))
+    float_number: ClassVar[Combine] = Combine(
+        Optional("-") + OneOrMore(Word(nums + "."))
+    )
 
-    righthand_id = float_number | ID
+    righthand_id: ClassVar[ParserElement] = float_number | ID
 
-    node_id = DelimitedList(
+    node_id: ClassVar[ParserElement] = DelimitedList(
         Group(ID("id_part")), delim=":", min=1, max=3, combine=False
     ).set_parse_action(push_node_id)
 
-    a_list = OneOrMore(
-        ID + Optional(equals + righthand_id) + Optional(comma.suppress())
+    a_list: ClassVar[OneOrMore] = OneOrMore(
+        ID + Optional("=" + righthand_id) + Optional(Suppress(","))
     )
-    attr_list = OneOrMore(
-        lbrack.suppress() + Optional(a_list) + rbrack.suppress()
+    attr_list: ClassVar[OneOrMore] = OneOrMore(
+        Suppress("[") + Optional(a_list) + Suppress("]")
     )
-    node_stmt = (
+    node_stmt: ClassVar[ParserElement] = (
         node_id("name")
         + Optional(attr_list("attr_l"))
-        + Optional(semi.suppress())
+        + Optional(Suppress(";"))
     )
 
-    default_type = graph_ | node_ | edge_
-    default_stmt = default_type("dtype") + attr_list("attr_l")
+    default_type: ClassVar[ParserElement] = graph_ | node_ | edge_
+    default_stmt: ClassVar[ParserElement] = default_type("dtype") + attr_list(
+        "attr_l"
+    )
 
-    stmt_list = Forward()
-    graph_stmt = Group(
-        lbrace.suppress()
+    stmt_list: ClassVar[Forward] = Forward()
+    graph_stmt: ClassVar[Group] = Group(
+        Suppress("{")
         + Optional(stmt_list)
-        + rbrace.suppress()
-        + Optional(semi.suppress())
+        + Suppress("}")
+        + Optional(Suppress(";"))
     )
 
-    subgraph = (
+    subgraph: ClassVar[ParserElement] = (
         subgraph_("keyword") + Optional(ID("id")) + graph_stmt("contents")
     )
 
-    edgeop = Literal("--") | Literal("->")
-    edge_point = subgraph | graph_stmt | node_id
-    edge_stmt = DelimitedList(edge_point, delim=edgeop, min=2)(
-        "endpoints"
-    ) + Optional(attr_list("attr_l"))
+    edgeop: ClassVar[ParserElement] = Literal("--") | Literal("->")
+    edge_point: ClassVar[ParserElement] = subgraph | graph_stmt | node_id
+    edge_stmt: ClassVar[ParserElement] = DelimitedList(
+        edge_point, delim=edgeop, min=2
+    )("endpoints") + Optional(attr_list("attr_l"))
 
-    assignment = ID + equals + righthand_id
+    assignment: ClassVar[ParserElement] = ID + "=" + righthand_id
 
-    stmt = (
+    stmt: ClassVar[ParserElement] = (
         assignment
         | edge_stmt
         | default_stmt
@@ -350,10 +349,10 @@ class GraphParser:
         | graph_stmt
         | node_stmt
     )
-    stmt_list <<= OneOrMore(stmt + Optional(semi.suppress()))
+    stmt_list <<= OneOrMore(stmt + Optional(Suppress(";")))
 
-    graph_type = digraph_ | graph_
-    parser = OneOrMore(
+    graph_type: ClassVar[ParserElement] = digraph_ | graph_
+    parser: ClassVar[ParserElement] = OneOrMore(
         Group(
             Optional(strict_("strict"))
             + graph_type("gtype")
@@ -362,9 +361,9 @@ class GraphParser:
         )
     ).set_results_name("graphs")
 
-    single_line_comment = Group("//" + rest_of_line) | Group(
-        "#" + rest_of_line
-    )
+    single_line_comment: ClassVar[ParserElement] = Group(
+        "//" + rest_of_line
+    ) | Group("#" + rest_of_line)
 
     # actions
 
@@ -405,4 +404,4 @@ def parse_dot_data(s: str) -> list[pydot.core.Dot] | None:
 
 
 # Backwards compatibility
-graphparser: ParserElement = GraphParser.parser
+graphparser: Final[ParserElement] = GraphParser.parser

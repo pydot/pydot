@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""An interface to GraphViz."""
+"""An interface to Graphviz."""
 
 from __future__ import annotations
 
@@ -15,7 +15,12 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import Any, Sequence, Union, cast
+from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
+
+if TYPE_CHECKING:
+    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
+    # even if not  installed
+    from typing_extensions import Self, TypeAlias
 
 import pydot
 from pydot._vendor import tempfile
@@ -31,7 +36,7 @@ from pydot.mixins import (
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
 
-OUTPUT_FORMATS = {
+OUTPUT_FORMATS: Final = {
     "canon",
     "cmap",
     "cmapx",
@@ -70,7 +75,7 @@ OUTPUT_FORMATS = {
 }
 
 
-DEFAULT_PROGRAMS = {
+DEFAULT_PROGRAMS: Final = {
     "dot",
     "twopi",
     "neato",
@@ -83,7 +88,7 @@ DEFAULT_PROGRAMS = {
 class frozendict(FrozenDict):
     """Deprecated alias for pydot.classes.FrozenDict."""
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         warnings.warn(
             f"{self.__class__.__name__} is deprecated. "
             "Use pydot.classes.FrozenDict instead.",
@@ -205,15 +210,19 @@ def make_quoted(s: str) -> str:
 
 dot_keywords = ["graph", "subgraph", "digraph", "node", "edge", "strict"]
 
-re_numeric = re.compile(r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$")
-re_dbl_quoted = re.compile(r'^".*"$', re.S)
-re_html = re.compile(r"^<.*>$", re.S)
+re_numeric: Final[re.Pattern[str]] = re.compile(
+    r"^([0-9]+\.?[0-9]*|[0-9]*\.[0-9]+)$"
+)
+re_dbl_quoted: Final[re.Pattern[str]] = re.compile(r'^".*"$', re.S)
+re_html: Final[re.Pattern[str]] = re.compile(r"^<.*>$", re.S)
 
-id_re_alpha_nums = re.compile(r"^[_a-zA-Z][a-zA-Z0-9_]*$")
-id_re_alpha_nums_with_ports = re.compile(
+id_re_alpha_nums: Final[re.Pattern[str]] = re.compile(
+    r"^[_a-zA-Z][a-zA-Z0-9_]*$"
+)
+id_re_alpha_nums_with_ports: Final[re.Pattern[str]] = re.compile(
     r'^[_a-zA-Z][a-zA-Z0-9_:"]*[a-zA-Z0-9_"]+$'
 )
-id_re_with_port = re.compile(r"^([^:]*):([^:]*)$")
+id_re_with_port: Final[re.Pattern[str]] = re.compile(r"^([^:]*):([^:]*)$")
 
 
 def any_needs_quotes(s: str) -> bool | None:
@@ -226,7 +235,7 @@ def any_needs_quotes(s: str) -> bool | None:
     if s.isdigit():
         return False
 
-    # MIXED-aphanumeric values need quoting if they *start* with a digit
+    # mixed alphanumeric values need quoting if they *start* with a digit
     if s.isalnum():
         return s[0].isdigit()
 
@@ -245,7 +254,7 @@ def id_needs_quotes(s: str) -> bool:
     """Checks whether a string is a dot language ID.
 
     It will check whether the string is solely composed
-    by the characters allowed in an ID or not.
+    of the characters allowed in an ID or not.
     If the string is one of the reserved keywords it will
     need quotes too but the user will need to add them
     manually.
@@ -368,9 +377,6 @@ def graph_from_edges(
     The edge list has to be a list of tuples representing
     the nodes connected by the edge.
     The values can be anything: bool, int, float, str.
-
-    If the graph is undirected by default, it is only
-    calculated from one of the symmetric halves of the matrix.
     """
 
     if directed:
@@ -409,32 +415,33 @@ def graph_from_adjacency_matrix(
     as they can evaluate to True or False.
     """
 
-    node_orig = 1
-
     if directed:
         graph = Dot(graph_type="digraph")
     else:
         graph = Dot(graph_type="graph")
 
-    for row in matrix:
+    for row_index, row in enumerate(matrix):
         if not directed:
-            skip = matrix.index(row)
-            r = row[skip:]
+            # An undirected edge is represented once in the upper triangle.
+            skip = row_index
+            edge_values = row[skip:]
         else:
             skip = 0
-            r = row
+            edge_values = row
+
+        # Node IDs use 1-based matrix positions.
+        source_node = row_index + 1
         node_dest = skip + 1
 
-        for e in r:
-            if e:
+        for edge_value in edge_values:
+            if edge_value:
                 graph.add_edge(
                     Edge(
-                        f"{node_prefix}{node_orig}",
+                        f"{node_prefix}{source_node}",
                         f"{node_prefix}{node_dest}",
                     )
                 )
             node_dest += 1
-        node_orig += 1
 
     return graph
 
@@ -675,7 +682,8 @@ class Node(Common, NodeMixin):
 
         # No point in having default nodes that don't set any attributes...
         if (
-            node in ("graph", "node", "edge")
+            isinstance(node, str)
+            and node.lower() in ("graph", "node", "edge")
             and len(self.obj_dict.get("attributes", {})) == 0
         ):
             return ""
@@ -714,8 +722,8 @@ class Edge(Common, EdgeMixin):
 
     def __init__(
         self,
-        src: EdgeDefinition | Sequence[EdgeDefinition] = "",
-        dst: EdgeDefinition = "",
+        src: EdgeDefinition | Sequence[EdgeDefinition] | None = None,
+        dst: EdgeDefinition | None = None,
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
@@ -723,6 +731,12 @@ class Edge(Common, EdgeMixin):
         if obj_dict is None:
             if isinstance(src, (list, tuple)):
                 _src, _dst = src[0:2]
+            elif src is None or dst is None:
+                raise pydot.Error(
+                    "Edge requires a source and destination, e.g. "
+                    "Edge('a', 'b'). For default attributes, use "
+                    "Graph.set_edge_defaults()."
+                )
             else:
                 _src, _dst = src, dst
 
@@ -883,11 +897,10 @@ class Graph(Common, GraphMixin):
     graph_type:
         can be 'graph' or 'digraph'
     suppress_disconnected:
-        defaults to False, which will remove from the
-        graph any disconnected nodes.
+        if True, remove disconnected nodes from the graph.
     simplify:
         if True it will avoid displaying equal edges, i.e.
-        only one edge between two nodes. removing the
+        only one edge between two nodes, removing the
         duplicated ones.
 
     All the attributes defined in the Graphviz dot language should
@@ -919,14 +932,17 @@ class Graph(Common, GraphMixin):
         if obj_dict is None:
             self.obj_dict["attributes"] = dict(attrs)
 
-            if graph_type not in ["graph", "digraph"]:
+            if not isinstance(graph_type, str) or graph_type.lower() not in [
+                "graph",
+                "digraph",
+            ]:
                 raise pydot.Error(
                     f'Invalid type "{graph_type}". '
                     "Accepted graph types are: graph, digraph"
                 )
 
             self.obj_dict["name"] = graph_name
-            self.obj_dict["type"] = graph_type
+            self.obj_dict["type"] = graph_type.lower()
 
             self.obj_dict["strict"] = strict
             self.obj_dict["suppress_disconnected"] = suppress_disconnected
@@ -983,7 +999,7 @@ class Graph(Common, GraphMixin):
         """Set whether to simplify or not.
 
         If True it will avoid displaying equal edges, i.e.
-        only one edge between two nodes. removing the
+        only one edge between two nodes, removing the
         duplicated ones.
         """
         self.obj_dict["simplify"] = simplify
@@ -997,7 +1013,15 @@ class Graph(Common, GraphMixin):
 
     def set_type(self, graph_type: str) -> None:
         """Set the graph's type, 'graph' or 'digraph'."""
-        self.obj_dict["type"] = graph_type
+        if not isinstance(graph_type, str) or graph_type.lower() not in [
+            "graph",
+            "digraph",
+        ]:
+            raise pydot.Error(
+                f'Invalid type "{graph_type}". '
+                "Accepted graph types are: graph, digraph"
+            )
+        self.obj_dict["type"] = graph_type.lower()
 
     def get_type(self) -> str | None:
         """Get the graph's type, 'graph' or 'digraph'."""
@@ -1047,6 +1071,28 @@ class Graph(Common, GraphMixin):
         seq: int = self.obj_dict.get("current_child_sequence", 1)
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
+
+    def __enter__(self) -> Self:
+        """Enter the runtime context for this graph.
+
+        Enables a nested construction style:
+
+            with Dot("A") as dot:
+                with Subgraph("B") as sg:
+                    sg.add_node(Node("N1"))
+                    dot.add_subgraph(sg)
+
+        This is syntactic sugar only with no side effects.
+        """
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit the runtime context for this graph.
+
+        Performs no cleanup.
+        Always returns `None`, so exceptions are never suppressed.
+        """
+        return
 
     def add_node(self, graph_node: Node) -> None:
         """Adds a node object to the graph.
@@ -1150,7 +1196,7 @@ class Graph(Common, GraphMixin):
     def add_edge(self, graph_edge: Edge) -> None:
         """Adds an edge object to the graph.
 
-        It takes a edge object as its only argument and returns
+        It takes an edge object as its only argument and returns
         None.
         """
         if not isinstance(graph_edge, Edge):
@@ -1176,7 +1222,7 @@ class Graph(Common, GraphMixin):
         """Delete an edge from the graph.
 
         Given an edge's (source, destination) node names all
-        matching edges(s) will be deleted if 'index' is not
+        matching edge(s) will be deleted if 'index' is not
         specified or set to None.
         If there are several matching edges and 'index' is
         given, only the edge in that position will be deleted.
@@ -1214,7 +1260,7 @@ class Graph(Common, GraphMixin):
         return False
 
     def get_edge(self, src_or_list: Any, dst: Any = None) -> list[Edge]:
-        """Retrieved an edge from the graph.
+        """Retrieve an edge from the graph.
 
         Given an edge's source and destination the corresponding
         Edge instance(s) will be returned.
@@ -1268,7 +1314,7 @@ class Graph(Common, GraphMixin):
         return edge_objs
 
     def add_subgraph(self, sgraph: Subgraph) -> None:
-        """Adds an subgraph object to the graph.
+        """Adds a subgraph object to the graph.
 
         It takes a subgraph object as its only argument and returns
         None.
@@ -1292,7 +1338,7 @@ class Graph(Common, GraphMixin):
         sgraph.set_parent_graph(self.get_parent_graph())
 
     def get_subgraph(self, name: str) -> list[Subgraph]:
-        """Retrieved a subgraph from the graph.
+        """Retrieve a subgraph from the graph.
 
         Given a subgraph's name the corresponding
         Subgraph instance will be returned.
@@ -1417,7 +1463,7 @@ class Graph(Common, GraphMixin):
         skip_disconnected = self.get_suppress_disconnected()
         simplify = self.get_simplify()
 
-        for idx, obj in obj_list:
+        for _, obj in obj_list:
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
 
@@ -1468,8 +1514,7 @@ class Subgraph(Graph):
     graph_name:
         the subgraph's name
     suppress_disconnected:
-        defaults to false, which will remove from the
-        subgraph any disconnected nodes.
+        if True, remove disconnected nodes from the subgraph.
     All the attributes defined in the Graphviz dot language should
     be supported.
 
@@ -1521,10 +1566,9 @@ class Cluster(Graph, ClusterMixin):
 
     graph_name:
         the cluster's name
-        (the string 'cluster' will be always prepended)
+        (the string 'cluster_' will be always prepended)
     suppress_disconnected:
-        defaults to false, which will remove from the
-        cluster any disconnected nodes.
+        if True, remove disconnected nodes from the cluster.
     All the attributes defined in the Graphviz dot language should
     be supported.
 
@@ -1570,10 +1614,14 @@ class Dot(Graph):
     the base class 'Graph'.
     """
 
+    shape_files: list[str]
+    formats: set[str]
+    prog: str
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.shape_files: list[str] = []
+        self.shape_files = []
         self.formats = OUTPUT_FORMATS
         self.prog = "dot"
 
@@ -1636,7 +1684,7 @@ class Dot(Graph):
         """Writes a graph to a file.
 
         Given a filename 'path' it will open/create and truncate
-        such file and write on it a representation of the graph
+        that file and write to it a representation of the graph
         defined by the dot object in the format specified by
         'format' and using the encoding specified by `encoding` for text.
         The format 'raw' is used to dump the string representation
@@ -1677,10 +1725,10 @@ class Dot(Graph):
     ) -> bytes:
         """Creates and returns a binary image for the graph.
 
-        create will write the graph to a tempworary dot file in the
+        create will write the graph to a temporary dot file in the
         encoding specified by `encoding` and process it with the
-        program given by 'prog' (which defaults to 'twopi'), reading
-        the binary image output and return it as `bytes`.
+        program given by 'prog' (which defaults to `self.prog`, initially
+        'dot'), reading the binary image output and returning it as `bytes`.
 
         There's also the preferred possibility of using:
 
@@ -1694,7 +1742,7 @@ class Dot(Graph):
           - `create_dia()`
 
         If 'prog' is a list, instead of a string,
-        then the fist item is expected to be the program name,
+        then the first item is expected to be the program name,
         followed by any optional command-line arguments for it:
 
             [ 'twopi', '-Tdot', '-s10' ]
@@ -1702,12 +1750,12 @@ class Dot(Graph):
 
         @param prog: either:
 
-          - name of GraphViz executable that
+          - name of Graphviz executable that
             can be found in the `$PATH`, or
 
-          - absolute path to GraphViz executable.
+          - absolute path to Graphviz executable.
 
-          If you have added GraphViz to the `$PATH` and
+          If you have added Graphviz to the `$PATH` and
           use its executables as installed
           (without renaming any of them)
           then their names are:
@@ -1725,7 +1773,7 @@ class Dot(Graph):
           The `$PATH` is inherited from `os.env['PATH']` and
           passed to `subprocess.Popen` using the `env` argument.
 
-          If you haven't added GraphViz to your `$PATH` on Windows,
+          If you haven't added Graphviz to your `$PATH` on Windows,
           then you may want to give the absolute path to the
           executable (for example, to `dot.exe`) in `prog`.
         """
@@ -1776,8 +1824,8 @@ class Dot(Graph):
             print(
                 f'"{prog}" with args {arguments} returned code: {code}\n\n'
                 f"stdout, stderr:\n"
-                f" {stdout_data.decode('utf-8')}\n"
-                f" {stderr_data.decode('utf-8')}\n"
+                f" {stdout_data.decode('utf-8', errors='replace')}\n"
+                f" {stderr_data.decode('utf-8', errors='replace')}\n"
             )
 
         assert process.returncode == 0, (
@@ -1792,4 +1840,4 @@ __generate_format_methods(Dot)
 
 
 # Type alias for forward-referenced type
-EdgeDefinition = Union[EdgeEndpoint, Node, Subgraph, Cluster]
+EdgeDefinition: TypeAlias = Union[EdgeEndpoint, Node, Subgraph, Cluster]
