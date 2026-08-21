@@ -1546,6 +1546,13 @@ class Graph(Common):
                 node_str = node.to_string(
                     indent=indent, indent_level=indent_level + 1
                 )
+
+                # A default-attribute statement that sets no attributes
+                # renders as the empty string. Emitting a newline for it
+                # would leave a blank line behind.
+                if not node_str:
+                    continue
+
                 graph.append(f"{node_str}\n")
 
             elif obj["type"] == "edge":
