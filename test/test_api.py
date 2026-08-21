@@ -847,6 +847,61 @@ def test_edge_point_object_cluster() -> None:
     assert g.get_edges()[0].to_string() == "cluster_a -> cluster_b;"
 
 
+def test_get_node_by_object() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    n = pydot.Node("a")
+    g.add_node(n)
+    assert [node.get_name() for node in g.get_node(n)] == ["a"]
+    assert [node.get_name() for node in g.get_node("a")] == ["a"]
+
+
+def test_get_edge_by_node_object() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    n1, n2 = pydot.Node("n1"), pydot.Node("n2")
+    g.add_node(n1)
+    g.add_node(n2)
+    g.add_edge(pydot.Edge(src=n1, dst=n2))
+    assert [e.to_string() for e in g.get_edge(n1, n2)] == ["n1 -> n2;"]
+
+
+def test_get_edge_by_node_object_list() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    n1, n2 = pydot.Node("n1"), pydot.Node("n2")
+    g.add_edge(pydot.Edge(n1, n2))
+    assert [e.to_string() for e in g.get_edge([n1, n2])] == ["n1 -> n2;"]
+
+
+def test_get_edge_by_subgraph_object() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    a, b = pydot.Subgraph("a"), pydot.Cluster("b")
+    g.add_edge(pydot.Edge(a, b))
+    assert [e.to_string() for e in g.get_edge(a, b)] == ["a -> cluster_b;"]
+
+
+def test_get_edge_by_object_undirected_reversed() -> None:
+    # An undirected graph matches either orientation, and returns the
+    # edge as it was stored.
+    g = pydot.Graph("testgraph", graph_type="graph")
+    n1, n2 = pydot.Node("n1"), pydot.Node("n2")
+    g.add_edge(pydot.Edge(n1, n2))
+    assert [e.to_string() for e in g.get_edge(n2, n1)] == ["n1 -- n2;"]
+
+
+def test_get_edge_by_name_still_works() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    g.add_edge(pydot.Edge("n1", "n2"))
+    assert [e.to_string() for e in g.get_edge("n1", "n2")] == ["n1 -> n2;"]
+    assert g.get_edge("n1", "nope") == []
+
+
+def test_del_edge_by_object_matches_get_edge() -> None:
+    g = pydot.Graph("testgraph", graph_type="digraph")
+    n1, n2 = pydot.Node("n1"), pydot.Node("n2")
+    g.add_edge(pydot.Edge(n1, n2))
+    assert g.del_edge(n1, n2) is True
+    assert g.get_edge(n1, n2) == []
+
+
 def test_graph_from_adjacency_matrix() -> None:
     # Directed graphs use every truthy cell.
     g = pydot.graph_from_adjacency_matrix(

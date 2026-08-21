@@ -958,6 +958,21 @@ class Edge(Common):
 __generate_attribute_methods(Edge, EDGE_ATTRIBUTES)
 
 
+def name_of(obj: Any) -> Any:
+    """Return the name of a `Node`, `Subgraph` or `Cluster`.
+
+    Any other value is returned unchanged, so that names, numbers and
+    `FrozenDict` endpoints keep working as lookup keys.
+
+    Nodes and edges are stored under their name, because `Edge` reduces
+    its endpoints to names on construction. Lookups therefore have to
+    apply the same reduction to find them again.
+    """
+    if isinstance(obj, (Node, Subgraph)):
+        return str(obj.get_name())
+    return obj
+
+
 class Graph(Common):
     """Class representing a graph in Graphviz's dot language.
 
@@ -1215,8 +1230,7 @@ class Graph(Common):
         If nodes are deleted it returns True. If no action
         is taken it returns False.
         """
-        if isinstance(name, Node):
-            name = name.get_name()
+        name = name_of(name)
 
         if name in self.obj_dict["nodes"]:
             if index is not None and index < len(self.obj_dict["nodes"][name]):
@@ -1228,16 +1242,18 @@ class Graph(Common):
 
         return False
 
-    def get_node(self, name: str) -> list[Node]:
+    def get_node(self, name: str | Node) -> list[Node]:
         """Retrieve a node from the graph.
 
-        Given a node's name the corresponding Node
-        instance will be returned.
+        Given a node's name, or a `Node` instance, the corresponding
+        Node instance will be returned.
 
         If one or more nodes exist with that name a list of
         Node instances is returned.
         An empty list is returned otherwise.
         """
+        name = name_of(name)
+
         match = []
 
         if name in self.obj_dict["nodes"]:
@@ -1316,11 +1332,7 @@ class Graph(Common):
         else:
             src, dst = src_or_list, dst
 
-        if isinstance(src, Node):
-            src = src.get_name()
-
-        if isinstance(dst, Node):
-            dst = dst.get_name()
+        src, dst = name_of(src), name_of(dst)
 
         if (src, dst) in self.obj_dict["edges"]:
             if index is not None and index < len(
@@ -1340,16 +1352,19 @@ class Graph(Common):
         Given an edge's source and destination the corresponding
         Edge instance(s) will be returned.
 
+        Endpoints may be given as names or as the `Node`, `Subgraph`
+        or `Cluster` instances that `Edge` itself accepts.
+
         If one or more edges exist with that source and destination
         a list of Edge instances is returned.
         An empty list is returned otherwise.
         """
         if isinstance(src_or_list, (list, tuple)) and dst is None:
-            edge_points = tuple(src_or_list)
-            edge_points_reverse = (edge_points[1], edge_points[0])
+            edge_points = tuple(name_of(ep) for ep in src_or_list)
         else:
-            edge_points = (src_or_list, dst)
-            edge_points_reverse = (dst, src_or_list)
+            edge_points = (name_of(src_or_list), name_of(dst))
+
+        edge_points_reverse = (edge_points[1], edge_points[0])
 
         match = []
 
