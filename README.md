@@ -160,7 +160,7 @@ graph.get_node("b")[0].set_shape("box")
 
 ### 3. Output
 
-Here are three different output options:
+Here are four different output options:
 
 #### Generate an image
 
@@ -199,6 +199,24 @@ There are two different DOT strings you can retrieve:
   # Or, save it as a DOT-file:
   graph.write_dot("output_graphviz.dot")
   ```
+
+#### Display in a Jupyter notebook
+
+To render the graph below a notebook cell:
+
+```python
+from IPython.display import SVG
+
+SVG(graph.create_svg())
+```
+
+Or, as a bitmap:
+
+```python
+from IPython.display import Image
+
+Image(graph.create_png())
+```
 
 #### Convert to a NetworkX graph
 
