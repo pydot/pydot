@@ -202,8 +202,7 @@ There are two different DOT strings you can retrieve:
 
 #### Display in a Jupyter notebook
 
-Pass the output of a `create_*` method to the matching IPython display
-class to render the graph below a notebook cell:
+To render the graph below a notebook cell:
 
 ```python
 from IPython.display import SVG
@@ -211,16 +210,13 @@ from IPython.display import SVG
 SVG(graph.create_svg())
 ```
 
-SVG keeps the graph sharp at any zoom level and keeps the text
-selectable. For a bitmap instead, use `Image` with `create_png()`:
+Or, as a bitmap:
 
 ```python
 from IPython.display import Image
 
 Image(graph.create_png())
 ```
-
-Both call Graphviz, so they render the graph as Graphviz lays it out.
 
 #### Convert to a NetworkX graph
 
