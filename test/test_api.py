@@ -619,6 +619,17 @@ def test_quote_id_with_embedded_double_quote() -> None:
         """)
 
 
+@pytest.mark.xfail(reason="We mishandle two-colon (id:port:compass) endpoints")
+def test_edge_with_port_and_compass() -> None:
+    g = pydot.Graph("G")
+    e = pydot.Edge("foo.bar:5:sw", '"red/blue":4:"nw"')
+    g.add_edge(e)
+    assert g.to_string() == textwrap.dedent("""\
+        digraph G {
+        "foo.bar":5:sw -> "red/blue":4:"nw";
+        }
+        """)
+
 
 def test_id_storage_and_lookup() -> None:
     g = pydot.Graph()
