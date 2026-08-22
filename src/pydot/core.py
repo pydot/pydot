@@ -291,7 +291,7 @@ id_re_alpha_nums: Final[re.Pattern[str]] = re.compile(
     r"^[_a-zA-Z][a-zA-Z0-9_]*$"
 )
 id_re_alpha_nums_with_ports: Final[re.Pattern[str]] = re.compile(
-    r'^[_a-zA-Z][a-zA-Z0-9_:"]*[a-zA-Z0-9_"]+$'
+    r"^[_a-zA-Z][a-zA-Z0-9_:]*[a-zA-Z0-9_]+$"
 )
 id_re_with_port: Final[re.Pattern[str]] = re.compile(r"^([^:]*):([^:]*)$")
 
