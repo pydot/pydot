@@ -1547,9 +1547,7 @@ class Graph(Common):
                     indent=indent, indent_level=indent_level + 1
                 )
 
-                # A default-attribute statement that sets no attributes
-                # renders as the empty string. Emitting a newline for it
-                # would leave a blank line behind.
+                # May be empty, avoid blank line
                 if not node_str:
                     continue
 

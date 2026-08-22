@@ -388,7 +388,7 @@ def test_suppressed_default_stmt_leaves_no_blank_line() -> None:
     g.add_node(pydot.Node("NODE"))
     g.add_node(pydot.Node("EDGE"))
     g.add_edge(pydot.Edge("NODE", "EDGE"))
-    assert g.to_string() == ('digraph testgraph {\n"NODE" -> "EDGE";\n}\n')
+    assert g.to_string() == 'digraph testgraph {\n"NODE" -> "EDGE";\n}\n'
 
 
 def test_default_stmt_with_attributes_still_emitted() -> None:
@@ -396,7 +396,7 @@ def test_default_stmt_with_attributes_still_emitted() -> None:
     g.set_node_defaults(shape="box")
     g.add_node(pydot.Node("a"))
     g.add_node(pydot.Node("node"))
-    assert g.to_string() == ("digraph testgraph {\nnode [shape=box];\na;\n}\n")
+    assert g.to_string() == "digraph testgraph {\nnode [shape=box];\na;\n}\n"
 
 
 def test_dot_graph_type_uppercase() -> None:
