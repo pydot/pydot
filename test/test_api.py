@@ -383,6 +383,22 @@ def test_keyword_node_id_uppercase_to_string_with_attributes() -> None:
     assert g.get_nodes()[0].to_string() == "NODE [shape=box];"
 
 
+def test_suppressed_default_stmt_leaves_no_blank_line() -> None:
+    g = pydot.Dot("testgraph", graph_type="digraph")
+    g.add_node(pydot.Node("NODE"))
+    g.add_node(pydot.Node("EDGE"))
+    g.add_edge(pydot.Edge("NODE", "EDGE"))
+    assert g.to_string() == 'digraph testgraph {\n"NODE" -> "EDGE";\n}\n'
+
+
+def test_default_stmt_with_attributes_still_emitted() -> None:
+    g = pydot.Dot("testgraph", graph_type="digraph")
+    g.set_node_defaults(shape="box")
+    g.add_node(pydot.Node("a"))
+    g.add_node(pydot.Node("node"))
+    assert g.to_string() == "digraph testgraph {\nnode [shape=box];\na;\n}\n"
+
+
 def test_dot_graph_type_uppercase() -> None:
     g = pydot.Dot("G", graph_type="DIGRAPH")
     assert g.get_type() == "digraph"
