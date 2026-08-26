@@ -1041,6 +1041,28 @@ class Graph(Common):
     def __str__(self) -> str:
         return self.to_string()
 
+    def __enter__(self) -> Self:
+        """Enter the runtime context for this graph.
+
+        Enables a nested construction style:
+
+            with Dot("A") as dot:
+                with Subgraph("B") as sg:
+                    sg.add_node(Node("N1"))
+                    dot.add_subgraph(sg)
+
+        This is syntactic sugar only with no side effects.
+        """
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit the runtime context for this graph.
+
+        Performs no cleanup.
+        Always returns `None`, so exceptions are never suppressed.
+        """
+        return
+
     def get_graph_type(self) -> str | None:
         return self.obj_dict["type"]  # type: ignore
 
@@ -1146,28 +1168,6 @@ class Graph(Common):
         seq: int = self.obj_dict.get("current_child_sequence", 1)
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
-
-    def __enter__(self) -> Self:
-        """Enter the runtime context for this graph.
-
-        Enables a nested construction style:
-
-            with Dot("A") as dot:
-                with Subgraph("B") as sg:
-                    sg.add_node(Node("N1"))
-                    dot.add_subgraph(sg)
-
-        This is syntactic sugar only with no side effects.
-        """
-        return self
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """Exit the runtime context for this graph.
-
-        Performs no cleanup.
-        Always returns `None`, so exceptions are never suppressed.
-        """
-        return
 
     def add_node(self, graph_node: Node) -> None:
         """Adds a node object to the graph.
