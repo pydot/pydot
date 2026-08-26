@@ -720,13 +720,13 @@ class Node(Common):
     def __str__(self) -> str:
         return self.to_string()
 
-    def set_name(self, node_name: str | None) -> None:
+    def set_name(self, node_name: str | int | float | bool) -> None:
         """Set the node's name."""
-        self.obj_dict["name"] = node_name
+        self.obj_dict["name"] = str(node_name)
 
     def get_name(self) -> str:
         """Get the node's name."""
-        return self.obj_dict["name"]  # type: ignore
+        return str(self.obj_dict["name"])
 
     def get_port(self) -> str | None:
         """Get the node's port."""
