@@ -690,7 +690,7 @@ class Node(Common):
 
     def __init__(
         self,
-        name: str = "",
+        name: str | int | float | bool = "",
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
