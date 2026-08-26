@@ -17,14 +17,15 @@ import sys
 import warnings
 from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
 
-if TYPE_CHECKING:
-    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
-    # even if not  installed
-    from typing_extensions import Self, TypeAlias
-
 import pydot
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
+
+if TYPE_CHECKING:
+    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
+    # even if not installed
+    from typing_extensions import Self, TypeAlias
+
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
