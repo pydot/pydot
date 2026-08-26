@@ -577,7 +577,7 @@ class Common:
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
 
-    def set_parent_graph(self, parent_graph: Common | None) -> None:
+    def set_parent_graph(self, parent_graph: Graph | None) -> None:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
