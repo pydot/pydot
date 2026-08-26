@@ -18,6 +18,7 @@ from pathlib import Path
 import pytest
 
 import pydot
+import pydot.core
 import pydot.exceptions
 from pydot._vendor import tempfile
 
@@ -59,6 +60,7 @@ def test_boolean_attribute() -> None:
 def test_attribute_with_implicit_value() -> None:
     d = 'digraph {\na -> b[label="hi", decorate];\n}'
     graphs = pydot.graph_from_dot_data(d)
+    assert graphs is not None
     (g,) = graphs
     attrs = g.get_edges()[0].get_attributes()
 
@@ -262,6 +264,7 @@ def test_unicode_ids() -> None:
     assert g.get_edges()[0].get_source() == node1
     assert g.get_edges()[0].get_destination() == node2
     graphs = pydot.graph_from_dot_data(g.to_string())
+    assert graphs is not None
     (g2,) = graphs
 
     assert g2.get_node(node1)[0].get_name() == node1
@@ -310,6 +313,7 @@ def test_graph_simplify() -> None:
 def test_multiple_graphs() -> None:
     graph_data = "graph A { a->b };\ngraph B {c->d}"
     graphs = pydot.graph_from_dot_data(graph_data)
+    assert graphs is not None
     n = len(graphs)
     assert n == 2
     names = [g.get_name() for g in graphs]
@@ -503,7 +507,7 @@ def test_executable_not_found_exception() -> None:
 
 def test_subprocess_bad_exit() -> None:
     script = Path(__file__).parent / "badexit.py"
-    (out, err, proc) = pydot.call_graphviz("python", [script], ".")
+    (out, err, proc) = pydot.call_graphviz("python", [str(script)], ".")
     assert isinstance(out, bytes)
     assert isinstance(err, bytes)
     assert proc.returncode == 1
@@ -512,7 +516,12 @@ def test_subprocess_bad_exit() -> None:
 
 def test_dot_bad_input() -> None:
     class MyDot(pydot.Dot):
-        def to_string(self, indent="", indent_level=0) -> str:
+        def to_string(
+            self,
+            indent: T.Any = "",
+            indent_level: int = 0,
+            inline: bool = True,
+        ) -> str:
             return "graph G { {{[{red=blue}]}}; }"
 
     g = MyDot("G")
@@ -521,8 +530,10 @@ def test_dot_bad_input() -> None:
     assert "returned code: 1" in str(e)
 
 
-def test_dot_bad_exit_with_non_utf8_diagnostics(monkeypatch, capsys) -> None:
-    process = subprocess.CompletedProcess([], returncode=1)
+def test_dot_bad_exit_with_non_utf8_diagnostics(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    process = subprocess.CompletedProcess([], returncode=1)  # type: ignore
     # Ensure non-UTF-8 error output does not cause UnicodeDecodeError
     monkeypatch.setattr(
         pydot.core,
@@ -541,25 +552,25 @@ def test_dot_bad_exit_with_non_utf8_diagnostics(monkeypatch, capsys) -> None:
 def test_graph_add_node_argument_type() -> None:
     g = pydot.Graph("testgraph", graph_type="digraph")
     with pytest.raises(TypeError):
-        g.add_node(1)
+        g.add_node(1)  # type: ignore
     with pytest.raises(TypeError):
-        g.add_node("a")
+        g.add_node("a")  # type: ignore
 
 
 def test_graph_add_edge_argument_type() -> None:
     g = pydot.Graph("testgraph", graph_type="digraph")
     with pytest.raises(TypeError):
-        g.add_edge(1)
+        g.add_edge(1)  # type: ignore
     with pytest.raises(TypeError):
-        g.add_edge("a")
+        g.add_edge("a")  # type: ignore
 
 
 def test_graph_add_subgraph_argument_type() -> None:
     g = pydot.Graph("testgraph", graph_type="digraph")
     with pytest.raises(TypeError):
-        g.add_subgraph(1)
+        g.add_subgraph(1)  # type: ignore
     with pytest.raises(TypeError):
-        g.add_subgraph("a")
+        g.add_subgraph("a")  # type: ignore
 
 
 def test_node_parenting() -> None:
@@ -739,13 +750,13 @@ def test_id_storage_and_lookup() -> None:
 def test_generated_setter_getters() -> None:
     g = pydot.Graph("G", graph_type="graph")
     n = pydot.Node("A")
-    n.set_shape("box")
-    n.set_penwidth(2)
+    n.set_shape("box")  # type: ignore
+    n.set_penwidth(2)  # type: ignore
     g.add_node(n)
 
     nout = g.get_nodes()[0]
-    assert nout.get_shape() == "box"
-    assert nout.get_penwidth() == 2
+    assert nout.get_shape() == "box"  # type: ignore
+    assert nout.get_penwidth() == 2  # type: ignore
 
     expected = "graph G {\nA [shape=box, penwidth=2];\n}\n"
     assert g.to_string() == expected
@@ -754,12 +765,12 @@ def test_generated_setter_getters() -> None:
 def test_generated_create_write() -> None:
     g = pydot.Dot()
     g.add_node(pydot.Node("N"))
-    svg = g.create_svg()
+    svg = g.create_svg()  # type: ignore
     assert isinstance(svg, bytes)
     assert svg.startswith(b"<?xml version")
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:  # type: ignore
         outfile = os.path.join(tmp_dir, "write.svg")
-        g.write_svg(outfile)
+        g.write_svg(outfile)  # type: ignore
         with open(outfile, "rb") as outf:
             written = outf.read()
     assert svg == written
@@ -769,9 +780,9 @@ def test_dot_args() -> None:
     g = pydot.Dot()
     u = pydot.Node("a")
     g.add_node(u)
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:  # type: ignore
         outfile = os.path.join(tmp_dir, "test.svg")
-        g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])
+        g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])  # type: ignore
         assert os.path.exists(outfile)
 
 
@@ -975,7 +986,7 @@ def test_version() -> None:
 
 def test_call_graphviz() -> None:
     with pytest.raises(FileNotFoundError):
-        pydot.call_graphviz("__dotnotexist", None, ".")
+        pydot.call_graphviz("__dotnotexist", [], ".")
 
 
 def test_object_cloning(objdict: dict[str, T.Any]) -> None:
