@@ -64,11 +64,12 @@ lint = [
 ]
 types = [
   'mypy',
+  'chardet',
+  'pytest'
 ]
 dev = [
   'pydot[lint]',
   'pydot[types]',
-  'chardet',
 ]
 tests = [
   'pydot[dev]',
@@ -90,7 +91,7 @@ select = ['E', 'F', 'W', 'I', 'UP', 'C4']
 
 [tool.mypy]
 strict = true
-files = "src"
+files = ["src", "test"]
 
 [[tool.mypy.overrides]]
 module = "pydot._vendor.tempfile"
