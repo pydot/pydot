@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_36f028580bb02cc8_test_classes_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.4">coverage.py v7.15.4</a>,
-            created at 2026-08-23 10:13 +0000
+            created at 2026-08-27 21:31 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -849,13 +849,13 @@
     <p class="run"><span class="n"><a id="t765" href="#t765">765</a></span><span class="t">    <span class="key">assert</span> <span class="nam">svg</span> <span class="op">==</span> <span class="nam">written</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t766" href="#t766">766</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t767" href="#t767">767</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t768" href="#t768">768</a></span><span class="t"><span class="key">def</span> <span class="nam">test_dot_args</span><span class="op">(</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t768" href="#t768">768</a></span><span class="t"><span class="key">def</span> <span class="nam">test_prog_with_args</span><span class="op">(</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t769" href="#t769">769</a></span><span class="t">    <span class="nam">g</span> <span class="op">=</span> <span class="nam">pydot</span><span class="op">.</span><span class="nam">Dot</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t770" href="#t770">770</a></span><span class="t">    <span class="nam">u</span> <span class="op">=</span> <span class="nam">pydot</span><span class="op">.</span><span class="nam">Node</span><span class="op">(</span><span class="str">&quot;a&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t771" href="#t771">771</a></span><span class="t">    <span class="nam">g</span><span class="op">.</span><span class="nam">add_node</span><span class="op">(</span><span class="nam">u</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t772" href="#t772">772</a></span><span class="t">    <span class="key">with</span> <span class="nam">tempfile</span><span class="op">.</span><span class="nam">TemporaryDirectory</span><span class="op">(</span><span class="nam">ignore_cleanup_errors</span><span class="op">=</span><span class="key">True</span><span class="op">)</span> <span class="key">as</span> <span class="nam">tmp_dir</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t773" href="#t773">773</a></span><span class="t">        <span class="nam">outfile</span> <span class="op">=</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">tmp_dir</span><span class="op">,</span> <span class="str">&quot;test.svg&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t774" href="#t774">774</a></span><span class="t">        <span class="nam">g</span><span class="op">.</span><span class="nam">write_svg</span><span class="op">(</span><span class="nam">outfile</span><span class="op">,</span> <span class="nam">prog</span><span class="op">=</span><span class="op">[</span><span class="str">&quot;twopi&quot;</span><span class="op">,</span> <span class="str">&quot;-Goverlap=scale&quot;</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t774" href="#t774">774</a></span><span class="t">        <span class="nam">g</span><span class="op">.</span><span class="nam">write</span><span class="op">(</span><span class="nam">outfile</span><span class="op">,</span> <span class="nam">format</span><span class="op">=</span><span class="str">&quot;svg&quot;</span><span class="op">,</span> <span class="nam">prog</span><span class="op">=</span><span class="op">[</span><span class="str">&quot;twopi&quot;</span><span class="op">,</span> <span class="str">&quot;-Goverlap=scale&quot;</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t775" href="#t775">775</a></span><span class="t">        <span class="key">assert</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">exists</span><span class="op">(</span><span class="nam">outfile</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t776" href="#t776">776</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t777" href="#t777">777</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1087,7 +1087,7 @@
             <a class="nav" href="z_36f028580bb02cc8_test_classes_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.4">coverage.py v7.15.4</a>,
-            created at 2026-08-23 10:13 +0000
+            created at 2026-08-27 21:31 +0000
         </p>
     </div>
 </footer>
