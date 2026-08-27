@@ -1760,22 +1760,30 @@ class Dot(Graph):
     def write(
         self,
         path: str | bytes,
-        prog: str | None = None,
+        prog: list[str] | tuple[str] | str | None = None,
         format: str = "raw",
         encoding: str | None = None,
     ) -> bool:
         """Writes a graph to a file.
 
-        Given a filename 'path' it will open/create and truncate
-        that file and write to it a representation of the graph
-        defined by the dot object in the format specified by
-        'format' and using the encoding specified by `encoding` for text.
-        The format 'raw' is used to dump the string representation
-        of the Dot object, without further processing.
-        The output can be processed by any of graphviz tools, defined
-        in 'prog', which defaults to 'dot'
-        Returns True or False according to the success of the write
-        operation.
+        Creates/opens (and truncates) the file ``path``, and writes
+        to it a rendered representation of the current graph.
+
+        The file format can be specified with ``format``, which defaults
+        to ``raw`` (see below).
+
+        The encoding to use when writing the intermediate graph
+        definition can be set with ``encoding``. (The default is
+        ``utf-8``, which matches the data in memory and is almost
+        always what you want.)
+
+        The special ``format`` value ``raw`` is used to dump the generated
+        graph definition ("dotfile" source), without further processing.
+        (In ``raw`` mode, ``encoding`` can be used to set the encoding of
+        the output file.)
+
+        Returns True, or raises an exception if an error is encountered.
+        The exception is some form of ``OSError`` or an ``AssertionError``.
 
         There's also the preferred possibility of using:
 
@@ -1784,9 +1792,45 @@ class Dot(Graph):
         which are automatically defined for all the supported formats.
         [write_ps(), write_gif(), write_dia(), ...]
 
-        The encoding is passed to `open` [1].
+        The encoding is passed to ``open`` [1].
 
-        [1] https://docs.python.org/3/library/functions.html#open
+        [1]: https://docs.python.org/3/library/functions.html#open
+
+        @param prog:
+
+          One of:
+
+          - the name of Graphviz executable that
+            can be found in the ``$PATH``.
+
+          - the absolute path to Graphviz executable.
+
+          - a sequence (list, tuple) with the first
+            element being one of the above, and the
+            remaining elements being command-line
+            arguments to use when invoking the executable.
+
+          If you have added Graphviz to the ``$PATH`` and
+          use its executables as installed
+          (without renaming any of them)
+          then their names are:
+
+            - ``dot``
+            - ``twopi``
+            - ``neato``
+            - ``circo``
+            - ``fdp``
+            - ``sfdp``
+
+          On Windows, these have the notorious ".exe" extension that,
+          only for the above strings, will be added automatically.
+
+          The ``$PATH`` is inherited from ``os.env['PATH']`` and
+          passed to ``subprocess.Popen`` using the `env` argument.
+
+          If you haven't added Graphviz to your ``$PATH`` on Windows,
+          then you may want to give the absolute path to the
+          executable (for example, to ``dot.exe``) in ``prog``.
         """
         if prog is None:
             prog = self.prog
@@ -1808,10 +1852,20 @@ class Dot(Graph):
     ) -> bytes:
         """Creates and returns a binary image for the graph.
 
-        create will write the graph to a temporary dot file in the
-        encoding specified by `encoding` and process it with the
-        program given by 'prog' (which defaults to `self.prog`, initially
-        'dot'), reading the binary image output and returning it as `bytes`.
+        The program used to process the graph data is specified by
+        ``prog``, which defaults to ``self.prog`` (initially ``dot``).
+
+        The file format for the returned data can be specified with
+        ``format``, which defaults to ``ps`` (PostScript).
+
+        The encoding to use when writing the intermediate graph
+        definition can be set with ``encoding``. (The default is
+        ``utf-8``, which matches the data in memory and is almost
+        always what you want.)
+
+        Returns the output of the rendering tool as ``bytes``, or
+        raises an exception if an error is encountered.
+        The exception is some form of ``OSError`` or an ``AssertionError``.
 
         There's also the preferred possibility of using:
 
@@ -1820,45 +1874,52 @@ class Dot(Graph):
         which are automatically defined for all the supported formats,
         for example:
 
-          - `create_ps()`
-          - `create_gif()`
-          - `create_dia()`
+          - ``create_ps()``
+          - ``create_gif()``
+          - ``create_dia()``
 
-        If 'prog' is a list, instead of a string,
-        then the first item is expected to be the program name,
-        followed by any optional command-line arguments for it:
+        If ``prog`` is a sequence, instead of a string,
+        then the elements after the first are expected to be
+        command-line arguments to be included in the ``prog``
+        invocation:
 
-            [ 'twopi', '-Tdot', '-s10' ]
+            ('twopi', '-Lg', '-s10')
 
+        @param prog:
 
-        @param prog: either:
+          One of:
 
-          - name of Graphviz executable that
-            can be found in the `$PATH`, or
+          - the name of Graphviz executable that
+            can be found in the ``$PATH``.
 
-          - absolute path to Graphviz executable.
+          - the absolute path to Graphviz executable.
 
-          If you have added Graphviz to the `$PATH` and
+          - a sequence (list, tuple) with the first
+            element being one of the above, and the
+            remaining elements being command-line
+            arguments to use when invoking the executable.
+
+          If you have added Graphviz to the ``$PATH`` and
           use its executables as installed
           (without renaming any of them)
           then their names are:
 
-            - `'dot'`
-            - `'twopi'`
-            - `'neato'`
-            - `'circo'`
-            - `'fdp'`
-            - `'sfdp'`
+            - ``dot``
+            - ``twopi``
+            - ``neato``
+            - ``circo``
+            - ``fdp``
+            - ``sfdp``
 
           On Windows, these have the notorious ".exe" extension that,
           only for the above strings, will be added automatically.
 
-          The `$PATH` is inherited from `os.env['PATH']` and
-          passed to `subprocess.Popen` using the `env` argument.
+          The ``$PATH`` is inherited from ``os.env['PATH']`` and
+          passed to ``subprocess.Popen`` using the `env` argument.
 
-          If you haven't added Graphviz to your `$PATH` on Windows,
+          If you haven't added Graphviz to your ``$PATH`` on Windows,
           then you may want to give the absolute path to the
-          executable (for example, to `dot.exe`) in `prog`.
+          executable (for example, to ``dot.exe``) in ``prog``.
         """
         if prog is None:
             prog = self.prog
@@ -1866,9 +1927,11 @@ class Dot(Graph):
         assert prog is not None
 
         if isinstance(prog, (list, tuple)):
-            prog, args = prog[0], prog[1:]
+            _prog: str = prog[0]
+            args: list[str] = list(prog[1:])
         else:
-            args = []  # type: ignore
+            _prog = str(prog)
+            args = []
 
         # temp file
         with tempfile.TemporaryDirectory(
@@ -1886,33 +1949,33 @@ class Dot(Graph):
                     img_data = img_in.read()
                     img_out.write(img_data)
 
-            arguments = [f"-T{format}"] + args + [fp.name]  # type: ignore
+            arguments = [f"-T{format}"] + args + [fp.name]
 
             try:
                 stdout_data, stderr_data, process = call_graphviz(
-                    program=prog,
+                    program=_prog,
                     arguments=arguments,
                     working_dir=tmp_dir,
                 )
             except OSError as e:
                 if e.errno == errno.ENOENT:
-                    args = list(e.args)  # type: ignore
-                    args[1] = f'"{prog}" not found in path.'  # type: ignore
-                    raise OSError(*args)
+                    errargs: list[str] = list(e.args)
+                    errargs[1] = f'"{_prog}" not found in path.'
+                    raise OSError(*errargs)
                 else:
                     raise  # pragma: no cover
 
         if process.returncode != 0:
             code = process.returncode
             print(
-                f'"{prog}" with args {arguments} returned code: {code}\n\n'
+                f'"{_prog}" with args {arguments} returned code: {code}\n\n'
                 f"stdout, stderr:\n"
                 f" {stdout_data.decode('utf-8', errors='replace')}\n"
                 f" {stderr_data.decode('utf-8', errors='replace')}\n"
             )
 
         assert process.returncode == 0, (
-            f'"{prog}" with args {arguments} '
+            f'"{_prog}" with args {arguments} '
             f"returned code: {process.returncode}"
         )
 
