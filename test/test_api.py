@@ -776,13 +776,13 @@ def test_generated_create_write() -> None:
     assert svg == written
 
 
-def test_dot_args() -> None:
+def test_prog_with_args() -> None:
     g = pydot.Dot()
     u = pydot.Node("a")
     g.add_node(u)
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_dir:  # type: ignore
         outfile = os.path.join(tmp_dir, "test.svg")
-        g.write_svg(outfile, prog=["twopi", "-Goverlap=scale"])  # type: ignore
+        g.write(outfile, format="svg", prog=["twopi", "-Goverlap=scale"])
         assert os.path.exists(outfile)
 
 
