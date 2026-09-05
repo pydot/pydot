@@ -6,13 +6,15 @@
 
 from __future__ import annotations
 
+import typing as T
+
 import pytest
 
 import pydot
 from pydot.classes import FrozenDict
 
 
-def test_FrozenDict_create(objdict):
+def test_FrozenDict_create(objdict: dict[str, T.Any]) -> None:
     fd = FrozenDict(objdict)
     assert isinstance(fd, FrozenDict)
     assert isinstance(fd["attributes"], FrozenDict)
@@ -26,7 +28,7 @@ def test_FrozenDict_create(objdict):
     assert fd == fd2["obj_dict"]["frozen"]
 
 
-def test_FrozenDict_modify(objdict):
+def test_FrozenDict_modify(objdict: dict[str, T.Any]) -> None:
     fd = FrozenDict(objdict)
 
     with pytest.raises(AttributeError):
@@ -51,7 +53,7 @@ def test_FrozenDict_modify(objdict):
         del fd["nodes"]
 
 
-def test_FrozenDict_compare():
+def test_FrozenDict_compare() -> None:
     dict_in = {
         "red": "first",
         "green": "second",
@@ -80,7 +82,7 @@ def test_FrozenDict_repr() -> None:
     )
 
 
-def test_frozendict_deprecation(objdict):
+def test_frozendict_deprecation(objdict: dict[str, T.Any]) -> None:
     with pytest.warns(DeprecationWarning):
         fd = pydot.frozendict(objdict)
 

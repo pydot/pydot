@@ -9,6 +9,7 @@ from __future__ import annotations
 import functools
 import os
 import sys
+import typing as T
 from collections.abc import Generator
 from hashlib import sha256
 
@@ -111,7 +112,7 @@ class Renderer:
                 g.create(prog=TEST_PROGRAM, format="jpe", encoding=encoding)
             )
         src = "\n".join(g.to_string() for g in c)
-        return PydotRenderResult(jpe_data, src)
+        return PydotRenderResult(T.cast("bytes", jpe_data), src)
 
 
 def _load_test_cases(casedir: str) -> Generator[tuple[str, str, str]]:

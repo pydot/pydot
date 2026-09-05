@@ -17,14 +17,15 @@ import sys
 import warnings
 from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
 
-if TYPE_CHECKING:
-    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
-    # even if not  installed
-    from typing_extensions import Self, TypeAlias
-
 import pydot
 from pydot._vendor import tempfile
 from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
+
+if TYPE_CHECKING:
+    # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
+    # even if not installed
+    from typing_extensions import Self, TypeAlias
+
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -576,7 +577,7 @@ class Common:
     def __setstate__(self, state: AttributeDict) -> None:
         self.obj_dict = state
 
-    def set_parent_graph(self, parent_graph: Common | None) -> None:
+    def set_parent_graph(self, parent_graph: Graph | None) -> None:
         self.obj_dict["parent_graph"] = parent_graph
 
     def get_parent_graph(self) -> Graph | None:
@@ -689,7 +690,7 @@ class Node(Common):
 
     def __init__(
         self,
-        name: str = "",
+        name: str | int | float | bool = "",
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
@@ -719,13 +720,13 @@ class Node(Common):
     def __str__(self) -> str:
         return self.to_string()
 
-    def set_name(self, node_name: str | None) -> None:
+    def set_name(self, node_name: str | int | float | bool) -> None:
         """Set the node's name."""
-        self.obj_dict["name"] = node_name
+        self.obj_dict["name"] = str(node_name)
 
     def get_name(self) -> str:
         """Get the node's name."""
-        return self.obj_dict["name"]  # type: ignore
+        return str(self.obj_dict["name"])
 
     def get_port(self) -> str | None:
         """Get the node's port."""
@@ -1041,6 +1042,28 @@ class Graph(Common):
     def __str__(self) -> str:
         return self.to_string()
 
+    def __enter__(self) -> Self:
+        """Enter the runtime context for this graph.
+
+        Enables a nested construction style:
+
+            with Dot("A") as dot:
+                with Subgraph("B") as sg:
+                    sg.add_node(Node("N1"))
+                    dot.add_subgraph(sg)
+
+        This is syntactic sugar only with no side effects.
+        """
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit the runtime context for this graph.
+
+        Performs no cleanup.
+        Always returns `None`, so exceptions are never suppressed.
+        """
+        return
+
     def get_graph_type(self) -> str | None:
         return self.obj_dict["type"]  # type: ignore
 
@@ -1146,28 +1169,6 @@ class Graph(Common):
         seq: int = self.obj_dict.get("current_child_sequence", 1)
         self.obj_dict["current_child_sequence"] = seq + 1
         return seq
-
-    def __enter__(self) -> Self:
-        """Enter the runtime context for this graph.
-
-        Enables a nested construction style:
-
-            with Dot("A") as dot:
-                with Subgraph("B") as sg:
-                    sg.add_node(Node("N1"))
-                    dot.add_subgraph(sg)
-
-        This is syntactic sugar only with no side effects.
-        """
-        return self
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """Exit the runtime context for this graph.
-
-        Performs no cleanup.
-        Always returns `None`, so exceptions are never suppressed.
-        """
-        return
 
     def add_node(self, graph_node: Node) -> None:
         """Adds a node object to the graph.
