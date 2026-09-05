@@ -239,3 +239,23 @@ def test_bad_parse_bracket(capsys) -> None:
     assert res is None
     captured = capsys.readouterr()
     assert captured.out.strip() == expected
+
+
+def test_comments_are_discarded() -> None:
+    """Test that all three comment forms are ignored.
+
+    The DOT language accepts C-style block comments, C++-style line
+    comments, and lines beginning with '#', which are discarded as
+    preprocessor output.
+    """
+    expected = "digraph {\na -> b;\n}\n"
+
+    for source in [
+        "digraph { /* block */ a -> b }",
+        "digraph {\n/* spanning\n   two lines */\na -> b\n}",
+        "digraph { a -> b // trailing\n}",
+        '# 1 "preprocessed.dot"\ndigraph { a -> b }',
+        "digraph {\n# a line comment\na -> b\n}",
+    ]:
+        (g,) = dot_parser.parse_dot_data(source)
+        assert g.to_string() == expected, f"differs for: {source!r}"
