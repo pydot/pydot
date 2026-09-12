@@ -11,7 +11,7 @@ import textwrap
 import pyparsing as pp
 import pytest
 
-from pydot import dot_parser
+from pydot import core, dot_parser
 from pydot.dot_parser import HTML, GraphParser
 
 
@@ -39,6 +39,7 @@ def test_edge_subgraph_anon() -> None:
     res = parser.parse_string("""a -- { b; c; }""")
     assert len(res) == 1
     edge = res[0]
+    assert isinstance(edge, core.Edge)
     expected = textwrap.dedent("""
         a -- {
         b;
@@ -53,6 +54,7 @@ def test_edge_subgraph_explicit() -> None:
     res = parser.parse_string("""a -- subgraph XY { b; c; }""")
     assert len(res) == 1
     edge = res[0]
+    assert isinstance(edge, core.Edge)
     expected = textwrap.dedent("""
         a -- subgraph XY {
         b;
@@ -89,7 +91,9 @@ def test_keyword_case_insensitive_graph_type() -> None:
         ("Digraph G { a -> b }", "digraph"),
         ("Graph G { a -- b }", "graph"),
     ]:
-        (g,) = dot_parser.parse_dot_data(src)
+        graphs = dot_parser.parse_dot_data(src)
+        assert graphs is not None
+        g = graphs[0]
         assert g.get_type() == expected_type, src
 
 
@@ -101,7 +105,9 @@ def test_keyword_case_insensitive_strict() -> None:
         "Strict Digraph G { a -> b }",
         "strict GRAPH G { a -- b }",
     ]:
-        (g,) = dot_parser.parse_dot_data(src)
+        graphs = dot_parser.parse_dot_data(src)
+        assert graphs is not None
+        g = graphs[0]
         assert g.get_strict(), src
 
 
@@ -116,7 +122,9 @@ def test_keyword_case_insensitive_node_edge_defaults() -> None:
             f"digraph G {{ {node_kw} [color=red]; {edge_kw}"
             " [style=dashed]; a -> b }}"
         )
-        (g,) = dot_parser.parse_dot_data(src)
+        graphs = dot_parser.parse_dot_data(src)
+        assert graphs is not None
+        g = graphs[0]
         assert g.get_node_defaults() == [{"color": "red"}], src
         assert g.get_edge_defaults() == [{"style": "dashed"}], src
 
@@ -125,7 +133,9 @@ def test_keyword_case_insensitive_subgraph() -> None:
     """SUBGRAPH keyword is case-insensitive."""
     for kw in ["subgraph", "SUBGRAPH", "Subgraph"]:
         src = f"digraph G {{ {kw} SUB {{ a; b; }} }}"
-        (g,) = dot_parser.parse_dot_data(src)
+        graphs = dot_parser.parse_dot_data(src)
+        assert graphs is not None
+        g = graphs[0]
         subs = g.get_subgraphs()
         assert len(subs) == 1, src
         assert subs[0].get_name() == "SUB", src
@@ -207,7 +217,7 @@ def test_plus_concatenation() -> None:
     assert edge.get("arrows") == '"both"'
 
 
-def test_bad_parse_brace(capsys) -> None:
+def test_bad_parse_brace(capsys: pytest.CaptureFixture[str]) -> None:
     src = textwrap.dedent(r"""
         graph G {
             a -- b;
@@ -224,7 +234,7 @@ def test_bad_parse_brace(capsys) -> None:
     assert captured.out.strip() == expected
 
 
-def test_bad_parse_bracket(capsys) -> None:
+def test_bad_parse_bracket(capsys: pytest.CaptureFixture[str]) -> None:
     src = textwrap.dedent(r"""
         graph G {
             a -- b;
