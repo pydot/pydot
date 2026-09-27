@@ -860,8 +860,9 @@ class Edge(Common):
     def __eq__(self, edge: object) -> bool:
         """Compare two edges.
 
-        If the parent graph is directed, arcs linking
-        node A to B are considered equal and A->B != B->A
+        If the parent graph is directed, edges compare equal only when
+        their ordered (source, destination) pairs match.
+        A->B != B->A when A and B are distinct nodes.
 
         If the parent graph is undirected, any edge
         connecting two nodes is equal to any other
