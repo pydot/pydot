@@ -246,7 +246,8 @@ def test_comments_are_discarded() -> None:
 
     The DOT language accepts C-style block comments, C++-style line
     comments, and lines beginning with '#', which are discarded as
-    preprocessor output.
+    preprocessor output. Both dot and pydot also discard a '#' comment
+    at the end of a line, which the language definition does not mention.
     """
     expected = "digraph {\na -> b;\n}\n"
 
@@ -256,6 +257,12 @@ def test_comments_are_discarded() -> None:
         "digraph { a -> b // trailing\n}",
         '# 1 "preprocessed.dot"\ndigraph { a -> b }',
         "digraph {\n# a line comment\na -> b\n}",
+        "digraph { a -> b; # trailing\n}",
+        "digraph { a -> b # trailing\n}",
     ]:
         (g,) = dot_parser.parse_dot_data(source)
         assert g.to_string() == expected, f"differs for: {source!r}"
+
+    # A '#' inside a quoted string is not a comment.
+    (g,) = dot_parser.parse_dot_data('digraph { a [label="# 1"] }')
+    assert g.to_string() == 'digraph {\na [label="# 1"];\n}\n'
