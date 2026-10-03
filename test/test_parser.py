@@ -246,7 +246,9 @@ def test_comments_are_discarded() -> None:
 
     The DOT language accepts C-style block comments, C++-style line
     comments, and lines beginning with '#', which are discarded as
-    preprocessor output.
+    preprocessor output. Both dot and pydot also discard a '#' comment
+    at the end of a line, and both accept a comment anywhere whitespace
+    is allowed, including between the parts of an edge statement.
     """
     expected = "digraph {\na -> b;\n}\n"
 
@@ -256,6 +258,40 @@ def test_comments_are_discarded() -> None:
         "digraph { a -> b // trailing\n}",
         '# 1 "preprocessed.dot"\ndigraph { a -> b }',
         "digraph {\n# a line comment\na -> b\n}",
+        "digraph { a -> b; # trailing\n}",
+        "digraph { a -> b # trailing\n}",
     ]:
         (g,) = dot_parser.parse_dot_data(source)
         assert g.to_string() == expected, f"differs for: {source!r}"
+
+    # Comments go wherever whitespace goes, edge statements included.
+    interleaved = (
+        "graph G {\n"
+        "             a // node a\n"
+        "/* edgeop */ --\n"
+        "             b  # node b\n"
+        "             [ /* width of line */ penwidth=5];\n"
+        "}"
+    )
+    (g,) = dot_parser.parse_dot_data(interleaved)
+    assert g.to_string() == "graph G {\na -- b [penwidth=5];\n}\n"
+
+    # Inside a quoted string none of the three forms starts a comment.
+    quoted = (
+        "graph G {\n"
+        '  a [label="# node a"];\n'
+        '  b [label="// node b"];\n'
+        '  "/* node */ c";\n'
+        '  a -- b -- "/* node */ c";\n'
+        "}"
+    )
+    (g,) = dot_parser.parse_dot_data(quoted)
+    assert g.to_string() == (
+        "graph G {\n"
+        'a [label="# node a"];\n'
+        'b [label="// node b"];\n'
+        '"/* node */ c";\n'
+        "a -- b;\n"
+        'b -- "/* node */ c";\n'
+        "}\n"
+    )
