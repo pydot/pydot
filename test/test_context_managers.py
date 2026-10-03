@@ -11,7 +11,7 @@ import pytest
 import pydot
 
 
-def test_context_manager_returns_exact_instance():
+def test_context_manager_returns_exact_instance() -> None:
     g_orig = pydot.Graph("G")
     with g_orig as g_ctx:
         assert g_orig is g_ctx
@@ -23,14 +23,14 @@ def test_context_manager_returns_exact_instance():
         assert g_orig is g_ctx
 
 
-def test_context_manager_empty_block():
+def test_context_manager_empty_block() -> None:
     with pydot.Graph("G") as g:
         pass
     assert g.get_name() == "G"
     assert len(g.get_nodes()) == 0
 
 
-def test_context_manager_dot():
+def test_context_manager_dot() -> None:
     with pydot.Dot(graph_name="main", graph_type="digraph") as dot:
         assert isinstance(dot, pydot.Dot)
 
@@ -49,7 +49,7 @@ def test_context_manager_dot():
     assert dot.get_nodes()[1].get_name() == "B"
 
 
-def test_context_manager_graph():
+def test_context_manager_graph() -> None:
     with pydot.Graph(graph_name="G") as g:
         assert isinstance(g, pydot.Graph)
         g.add_node(pydot.Node("B"))
@@ -58,7 +58,7 @@ def test_context_manager_graph():
     assert len(g.get_nodes()) == 1
 
 
-def test_context_manager_subgraph():
+def test_context_manager_subgraph() -> None:
     with pydot.Subgraph(graph_name="sub") as sub:
         assert isinstance(sub, pydot.Subgraph)
         sub.add_node(pydot.Node("C"))
@@ -67,7 +67,7 @@ def test_context_manager_subgraph():
     assert len(sub.get_nodes()) == 1
 
 
-def test_context_manager_cluster():
+def test_context_manager_cluster() -> None:
     with pydot.Cluster(graph_name="my_cluster") as cluster:
         assert isinstance(cluster, pydot.Cluster)
         cluster.add_node(pydot.Node("D"))
@@ -77,7 +77,7 @@ def test_context_manager_cluster():
     assert len(cluster.get_nodes()) == 1
 
 
-def test_context_manager_nested_mixed():
+def test_context_manager_nested_mixed() -> None:
     dot = pydot.Dot("my_graph", graph_type="digraph")
 
     with pydot.Cluster("my_cluster") as cluster:
@@ -111,7 +111,7 @@ def test_context_manager_nested_mixed():
     assert deep_obj.get_nodes()[0].get_name() == "D"
 
 
-def test_context_manager_exception_propagation():
+def test_context_manager_exception_propagation() -> None:
     # Context manager should not swallow exceptions
     with pytest.raises(ValueError, match="test error"):
         with pydot.Dot() as dot:
