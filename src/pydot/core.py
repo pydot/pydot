@@ -702,13 +702,54 @@ class Node(Common):
             self.obj_dict["parent_graph"] = None
             self.obj_dict["sequence"] = None
 
-            # Remove the compass point
-            #
-            port = None
-            if isinstance(name, str) and not name.startswith('"'):
-                idx = name.find(":")
-                if idx > 0 and idx + 1 < len(name):
-                    name, port = name[:idx], name[idx:]
+            # Split a "<name>"[:port] string into (name, port). The
+            # unquoted "name:port" form has always worked. The quoted
+            # form ('"name":port') used to swallow everything (including
+            # the port) as the name, dropping both the port and the
+            # useful distinction between the two halves of the identifier.
+            # This now finds the matching closing quote (respecting
+            # backslash-escaped quotes inside the name) and treats any
+            # trailing text starting with ":" as a port. If the trailing
+            # text isn't a port (e.g. the input is '"a"b' — a quoted
+            # name with extra unquoted text), we fall back to the
+            # pre-fix behavior of leaving the name untouched, so we
+            # don't silently drop data the caller provided.
+            port: str | None = None
+            if isinstance(name, str):
+                if name.startswith('"'):
+                    # Find the matching closing quote, respecting \" escapes
+                    closing_idx = -1
+                    i = 1
+                    while i < len(name):
+                        if name[i] == "\\" and i + 1 < len(name):
+                            i += 2
+                            continue
+                        if name[i] == '"':
+                            closing_idx = i
+                            break
+                        i += 1
+                    if closing_idx > 0:
+                        # Capture the part after the closing quote. Keep
+                        # the surrounding quotes on the name so the user's
+                        # explicit "quote it" intent survives a round-trip:
+                        # `Node('"node"')` and `Node('node')` must remain
+                        # distinguishable, since the first is a literal
+                        # node name and the second is a DOT reserved
+                        # keyword. Only the port, if any, is extracted.
+                        rest = name[closing_idx + 1 :]
+                        if rest.startswith(":"):
+                            name = name[: closing_idx + 1]
+                            port = rest
+                        # If `rest` is empty the whole input is the name
+                        # and there's no port — fall through with the
+                        # original name. Same when `rest` is non-empty
+                        # but doesn't start with ":": this is something
+                        # like `'"a"b'`, which the old code left alone.
+                else:
+                    idx = name.find(":")
+                    if idx > 0 and idx + 1 < len(name):
+                        port = name[idx:]
+                        name = name[:idx]
 
             if isinstance(name, int):
                 name = str(name)
@@ -761,6 +802,25 @@ class Node(Common):
 
 
 __generate_attribute_methods(Node, NODE_ATTRIBUTES)
+
+
+def _format_node_endpoint(node: "Node | Subgraph | Cluster") -> str:
+    """Return the DOT representation of a node endpoint, including port.
+
+    ``Node`` stores the (optional) port with a leading colon (e.g. ``":p45"``)
+    so the leading colon of the port is treated as part of the node-id syntax.
+    When emitting an Edge endpoint we want ``"name":port`` (or
+    ``"name":"port"`` when the port itself needs quoting), not just the bare
+    name — otherwise the port is silently dropped on round-trip.
+    """
+    name = str(node.get_name())
+    port = node.get_port() if hasattr(node, "get_port") else None
+    if not port:
+        return name
+    # port is stored as e.g. ":p45" — split off the leading ':' so we can
+    # re-quote the port identifier with the same rules used elsewhere.
+    port_id = port[1:] if port.startswith(":") else port
+    return f"{name}:{quote_id_if_necessary(port_id)}"
 
 
 class Edge(Common):
@@ -816,14 +876,14 @@ class Edge(Common):
             ep1: EdgeEndpoint
 
             if isinstance(_src, (Node, Subgraph, Cluster)):
-                ep0 = str(_src.get_name())
+                ep0 = _format_node_endpoint(_src)
             elif isinstance(_src, (FrozenDict, int, float)):
                 ep0 = _src
             else:
                 ep0 = str(_src)
 
             if isinstance(_dst, (Node, Subgraph, Cluster)):
-                ep1 = str(_dst.get_name())
+                ep1 = _format_node_endpoint(_dst)
             elif isinstance(_dst, (FrozenDict, int, float)):
                 ep1 = _dst
             else:
