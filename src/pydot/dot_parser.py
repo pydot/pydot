@@ -13,6 +13,7 @@ Fixes by: Ero Carrera <ero.carrera@gmail.com>
 
 from __future__ import annotations
 
+import itertools
 import logging
 from typing import Any, ClassVar, Final, cast
 
@@ -253,13 +254,14 @@ def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
             return [make_endpoint(node) for node in endpoint]
         return [make_endpoint(endpoint)]
 
-    edges = []
+    edges: list[pydot.core.Edge] = []
     n_prev = make_endpoints(endpoints[0])
     for endpoint in endpoints[1:]:
         n_next = make_endpoints(endpoint)
-        for source in n_prev:
-            for destination in n_next:
-                edges.append(pydot.core.Edge(source, destination, **attrs))
+        edges.extend(
+            pydot.core.Edge(source, destination, **attrs)
+            for source, destination in itertools.product(n_prev, n_next)
+        )
         n_prev = n_next
     return edges
 
@@ -312,7 +314,7 @@ class GraphParser:
         Group(ID("id_part")), delim=":", min=1, max=3, combine=False
     ).set_parse_action(push_node_id)
 
-    node_list: ClassVar[Group] = Group(DelimitedList(node_id))
+    node_list: ClassVar[DelimitedList] = DelimitedList(node_id)
 
     a_list: ClassVar[OneOrMore] = OneOrMore(
         ID + Optional("=" + righthand_id) + Optional(Suppress(","))
@@ -344,7 +346,9 @@ class GraphParser:
     )
 
     edgeop: ClassVar[ParserElement] = Literal("--") | Literal("->")
-    edge_point: ClassVar[ParserElement] = subgraph | graph_stmt | node_list
+    edge_point: ClassVar[ParserElement] = (
+        subgraph | graph_stmt | Group(node_list)
+    )
     edge_stmt: ClassVar[ParserElement] = DelimitedList(
         edge_point, delim=edgeop, min=2
     )("endpoints") + Optional(attr_list("attr_l"))

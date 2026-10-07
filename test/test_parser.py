@@ -81,6 +81,77 @@ def test_DefaultStatement_repr() -> None:
     assert repr_str == "DefaultStatement(node, {'color': 'blue'})"
 
 
+def test_comma_nodes_are_individually_discoverable() -> None:
+    (graph,) = dot_parser.parse_dot_data("graph { a, b, c [color=red]; }")
+    nodes = graph.get_nodes()
+    assert len(nodes) == 3
+    assert nodes[0].get_name() == "a"
+    assert nodes[1].get_name() == "b"
+    assert nodes[2].get_name() == "c"
+    for name in ("a", "b", "c"):
+        assert graph.get_node(name)[0].get_attributes() == {"color": "red"}
+
+    graph.get_node("a")[0].set("color", "blue")
+    assert graph.get_node("a")[0].get("color") == "blue"
+    assert graph.get_node("b")[0].get("color") == "red"
+
+
+def test_list_node_names_and_attributes_preserve_commas() -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        'digraph { "a,b", <c,d>, plain [label="x,y"][color=red]; }'
+    )
+    nodes = graph.get_nodes()
+    assert len(nodes) == 3
+    assert nodes[0].get_name() == '"a,b"'
+    assert nodes[1].get_name() == "<c,d>"
+    assert nodes[2].get_name() == "plain"
+    for node in nodes:
+        assert node.get_attributes() == {"label": '"x,y"', "color": "red"}
+
+
+def test_comma_edge_chain_is_unrolled() -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        "digraph { a, b -> c, d -> e [penwidth=5]; }"
+    )
+    edges = graph.get_edges()
+    assert len(edges) == 6
+    for source, destination in (
+        ("a", "c"),
+        ("a", "d"),
+        ("b", "c"),
+        ("b", "d"),
+        ("c", "e"),
+        ("d", "e"),
+    ):
+        (edge,) = graph.get_edge(source, destination)
+        assert edge.get_attributes() == {"penwidth": "5"}
+
+
+def test_edge_lists_preserve_quoted_ids_and_ports() -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        'digraph { "a,b":out:sw, c:in -> d:n, "e,f":port; }'
+    )
+    assert len(graph.get_edges()) == 4
+    for source, destination in (
+        ('"a,b":out:sw', "d:n"),
+        ('"a,b":out:sw', '"e,f":port'),
+        ("c:in", "d:n"),
+        ("c:in", '"e,f":port'),
+    ):
+        assert len(graph.get_edge(source, destination)) == 1
+
+
+def test_comma_lists_with_subgraph_endpoint() -> None:
+    parser = GraphParser.edge_stmt
+    (first, second, third, fourth) = parser.parse_string(
+        "a, b -> { c; d; } -> e, f"
+    )
+    assert first.to_string() == "a -- {\nc;\nd;\n};"
+    assert second.to_string() == "b -- {\nc;\nd;\n};"
+    assert third.to_string() == "{\nc;\nd;\n} -- e;"
+    assert fourth.to_string() == "{\nc;\nd;\n} -- f;"
+
+
 def test_keyword_case_insensitive_graph_type() -> None:
     """Graph type keywords are case-insensitive."""
     for src, expected_type in [
