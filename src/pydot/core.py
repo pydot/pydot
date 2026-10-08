@@ -689,12 +689,18 @@ class Node(Common):
 
     def __init__(
         self,
-        name: str = "",
+        name: str | None = "",
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
         if obj_dict is None:
+            if name is None:
+                raise pydot.Error(
+                    "Node requires a name, e.g. Node('a'). For default "
+                    "attributes, use Graph.set_node_defaults()."
+                )
+
             # Copy the attributes
             #
             self.obj_dict["attributes"] = dict(attrs)
