@@ -154,6 +154,18 @@ def test_edge_missing_endpoints() -> None:
     assert pydot.Edge(("", "")).get_source() == ""
 
 
+def test_node_missing_name() -> None:
+    # Name given as None: should raise.
+    with pytest.raises(pydot.Error):
+        pydot.Node(None)
+    with pytest.raises(pydot.Error):
+        pydot.Node(None, color="grey50")
+
+    # An empty string is a legal, if unusual, node name: should work fine.
+    assert pydot.Node("").get_name() == ""
+    assert pydot.Node().get_name() == ""
+
+
 def test_subgraphs() -> None:
     g = pydot.Graph()
     s = pydot.Subgraph("foo")
