@@ -66,6 +66,10 @@ class FrozenDict(dict):  # type: ignore
     def __init__(self, *args: Any, **kw: Any):
         pass
 
+    def __reduce__(self) -> tuple[type[FrozenDict], tuple[dict[Any, Any]]]:
+        """Unpickle through the constructor without assigning frozen items."""
+        return type(self), (dict(self),)
+
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, self.__class__):
             return hash(self) == hash(other)

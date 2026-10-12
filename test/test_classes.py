@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import pickle
+
 import pytest
 
 import pydot
@@ -78,6 +80,24 @@ def test_FrozenDict_repr() -> None:
         "FrozenDict({'one': 1, 'two': 2, 'group':"
         + " FrozenDict({'three': 3, 'four': 4})})"
     )
+
+
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+def test_FrozenDict_pickle(protocol: int) -> None:
+    original = FrozenDict(
+        {"attributes": {"color": "red"}, "nodes": [{"name": "a"}]}
+    )
+    original_hash = hash(original)
+    restored = pickle.loads(pickle.dumps(original, protocol=protocol))
+
+    assert isinstance(restored, FrozenDict)
+    assert dict(restored) == dict(original)
+    assert hash(restored) == original_hash
+    assert isinstance(restored["attributes"], FrozenDict)
+    assert isinstance(restored["nodes"], tuple)
+    assert isinstance(restored["nodes"][0], FrozenDict)
+    with pytest.raises(AttributeError):
+        restored["attributes"]["color"] = "blue"
 
 
 def test_frozendict_deprecation(objdict):
