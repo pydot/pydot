@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 import pydot
 from pydot._vendor import tempfile
-from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict
+from pydot.classes import AttributeDict, EdgeEndpoint, FrozenDict, NodeName
 
 _logger = logging.getLogger(__name__)
 _logger.debug("pydot core module initializing")
@@ -367,7 +367,9 @@ def quote_id_if_necessary(
         w.lower() for w in list(unquoted_keywords if unquoted_keywords else [])
     ]
 
-    if isinstance(s, bool):
+    if isinstance(s, bool):  # pragma: no cover
+        # Node names are normalized to `str` by `Node.set_name()`, so
+        # based on type annotations this should never happen.
         return str(s).lower()
     if not isinstance(s, str):
         # Based on type annotations, should never happen
@@ -674,6 +676,33 @@ class Common:
         return f"{prefix}[{', '.join(attrs)}]"
 
 
+def _normalize_node_name(name: NodeName) -> str:
+    """Return the string form of a node name, rejecting ``None``."""
+    if name is None:
+        raise pydot.MissingNameError(
+            "Node requires a name, e.g. Node('a'). For default "
+            "attributes, use Graph.set_node_defaults()."
+        )
+    if isinstance(name, bool):
+        # Graphviz spells boolean identifiers in lowercase.
+        return str(name).lower()
+    return str(name)
+
+
+def _split_node_port(name: str) -> tuple[str, str | None]:
+    """Split ``"name:port"`` into its name and port parts.
+
+    A quoted identifier is returned whole, as any colon inside the
+    quotes is part of the name rather than a port separator.
+    """
+    if name.startswith('"'):
+        return name, None
+    idx = name.find(":")
+    if idx > 0 and idx + 1 < len(name):
+        return name[:idx], name[idx:]
+    return name, None
+
+
 class Node(Common):
     """A graph node.
 
@@ -689,39 +718,32 @@ class Node(Common):
 
     def __init__(
         self,
-        name: str = "",
+        name: NodeName = "",
         obj_dict: AttributeDict | None = None,
         **attrs: Any,
     ) -> None:
         super().__init__(obj_dict)
         if obj_dict is None:
-            # Copy the attributes
-            #
             self.obj_dict["attributes"] = dict(attrs)
             self.obj_dict["type"] = "node"
             self.obj_dict["parent_graph"] = None
             self.obj_dict["sequence"] = None
-
-            # Remove the compass point
-            #
-            port = None
-            if isinstance(name, str) and not name.startswith('"'):
-                idx = name.find(":")
-                if idx > 0 and idx + 1 < len(name):
-                    name, port = name[:idx], name[idx:]
-
-            if isinstance(name, int):
-                name = str(name)
-
-            self.obj_dict["name"] = name
-            self.obj_dict["port"] = port
+            self.set_name(name)
 
     def __str__(self) -> str:
         return self.to_string()
 
-    def set_name(self, node_name: str | None) -> None:
-        """Set the node's name."""
-        self.obj_dict["name"] = node_name
+    def set_name(self, node_name: NodeName) -> None:
+        """Set the node's name.
+
+        Non-string names are stored in their string form, with booleans
+        lowercased as Graphviz expects. A port suffix such as in
+        ``"a:ne"`` is split off and stored separately. Passing ``None``
+        raises `pydot.MissingNameError`.
+        """
+        name, port = _split_node_port(_normalize_node_name(node_name))
+        self.obj_dict["name"] = name
+        self.obj_dict["port"] = port
 
     def get_name(self) -> str:
         """Get the node's name."""
