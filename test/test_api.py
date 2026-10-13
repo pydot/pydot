@@ -246,6 +246,18 @@ def test_dot_pickling() -> None:
     assert g2.shape_files[0] == "dummy.png"
 
 
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+def test_complex_edge_pickling(protocol: int) -> None:
+    graphs = pydot.graph_from_dot_data("digraph { { a b } -> { c d }; }")
+    assert graphs is not None
+    graph = graphs[0]
+    restored = pickle.loads(pickle.dumps(graph, protocol=protocol))
+
+    assert isinstance(restored, pydot.Dot)
+    assert restored.to_string() == graph.to_string()
+    assert len(restored.get_edges()) == 1
+
+
 def test_unicode_ids() -> None:
     node1 = '"aánñoöüé€"'
     node2 = '"îôø®çßΩ"'
