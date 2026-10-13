@@ -89,3 +89,4 @@ class FrozenDict(dict):  # type: ignore
 # Backwards-compatible typing alias
 AttributeDict = Dict[str, Any]
 EdgeEndpoint = Union[str, int, float, FrozenDict]
+NodeName = Union[str, bool, int, float]
