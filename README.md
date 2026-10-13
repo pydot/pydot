@@ -5,19 +5,19 @@
 | Name                            |    Stmts |     Miss |   Branch |   BrPart |    Cover |   Missing |
 |-------------------------------- | -------: | -------: | -------: | -------: | -------: | --------: |
 | src/pydot/\_\_init\_\_.py       |       10 |        0 |        0 |        0 |     100% |           |
-| src/pydot/classes.py            |       56 |        0 |       12 |        0 |     100% |           |
+| src/pydot/classes.py            |       58 |        0 |       12 |        0 |     100% |           |
 | src/pydot/core.py               |      680 |        0 |      260 |        0 |     100% |           |
 | src/pydot/dot\_parser.py        |      210 |        0 |       58 |        0 |     100% |           |
 | src/pydot/exceptions.py         |        8 |        0 |        0 |        0 |     100% |           |
 | test/\_\_init\_\_.py            |        0 |        0 |        0 |        0 |     100% |           |
 | test/conftest.py                |        6 |        0 |        0 |        0 |     100% |           |
-| test/test\_api.py               |      638 |        0 |       12 |        0 |     100% |           |
-| test/test\_classes.py           |       48 |        0 |        0 |        0 |     100% |           |
+| test/test\_api.py               |      647 |        0 |       12 |        0 |     100% |           |
+| test/test\_classes.py           |       62 |        0 |        0 |        0 |     100% |           |
 | test/test\_context\_managers.py |       81 |        0 |        2 |        0 |     100% |           |
 | test/test\_logging.py           |       12 |        0 |        0 |        0 |     100% |           |
 | test/test\_parser.py            |      135 |        0 |       10 |        0 |     100% |           |
 | test/test\_pydot.py             |       80 |        0 |        4 |        0 |     100% |           |
-| **TOTAL**                       | **1964** |    **0** |  **358** |    **0** | **100%** |           |
+| **TOTAL**                       | **1989** |    **0** |  **358** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
