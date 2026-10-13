@@ -14,12 +14,32 @@ import subprocess
 import textwrap
 import typing as T
 from pathlib import Path
+from xml.etree import ElementTree
 
 import pytest
 
 import pydot
 import pydot.exceptions
 from pydot._vendor import tempfile
+
+
+def test_notebook_svg_representation() -> None:
+    graph = pydot.Dot(bgcolor="#1a1a1a")
+    graph.add_node(pydot.Node("a", label="café α", fontcolor="white"))
+    graph.add_node(pydot.Node("b", fontcolor="white"))
+    graph.add_edge(pydot.Edge("a", "b", color="white"))
+
+    output = graph._repr_svg_()
+    assert isinstance(output, str)
+    svg = ElementTree.fromstring(output)
+    assert svg.tag == "{http://www.w3.org/2000/svg}svg"
+    assert "café α" in output
+    assert 'fill="#1a1a1a"' in output
+
+    graph.get_node("a")[0].set_label("updated")
+    updated = graph._repr_svg_()
+    assert "updated" in updated
+    assert "café α" not in updated
 
 
 def test_keep_graph_type() -> None:
