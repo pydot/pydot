@@ -855,6 +855,49 @@ def test_suppress_disconnected() -> None:
     assert gr1.to_string() == gr2.to_string()
 
 
+@pytest.mark.parametrize(
+    "keyword", ["graph", "node", "edge", "GRAPH", "NODE", "EDGE"]
+)
+@pytest.mark.parametrize("connected", [False, True])
+def test_suppress_disconnected_keeps_defaults(
+    keyword: str, connected: bool
+) -> None:
+    graph = pydot.Dot(suppress_disconnected=True)
+    graph.add_node(pydot.Node(keyword, color="green"))
+    graph.add_node(pydot.Node(f'"{keyword}"', color="red"))
+    graph.add_node(pydot.Node("isolated"))
+    if connected:
+        graph.add_node(pydot.Node("a"))
+        graph.add_node(pydot.Node("b"))
+        graph.add_edge(pydot.Edge("a", "b"))
+
+    output = graph.to_string()
+    assert f"{keyword} [color=green];" in output
+    assert f'"{keyword}" [color=red];' not in output
+    assert "isolated;" not in output
+    if connected:
+        assert "a;" in output
+        assert "b;" in output
+        assert "a -> b;" in output
+
+
+def test_suppress_disconnected_renders_defaults() -> None:
+    graph = pydot.Dot(suppress_disconnected=True)
+    graph.set_graph_defaults(bgcolor="#1a1a1a")
+    graph.set_node_defaults(color="green")
+    graph.set_edge_defaults(color="blue")
+    graph.add_node(pydot.Node("a"))
+    graph.add_node(pydot.Node("b"))
+    graph.add_node(pydot.Node("isolated"))
+    graph.add_edge(pydot.Edge("a", "b"))
+
+    output = graph.create_svg().decode("utf-8")
+    assert 'fill="#1a1a1a"' in output
+    assert 'stroke="green"' in output
+    assert 'stroke="blue"' in output
+    assert "isolated" not in output
+
+
 def test_strict(objdict: dict[str, T.Any]) -> None:
     g = pydot.Dot(obj_dict=objdict)
     g.set_parent_graph(g)
