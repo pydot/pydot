@@ -174,6 +174,48 @@ def test_edge_missing_endpoints() -> None:
     assert pydot.Edge(("", "")).get_source() == ""
 
 
+def test_node_missing_name() -> None:
+    # Name given as None: should raise, whether at construction or later.
+    with pytest.raises(pydot.MissingNameError):
+        pydot.Node(None)
+    with pytest.raises(pydot.MissingNameError):
+        pydot.Node(None, color="grey50")
+    with pytest.raises(pydot.MissingNameError):
+        pydot.Node("a").set_name(None)
+
+    # The new exception stays catchable as the general pydot.Error.
+    assert issubclass(pydot.MissingNameError, pydot.Error)
+
+    # An empty string is a legal, if unusual, node name: should work fine.
+    assert pydot.Node("").get_name() == ""
+    assert pydot.Node().get_name() == ""
+
+
+def test_node_name_normalization() -> None:
+    # The constructor and set_name() must agree on every accepted type.
+    for raw, expected in ((1, "1"), (2.5, "2.5"), (True, "true"), ("x", "x")):
+        assert pydot.Node(raw).get_name() == expected
+        n = pydot.Node("placeholder")
+        n.set_name(raw)
+        assert n.get_name() == expected
+
+
+def test_node_port_handling() -> None:
+    # A port suffix is split off, both at construction and on rename.
+    n = pydot.Node("a:ne")
+    assert (n.get_name(), n.get_port()) == ("a", ":ne")
+    n.set_name("b:sw")
+    assert (n.get_name(), n.get_port()) == ("b", ":sw")
+
+    # Renaming without a port clears the old one.
+    n.set_name("c")
+    assert (n.get_name(), n.get_port()) == ("c", None)
+
+    # A colon inside a quoted identifier is part of the name.
+    n.set_name('"d:e"')
+    assert (n.get_name(), n.get_port()) == ('"d:e"', None)
+
+
 def test_subgraphs() -> None:
     g = pydot.Graph()
     s = pydot.Subgraph("foo")
