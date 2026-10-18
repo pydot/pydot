@@ -1727,6 +1727,10 @@ class Dot(Graph):
         self.shape_files = state.get("shape_files", [])
         self.formats = state.get("formats", OUTPUT_FORMATS)
 
+    def _repr_svg_(self) -> str:
+        """Render this graph as SVG for display in Jupyter notebooks."""
+        return self.create(format="svg", encoding="utf-8").decode("utf-8")
+
     def set_shape_files(self, file_paths: str | Sequence[str]) -> None:
         """Add the paths of the required image files.
 

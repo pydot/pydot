@@ -202,7 +202,13 @@ There are two different DOT strings you can retrieve:
 
 #### Display in a Jupyter notebook
 
-To render the graph below a notebook cell:
+To render the graph as SVG, leave it as the cell's final expression:
+
+```python
+graph
+```
+
+Or, display it explicitly:
 
 ```python
 from IPython.display import SVG
