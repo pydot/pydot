@@ -5,7 +5,7 @@ Parsing and re-serialising are pure logic; no Graphviz binary is used.
 
 import pytest
 
-from pydot import Edge, Graph, Node
+from pydot import Edge, Graph, Node, Subgraph
 from pydot.core import graph_from_dot_data
 
 
@@ -154,7 +154,7 @@ def test_build_parse_round_trip_is_stable():
     graph.add_node(Node("b"))
     graph.add_edge(Edge("a", "b", color="red"))
     graph.add_edge(Edge("b", "a"))
-    subgraph = __import__("pydot").Subgraph("cluster_0")
+    subgraph = Subgraph("cluster_0")
     subgraph.add_node(Node("c"))
     graph.add_subgraph(subgraph)
     text = graph.to_string()
