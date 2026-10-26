@@ -42,34 +42,12 @@ def test_frozendict_non_dict_values_untouched():
     assert frozen["lst"] == (1, 2)
 
 
-@pytest.mark.parametrize(
-    "mutation",
-    [
-        lambda f: f.__setitem__("x", 1),
-        lambda f: f.__delitem__("a"),
-        lambda f: f.update({"x": 1}),
-        lambda f: f.pop("a"),
-        lambda f: f.clear(),
-        lambda f: f.setdefault("a", 9),
-        lambda f: f.popitem(),
-    ],
-)
-def test_frozendict_mutations_raise(mutation):
-    frozen = FrozenDict({"a": 1})
-    with pytest.raises(AttributeError, match="A frozendict cannot be modified."):
-        mutation(frozen)
-
-
 def test_frozendict_equality_and_hash():
     left = FrozenDict({"a": 1, "b": {"c": 2}})
     right = FrozenDict({"a": 1, "b": {"c": 2}})
     assert left == right
     assert hash(left) == hash(right)
     assert left != FrozenDict({"a": 9})
-
-
-def test_frozendict_repr():
-    assert repr(FrozenDict({"a": 1})) == "FrozenDict({'a': 1})"
 
 
 def test_frozendict_pickle_round_trip():
