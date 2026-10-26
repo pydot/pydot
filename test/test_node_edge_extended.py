@@ -25,7 +25,7 @@ def test_node_attributes_round_trip():
     assert str(node) == "a [color=red, shape=box];"
 
 
-def test_node_set_overwrites_and_get_missing_is_none():
+def test_node_set_overwrites():
     node = Node("a")
     node.set("label", "hi")
     assert node.get("label") == "hi"
