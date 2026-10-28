@@ -566,8 +566,23 @@ class Common:
     this one.
     """
 
+    _quote_colons = False
+
     def __init__(self, obj_dict: AttributeDict | None = None) -> None:
         self.obj_dict: AttributeDict = obj_dict or {}
+
+    def _quote_id(
+        self, value: str, unquoted_keywords: Sequence[str] | None = None
+    ) -> str:
+        """Quote an identifier when required by the DOT language."""
+        if (
+            self._quote_colons
+            and isinstance(value, str)
+            and ":" in value
+            and not (value.startswith('"') and value.endswith('"'))
+        ):
+            return make_quoted(value)
+        return quote_id_if_necessary(value, unquoted_keywords)
 
     def __getstate__(self) -> AttributeDict:
         _dict = copy.copy(self.obj_dict)
@@ -687,6 +702,8 @@ class Node(Common):
     be supported.
     """
 
+    _quote_colons = True
+
     def __init__(
         self,
         name: str = "",
@@ -745,7 +762,7 @@ class Node(Common):
         """Return string representation of node in DOT language."""
         indent_str = self.get_indent(indent, indent_level)
 
-        node = quote_id_if_necessary(
+        node = self._quote_id(
             self.obj_dict["name"], unquoted_keywords=("graph", "node", "edge")
         )
 
@@ -993,6 +1010,8 @@ class Graph(Common):
         graph_instance.obj_dict['attributes']['label']
         graph_instance.obj_dict['attributes']['fontname']
     """
+
+    _quote_colons = True
 
     def __init__(
         self,
@@ -1496,7 +1515,7 @@ class Graph(Common):
             # Suppressing the keyword hides the name as well
             graph_name = self.obj_dict.get("name")
             if graph_name:
-                first_line.append(quote_id_if_necessary(graph_name))
+                first_line.append(self._quote_id(graph_name))
 
         first_line.append("{\n")
         graph.append(" ".join(first_line))
