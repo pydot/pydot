@@ -465,6 +465,11 @@ def test_keywords_with_ports() -> None:
     assert n.get_port() == ":edge"
 
 
+def test_edge_with_port() -> None:
+    edge = pydot.Edge("source:port", "target:in")
+    assert str(edge) == "source:port -- target:in;"
+
+
 @pytest.mark.xfail(reason="The port logic is a broken mess")
 def test_broken_port_handling() -> None:
     n = pydot.Node("edge:12", color="red")
@@ -693,6 +698,30 @@ def test_edge_quoting() -> None:
         "Node^A";
         "Node^B";
         "Node^A" -> "Node^B";
+        }
+        """)
+
+
+def test_node_name_with_colon() -> None:
+    """Test that colons in node names are quoted."""
+    g = pydot.Graph("G")
+    n = pydot.Node("a:port", color="red")
+    n.set_name("z:foo")
+    g.add_node(n)
+
+    assert g.to_string() == textwrap.dedent("""\
+        digraph G {
+        "z:foo" [color=red];
+        }
+        """)
+
+
+def test_graph_name_with_colon() -> None:
+    """Test that colons in graph names are quoted."""
+    g = pydot.Graph("G:aGraph")
+
+    assert g.to_string() == textwrap.dedent("""\
+        digraph "G:aGraph" {
         }
         """)
 
