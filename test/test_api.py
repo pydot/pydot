@@ -101,6 +101,15 @@ def test_node_handling() -> None:
     assert len(g.get_nodes()) == 1
 
 
+def test_del_node_out_of_range_index_keeps_matching_nodes() -> None:
+    g = pydot.Graph("G")
+    g.add_node(pydot.Node("a"))
+    g.add_node(pydot.Node("a"))
+
+    assert not g.del_node("a", index=5)
+    assert len(g.get_node("a")) == 2
+
+
 def test_edge_handling() -> None:
     g = pydot.Graph("G")
     a = pydot.Node("a")
