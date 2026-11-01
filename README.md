@@ -13,11 +13,11 @@
 | test/conftest.py                |        6 |        0 |        0 |        0 |     100% |           |
 | test/test\_api.py               |      663 |        0 |       12 |        0 |     100% |           |
 | test/test\_classes.py           |       62 |        0 |        0 |        0 |     100% |           |
-| test/test\_context\_managers.py |       81 |        0 |        2 |        0 |     100% |           |
+| test/test\_context\_managers.py |       81 |        0 |        0 |        0 |     100% |           |
 | test/test\_logging.py           |       12 |        0 |        0 |        0 |     100% |           |
 | test/test\_parser.py            |      175 |        0 |       18 |        0 |     100% |           |
 | test/test\_pydot.py             |       80 |        0 |        4 |        0 |     100% |           |
-| **TOTAL**                       | **2052** |    **0** |  **368** |    **0** | **100%** |           |
+| **TOTAL**                       | **2052** |    **0** |  **366** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
