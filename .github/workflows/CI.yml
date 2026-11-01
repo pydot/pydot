@@ -76,7 +76,7 @@ jobs:
           echo "COVERAGE_FILE=.coverage.${{ runner.os }}.${{ matrix.python-version }}" >> "$GITHUB_ENV"
       - name: "Install graphviz (Linux)"
         if: runner.os == 'linux'
-        run: sudo apt install graphviz
+        run: sudo apt install graphviz libgvplugin-neato-layout8
       - name: "Install graphviz (Windows)"
         if: runner.os == 'windows'
         run: choco install graphviz --ignore-http-cache
