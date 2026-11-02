@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 pydot contributors
+
+SPDX-License-Identifier: MIT
+-->
+
 ## AI policy
 
 Use of AI coding assistants is permitted as a productivity aid, but should be done
