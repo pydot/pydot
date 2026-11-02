@@ -33,9 +33,7 @@ permissions:
 jobs:
   tests:
     name: "${{ matrix.system.os }}, Py${{ matrix.python-version }}"
-    runs-on: >-
-      ${{ matrix.system.os == 'ubuntu' && matrix.python-version == '3.9'
-      && 'ubuntu-24.04' || format('{0}-latest', matrix.system.os) }}
+    runs-on: "${{ matrix.system.os }}-latest"
     continue-on-error: ${{ matrix.system.can-fail }}
 
     strategy:
