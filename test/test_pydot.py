@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import functools
 import os
-import sys
 from collections.abc import Generator
 from hashlib import sha256
 

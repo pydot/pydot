@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, Union
+from typing import Any
 
 
 class FrozenDict(dict):  # type: ignore
@@ -91,5 +91,5 @@ class FrozenDict(dict):  # type: ignore
 
 
 # Backwards-compatible typing alias
-AttributeDict = Dict[str, Any]
-EdgeEndpoint = Union[str, int, float, FrozenDict]
+AttributeDict = dict[str, Any]
+EdgeEndpoint = str | int | float | FrozenDict
