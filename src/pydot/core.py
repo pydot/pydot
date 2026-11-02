@@ -15,12 +15,13 @@ import re
 import subprocess
 import sys
 import warnings
-from typing import TYPE_CHECKING, Any, Final, Sequence, Union, cast
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, Final, TypeAlias, cast
 
 if TYPE_CHECKING:
     # `typing_extensions` is always available in `TYPE_CHECKING` blocks,
     # even if not  installed
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self
 
 import pydot
 from pydot._vendor import tempfile
@@ -250,12 +251,7 @@ def call_graphviz(
 
     program_with_args = [program] + arguments
 
-    if sys.version_info < (3, 9):
-        my_popen = subprocess.Popen  # pragma: no cover
-    else:
-        my_popen = subprocess.Popen[bytes]
-
-    process = my_popen(
+    process = subprocess.Popen[bytes](
         program_with_args,
         env=env,
         cwd=working_dir,
@@ -641,7 +637,7 @@ class Common:
 
     @staticmethod
     def get_indent(indent: Any, indent_level: int) -> str:
-        if isinstance(indent, (int, float)):
+        if isinstance(indent, int | float):
             indent_str = " " * int(indent)
         else:
             indent_str = str(indent)
@@ -801,7 +797,7 @@ class Edge(Common):
     ) -> None:
         super().__init__(obj_dict)
         if obj_dict is None:
-            if isinstance(src, (list, tuple)):
+            if isinstance(src, list | tuple):
                 _src, _dst = src[0:2]
             elif src is None or dst is None:
                 raise pydot.Error(
@@ -815,16 +811,16 @@ class Edge(Common):
             ep0: EdgeEndpoint
             ep1: EdgeEndpoint
 
-            if isinstance(_src, (Node, Subgraph, Cluster)):
+            if isinstance(_src, Node | Subgraph | Cluster):
                 ep0 = str(_src.get_name())
-            elif isinstance(_src, (FrozenDict, int, float)):
+            elif isinstance(_src, FrozenDict | int | float):
                 ep0 = _src
             else:
                 ep0 = str(_src)
 
-            if isinstance(_dst, (Node, Subgraph, Cluster)):
+            if isinstance(_dst, Node | Subgraph | Cluster):
                 ep1 = str(_dst.get_name())
-            elif isinstance(_dst, (FrozenDict, int, float)):
+            elif isinstance(_dst, FrozenDict | int | float):
                 ep1 = _dst
             else:
                 ep1 = str(_dst)
@@ -842,7 +838,7 @@ class Edge(Common):
 
     def _get_endpoint(self, position: int) -> EdgeEndpoint:
         ep = self.obj_dict["points"][position]
-        if isinstance(ep, (FrozenDict, int, float)):
+        if isinstance(ep, FrozenDict | int | float):
             return ep
         return str(ep)
 
@@ -1310,7 +1306,7 @@ class Graph(Common):
         If edges are deleted it returns True. If no action
         is taken it returns False.
         """
-        if isinstance(src_or_list, (list, tuple)):
+        if isinstance(src_or_list, list | tuple):
             if dst is not None and isinstance(dst, int):
                 index = dst
             src, dst = src_or_list
@@ -1345,7 +1341,7 @@ class Graph(Common):
         a list of Edge instances is returned.
         An empty list is returned otherwise.
         """
-        if isinstance(src_or_list, (list, tuple)) and dst is None:
+        if isinstance(src_or_list, list | tuple) and dst is None:
             edge_points = tuple(src_or_list)
             edge_points_reverse = (edge_points[1], edge_points[0])
         else:
@@ -1751,7 +1747,7 @@ class Dot(Graph):
         if isinstance(file_paths, str):
             self.shape_files.append(file_paths)
 
-        if isinstance(file_paths, (list, tuple)):
+        if isinstance(file_paths, list | tuple):
             self.shape_files.extend(file_paths)
 
     def set_prog(self, prog: str) -> None:
@@ -1931,7 +1927,7 @@ class Dot(Graph):
 
         assert prog is not None
 
-        if isinstance(prog, (list, tuple)):
+        if isinstance(prog, list | tuple):
             _prog: str = prog[0]
             args: list[str] = list(prog[1:])
         else:
@@ -1991,4 +1987,4 @@ __generate_format_methods(Dot)
 
 
 # Type alias for forward-referenced type
-EdgeDefinition: TypeAlias = Union[EdgeEndpoint, Node, Subgraph, Cluster]
+EdgeDefinition: TypeAlias = EdgeEndpoint | Node | Subgraph | Cluster

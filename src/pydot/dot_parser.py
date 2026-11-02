@@ -149,7 +149,7 @@ def update_parent_graph_hierarchy(g: pydot.core.Dot) -> None:
 
 def add_elements(g: Any, toks: ParseResults) -> None:
     for element in toks:
-        if isinstance(element, (pydot.core.Subgraph, pydot.core.Cluster)):
+        if isinstance(element, pydot.core.Subgraph | pydot.core.Cluster):
             g.add_subgraph(element)
         elif isinstance(element, pydot.core.Node):
             g.add_node(element)
