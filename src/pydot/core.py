@@ -1220,11 +1220,12 @@ class Graph(Common):
             name = name.get_name()
 
         if name in self.obj_dict["nodes"]:
-            if index is not None and index < len(self.obj_dict["nodes"][name]):
-                del self.obj_dict["nodes"][name][index]
-                return True
-            else:
+            nodes = self.obj_dict["nodes"][name]
+            if index is None:
                 del self.obj_dict["nodes"][name]
+                return True
+            if -len(nodes) <= index < len(nodes):
+                del nodes[index]
                 return True
 
         return False
