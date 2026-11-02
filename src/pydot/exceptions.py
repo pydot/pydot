@@ -28,3 +28,13 @@ class Error(PydotException):
 
     def __str__(self) -> str:
         return self.value
+
+
+class MissingNameError(Error):
+    """Raised when a graph element is given no name.
+
+    Every node must have a name so that Graphviz can refer to it and
+    so that the graph can index it. Passing ``None`` as a name is
+    almost always a caller mistake, so it is rejected explicitly
+    rather than being rendered as the literal word ``None``.
+    """
