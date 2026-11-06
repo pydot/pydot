@@ -1929,7 +1929,8 @@ class Dot(Graph):
         if prog is None:
             prog = self.prog
 
-        assert prog is not None
+        if not prog:
+            raise pydot.Error("prog must contain an executable")
 
         if isinstance(prog, (list, tuple)):
             _prog: str = prog[0]
