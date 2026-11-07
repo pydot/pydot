@@ -1788,7 +1788,8 @@ class Dot(Graph):
         the output file.)
 
         Returns True, or raises an exception if an error is encountered.
-        The exception is some form of ``OSError`` or an ``AssertionError``.
+        The exception is ``MissingExecutable``, ``OSError``, or
+        ``AssertionError``.
 
         There's also the preferred possibility of using:
 
@@ -1870,7 +1871,8 @@ class Dot(Graph):
 
         Returns the output of the rendering tool as ``bytes``, or
         raises an exception if an error is encountered.
-        The exception is some form of ``OSError`` or an ``AssertionError``.
+        The exception is ``MissingExecutable``, ``OSError``, or
+        ``AssertionError``.
 
         There's also the preferred possibility of using:
 
@@ -1929,10 +1931,15 @@ class Dot(Graph):
         if prog is None:
             prog = self.prog
 
-        assert prog is not None
+        if not prog:
+            raise pydot.MissingExecutable("'prog' must specify an executable")
 
         if isinstance(prog, (list, tuple)):
             _prog: str = prog[0]
+            if not _prog:
+                raise pydot.MissingExecutable(
+                    "The first element of 'prog' must specify an executable"
+                )
             args: list[str] = list(prog[1:])
         else:
             _prog = str(prog)
