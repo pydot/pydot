@@ -28,3 +28,7 @@ class Error(PydotException):
 
     def __str__(self) -> str:
         return self.value
+
+
+class MissingExecutable(Error):
+    """Error raised when a Graphviz command contains no executable."""

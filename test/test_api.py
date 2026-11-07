@@ -533,9 +533,9 @@ def test_executable_not_found_exception() -> None:
         graph.create(prog="dothehe")
 
 
-@pytest.mark.parametrize("prog", ["", [], ()])
-def test_create_empty_prog(prog: str | list[str] | tuple[str, ...]) -> None:
-    with pytest.raises(pydot.Error, match="prog must contain an executable"):
+@pytest.mark.parametrize("prog", ["", [], (), [""], ("",), [None], (None,)])
+def test_create_empty_prog(prog: T.Any) -> None:
+    with pytest.raises(pydot.MissingExecutable):
         pydot.Dot().create(prog=prog)
 
 
