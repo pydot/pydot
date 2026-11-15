@@ -533,6 +533,12 @@ def test_executable_not_found_exception() -> None:
         graph.create(prog="dothehe")
 
 
+@pytest.mark.parametrize("prog", ["", [], (), [""], ("",), [None], (None,)])
+def test_create_empty_prog(prog: T.Any) -> None:
+    with pytest.raises(pydot.MissingExecutable):
+        pydot.Dot().create(prog=prog)
+
+
 def test_subprocess_bad_exit() -> None:
     script = Path(__file__).parent / "badexit.py"
     (out, err, proc) = pydot.call_graphviz("python", [script], ".")
