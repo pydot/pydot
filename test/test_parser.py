@@ -15,6 +15,51 @@ from pydot import dot_parser
 from pydot.dot_parser import HTML, GraphParser
 
 
+@pytest.mark.parametrize("attribute", ["name", "obj_dict"])
+def test_node_attributes_do_not_override_constructor_arguments(
+    attribute: str,
+) -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        f"graph G {{ a, b [{attribute}=value]; }}"
+    )
+    for name in ("a", "b"):
+        node = graph.get_node(name)[0]
+        assert node.get_name() == name
+        assert node.get_attributes() == {attribute: "value"}
+    graph.get_node("a")[0].set(attribute, "changed")
+    assert graph.get_node("b")[0].get(attribute) == "value"
+
+
+@pytest.mark.parametrize("keyword", ["graph", "node", "edge"])
+@pytest.mark.parametrize("attribute", ["name", "obj_dict"])
+def test_default_attributes_do_not_override_constructor_arguments(
+    keyword: str,
+    attribute: str,
+) -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        f"graph G {{ {keyword} [{attribute}=value]; }}"
+    )
+    default = graph.get_node(keyword)[0]
+    assert default.get_name() == keyword
+    assert default.get_attributes() == {attribute: "value"}
+
+
+@pytest.mark.parametrize("attribute", ["src", "dst", "obj_dict"])
+def test_edge_attributes_do_not_override_constructor_arguments(
+    attribute: str,
+) -> None:
+    (graph,) = dot_parser.parse_dot_data(
+        f"digraph G {{ a -> b -> c [{attribute}=value]; }}"
+    )
+    first, second = graph.get_edges()
+    assert (first.get_source(), first.get_destination()) == ("a", "b")
+    assert (second.get_source(), second.get_destination()) == ("b", "c")
+    assert first.get_attributes() == {attribute: "value"}
+    assert second.get_attributes() == {attribute: "value"}
+    first.set(attribute, "changed")
+    assert second.get(attribute) == "value"
+
+
 def test_HTML_valid() -> None:
     """Test successful HTML parses."""
     parsed = HTML().parse_string("<<b>Bold Text</b>>")

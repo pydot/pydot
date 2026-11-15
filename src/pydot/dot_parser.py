@@ -158,9 +158,8 @@ def add_elements(g: Any, toks: ParseResults) -> None:
         elif isinstance(element, ParseResults):
             add_elements(g, element)
         elif isinstance(element, DefaultStatement):
-            default_node = pydot.core.Node(
-                element.default_type, **element.attrs
-            )
+            default_node = pydot.core.Node(element.default_type)
+            default_node.obj_dict["attributes"].update(element.attrs)
             g.add_node(default_node)
         else:
             assert isinstance(element, P_AttrList)
@@ -258,17 +257,22 @@ def push_edge_stmt(toks: ParseResults) -> list[pydot.core.Edge]:
     n_prev = make_endpoints(endpoints[0])
     for endpoint in endpoints[1:]:
         n_next = make_endpoints(endpoint)
-        edges.extend(
-            pydot.core.Edge(source, destination, **attrs)
-            for source, destination in itertools.product(n_prev, n_next)
-        )
+        for source, destination in itertools.product(n_prev, n_next):
+            edge = pydot.core.Edge(source, destination)
+            edge.obj_dict["attributes"].update(attrs)
+            edges.append(edge)
         n_prev = n_next
     return edges
 
 
 def push_node_stmt(toks: ParseResults) -> list[pydot.core.Node]:
     attrs = expand_attr_lists(toks.attr_l)
-    return [pydot.core.Node(str(name), **attrs) for name in toks.names]
+    nodes = []
+    for name in toks.names:
+        node = pydot.core.Node(str(name))
+        node.obj_dict["attributes"].update(attrs)
+        nodes.append(node)
+    return nodes
 
 
 class GraphParser:
