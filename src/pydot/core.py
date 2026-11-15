@@ -1541,7 +1541,15 @@ class Graph(Common):
             if obj["type"] == "node":
                 node = Node(obj_dict=obj)
 
-                if skip_disconnected and node.get_name() not in edge_ep_set:
+                node_name = node.get_name()
+                is_default = isinstance(
+                    node_name, str
+                ) and node_name.lower() in ("graph", "node", "edge")
+                if (
+                    skip_disconnected
+                    and not is_default
+                    and node_name not in edge_ep_set
+                ):
                     continue
 
                 node_str = node.to_string(
