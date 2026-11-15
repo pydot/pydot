@@ -6,18 +6,18 @@
 |-------------------------------- | -------: | -------: | -------: | -------: | -------: | --------: |
 | src/pydot/\_\_init\_\_.py       |       10 |        0 |        0 |        0 |     100% |           |
 | src/pydot/classes.py            |       58 |        0 |       12 |        0 |     100% |           |
-| src/pydot/core.py               |      682 |        0 |      260 |        0 |     100% |           |
+| src/pydot/core.py               |      685 |        0 |      264 |        0 |     100% |           |
 | src/pydot/dot\_parser.py        |      215 |        0 |       60 |        0 |     100% |           |
-| src/pydot/exceptions.py         |        8 |        0 |        0 |        0 |     100% |           |
+| src/pydot/exceptions.py         |        9 |        0 |        0 |        0 |     100% |           |
 | test/\_\_init\_\_.py            |        0 |        0 |        0 |        0 |     100% |           |
 | test/conftest.py                |        6 |        0 |        0 |        0 |     100% |           |
-| test/test\_api.py               |      663 |        0 |       12 |        0 |     100% |           |
+| test/test\_api.py               |      667 |        0 |       12 |        0 |     100% |           |
 | test/test\_classes.py           |       62 |        0 |        0 |        0 |     100% |           |
 | test/test\_context\_managers.py |       81 |        0 |        0 |        0 |     100% |           |
 | test/test\_logging.py           |       12 |        0 |        0 |        0 |     100% |           |
 | test/test\_parser.py            |      175 |        0 |       18 |        0 |     100% |           |
 | test/test\_pydot.py             |       80 |        0 |        4 |        0 |     100% |           |
-| **TOTAL**                       | **2052** |    **0** |  **366** |    **0** | **100%** |           |
+| **TOTAL**                       | **2060** |    **0** |  **370** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
